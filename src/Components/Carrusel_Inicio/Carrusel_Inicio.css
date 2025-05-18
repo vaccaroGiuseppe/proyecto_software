@@ -1,0 +1,60 @@
+
+.Carrusel_Contenedor {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 30rem;
+    
+} 
+
+.Carrusel_Imagenes {
+    height: 100%; /* La imagen ocupa el 100% del contenedor */
+    width: 100%;
+    object-fit: cover;
+}
+
+.Contenedor_Imagenes {
+    position: relative;
+    object-fit: cover;
+    width: inherit;
+    height: inherit;
+    z-index: 1;
+}
+
+.Boton_Contenedor {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    position: absolute;
+    z-index: 2;
+   
+}
+
+.Carrusel_Boton {
+    border-radius: 40%;
+    background-color: transparent;
+    border-color: white;
+    border-width: .5rem;
+    transition-duration: 1s;
+}
+
+.Carrusel_Boton:hover {
+    cursor: pointer;
+    opacity: 80%;
+}
+
+.Boton_Izq {
+    margin-left: 1rem;
+}
+
+.Boton_Der {
+    margin-right: 1rem;
+}
+
+
+
+
+
+
+
+

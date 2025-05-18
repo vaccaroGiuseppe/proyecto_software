@@ -1,0 +1,47 @@
+.Navbar {
+  background-color: #F67E08;
+  width: 100%;
+}
+
+.Navbar_Contenedor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.Navbar_Contenedor_Logo {
+  height: 60px; /* Altura fija para el contenedor del logo */
+}
+
+.Navbar_Logo {
+  height: 100%; /* La imagen ocupa el 100% del contenedor */
+  object-fit: contain; /* Asegura que la imagen no se distorsione */
+}
+
+.Navbar_Contenedor_Links {
+  width: auto; /* Ancho según contenido */
+}
+
+.Contenedor_Links {
+  display: flex;
+  align-items: center;
+  gap: 2rem; 
+}
+
+.Navbar_Link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem; 
+  
+}
+
+.Navbar_Link_Acceder {
+    background-color: #f49b43;
+    padding: .5rem 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+
+
