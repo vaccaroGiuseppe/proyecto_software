@@ -1,47 +1,141 @@
 .Footer_Contenedor {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin: 0 3rem;
-    padding-bottom: 2rem;
+    margin: 0 3.2rem;
+    padding-bottom: 3.2rem;
     place-items: center;
+    row-gap: 6.4rem;
+    text-transform: uppercase;
+    color: white;
 
 }
 
-
-
-
-
-
+@media (min-width: 768px) {
+    .Footer_Contenedor {
+        gap: 1.6rem;
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
 .Mapa_Titulo {
     color: white;
     text-align: center;
-    font-size: 2rem;
-    margin: 1rem 0 .5rem;
+    font-size: 3.2rem;
+    margin: 1.6rem 0 0.8rem;
 }
 
+
 .Contacto_Contenedor {
-    margin-top: 1rem;
+    margin-top: 1.6rem;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 1.6rem;
 
 }
 
 .Contacto_Titulo, 
 .Contacto_Info {
     margin: 0;
-    color: white;
 }
+
 .Contacto_Titulo {
-    font-size: 1.5rem;
-    margin: 0 0 0.08rem;
+    font-size: 3rem;
+    margin: 3rem 0 0rem;
 }
 
 .Contacto_Info {
-    font-size: 1rem;
+    font-size: 1.8rem;
     text-decoration: underline;
+}
+
+
+.Campus_Titulo {
+    font-size: 3.2rem;
+    margin-bottom: 0;
+}
+
+.Campus_Descripcion {
+    font-size: 1.6rem;
+    margin-top: 0.8rem;
+    margin-bottom: 1.6rem;
+}
+
+.Campus_Info_Telefono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Icono_Telefono {
+    background-color: #c86604;
+    border-radius: 0.8rem;
+    padding: .64rem;
+    border: 2px solid white;
+    
+}
+
+
+.Info_Telefonos p {
+    margin: .48em;
+    font-size: 1.8rem;
+}
+
+
+
+
+.Redes_Contenedor_Titulo h1  {
+    font-size: 3.2rem;
+    text-align: center;
+    margin: 0 auto 1rem;
+    
+    
+}
+
+
+
+.Redes_Contenedor_Iconos {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    justify-content: space-around;
+}
+
+
+
+
+.Youtube,
+.Facebook,
+.Instagram, 
+.X {
+    background-color: #c86604;
+    border-radius: 0.8rem;
+    padding: .64rem;
+    border: 2px solid white;
 
 }
+
+.Samancito_Contenedor {
+    margin-top: 2rem;
+}
+
+.Samancito_Link {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition-duration: 0.5s;
+}
+
+.Samancito_Link:hover {
+    font-size: 1.7rem;
+    
+}
+
+
+
+
+.Samancito_Descripcion {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
 
 
 
