@@ -2,8 +2,11 @@
 .Carrusel_Contenedor {
     display: flex;
     align-items: center;
-    width: 100%;
     height: 30rem;
+    
+    width: 100%;
+    margin: 0 auto;
+    justify-content: center;
     
 } 
 
@@ -11,6 +14,7 @@
     height: 100%; /* La imagen ocupa el 100% del contenedor */
     width: 100%;
     object-fit: cover;
+    
 }
 
 .Contenedor_Imagenes {
@@ -19,6 +23,7 @@
     width: inherit;
     height: inherit;
     z-index: 1;
+    max-width: 1250px;
 }
 
 .Boton_Contenedor {
@@ -29,6 +34,13 @@
     z-index: 2;
    
 }
+
+@media (min-width: 1250px) {
+    .Boton_Contenedor {
+        width: 1250px;
+    }
+}
+
 
 .Carrusel_Boton {
     border-radius: 40%;
@@ -44,12 +56,14 @@
 }
 
 .Boton_Izq {
-    margin-left: 1rem;
+    margin-left: 2.5rem;
 }
 
 .Boton_Der {
-    margin-right: 1rem;
+    margin-right: 2.5rem;
 }
+
+
 
 
 

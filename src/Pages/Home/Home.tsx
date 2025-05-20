@@ -1,24 +1,36 @@
-import Carousel_Inicio from '../../Components/Carrusel_Inicio/Carusel_Inicio';
+import Carrusel_Inicio from '../../Components/Carrusel_Inicio/Carusel_Inicio';
 import Navbar from "../../Components/Navbar/Navbar";
+import Flujogramas from "../../Components/Flujogramas/Flujogramas"
+import "./Home.css"
 
 // Importa las imágenes correctamente
-import Imagen1 from '../../Images/Imagen_Prueba1.jpg';
-import Imagen2 from '../../Images/Imagen_Prueba2.jpg';
-import Imagen3 from '../../Images/Imagen_Prueba3.jpg';
+import Imagen1 from "../../Images/Carrusel_Inicio/mobile1.png";
+import Imagen2 from "../../Images/Carrusel_Inicio/mobile2.png";
+import Imagen3 from "../../Images/Carrusel_Inicio/mobile3.png";
+
+
+
 
 const Home = () => {
-  const imagenesCarousel = [
+  // En tu archivo Home.tsx o donde tengas el carrusel
+
+  const imagenesCarrusel = [
     Imagen1,
     Imagen2,
     Imagen3
   ];
 
   return (
-    <div>
+    <div className='Home_Contenedor'>
       <Navbar />
-      <Carousel_Inicio imagenes={imagenesCarousel} />
-      
+      <div className='Home_Separador'></div>
+      <Carrusel_Inicio imagenes={imagenesCarrusel} />
+      <div className='Home_Separador'></div>
+      <Flujogramas />
+
+
     </div>
+    
   );
 };
 
