@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import './Carrusel_Inicio.css';
 import Left_Arrow from '../Arrows/Left_Arrow';
@@ -7,7 +8,7 @@ interface CarouselProps {
   imagenes: string[]; // Nombre consistente en camelCase
 }
 
-const Carousel_Inicio: React.FC<CarouselProps> = ({ imagenes }) => {
+const Carrusel_Inicio: React.FC<CarouselProps> = ({ imagenes }) => {
   const [imagenActual, setImagenActual] = useState<number>(0);
 
   const siguienteImagen = () => {
@@ -29,6 +30,10 @@ const Carousel_Inicio: React.FC<CarouselProps> = ({ imagenes }) => {
                 />  
         </div>
 
+        <div>
+
+        </div>
+
       
         <div className='Boton_Contenedor'>
             <button className="Carrusel_Boton Boton_Izq" onClick={anteriorImagen}> 
@@ -44,6 +49,6 @@ const Carousel_Inicio: React.FC<CarouselProps> = ({ imagenes }) => {
   );
 };
 
-export default Carousel_Inicio;
+export default Carrusel_Inicio;
 
 
