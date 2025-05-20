@@ -1,0 +1,24 @@
+.Flujograma_Contenedor {
+    display: flex;
+    background-color: white;
+    padding-top: 1rem;
+    justify-content: center;
+    padding: 0 3rem;
+}
+
+
+.Contenedor_Titulo {
+    text-align: left;
+    width: 100%;
+}
+
+@media (min-width: 1250px) {
+    .Contenedor_Titulo {
+        width: 1250px;
+    }
+}
+
+.Titulo {
+    font-size: 2rem;
+}
+
