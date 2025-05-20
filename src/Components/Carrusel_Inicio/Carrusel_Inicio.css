@@ -3,17 +3,22 @@
     display: flex;
     align-items: center;
     height: 30rem;
-    
     width: 100%;
     margin: 0 auto;
     justify-content: center;
     
 } 
 
+@media (min-width: 768px) {
+    .Carrusel_Contenedor {
+        height: 40rem;
+    }
+}
+
 .Carrusel_Imagenes {
     height: 100%; /* La imagen ocupa el 100% del contenedor */
     width: 100%;
-    object-fit: cover;
+    object-fit: fit;
     
 }
 
@@ -46,7 +51,7 @@
     border-radius: 40%;
     background-color: transparent;
     border-color: white;
-    border-width: .5rem;
+    border-width: .8rem;
     transition-duration: 1s;
 }
 
@@ -56,11 +61,11 @@
 }
 
 .Boton_Izq {
-    margin-left: 2.5rem;
+    margin-left: 4rem;
 }
 
 .Boton_Der {
-    margin-right: 2.5rem;
+    margin-right: 4rem;
 }
 
 

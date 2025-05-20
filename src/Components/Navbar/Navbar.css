@@ -11,7 +11,7 @@
 }
 
 .Navbar_Contenedor_Logo {
-  height: 60px; /* Altura fija para el contenedor del logo */
+  height: 5rem; /* Altura fija para el contenedor del logo */
 }
 
 .Navbar_Logo {
@@ -26,19 +26,19 @@
 .Contenedor_Links {
   display: flex;
   align-items: center;
-  gap: 2rem; 
+  gap: 3.2rem; 
 }
 
 .Navbar_Link {
   color: white;
   text-decoration: none;
-  font-size: 1.2rem; 
+  font-size: 19.2px; 
   
 }
 
 .Navbar_Link_Acceder {
     background-color: #f49b43;
-    padding: .5rem 1rem;
+    padding: 8px 16px;
     border-radius: 8px;
     font-weight: bold;
 }
