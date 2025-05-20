@@ -2,6 +2,7 @@ import Carrusel_Inicio from '../../Components/Carrusel_Inicio/Carusel_Inicio';
 import Navbar from "../../Components/Navbar/Navbar";
 import Flujogramas from "../../Components/Flujogramas/Flujogramas"
 import "./Home.css"
+import Footer from "../../Components/Footer/Footer"
 
 // Importa las imágenes correctamente
 import Imagen1 from "../../Images/Carrusel_Inicio/mobile1.png";
@@ -27,7 +28,10 @@ const Home = () => {
       <Carrusel_Inicio imagenes={imagenesCarrusel} />
       <div className='Home_Separador'></div>
       <Flujogramas />
-
+      <div className='Home_Separador'></div>
+      <div className='Centrar_Footer'>
+        <Footer />  
+      </div>
 
     </div>
     

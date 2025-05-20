@@ -7,3 +7,9 @@
 .Home_Contenedor {
     background-color: rgb(234, 124, 21, 0.8)
 }
+
+.Centrar_Footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
