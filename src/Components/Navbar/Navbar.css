@@ -1,47 +1,77 @@
+/*Terminada, por favor NO TOCAR*/
 .Navbar {
+  padding-top: 1rem;
   background-color: #F67E08;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.Navbar_Contenedor {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
+@media (min-width: 768px) {
+  .Navbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 1.5rem 1rem;
+  }
 }
 
 .Navbar_Contenedor_Logo {
+  transition: .7s;
   height: 5rem; /* Altura fija para el contenedor del logo */
 }
 
-.Navbar_Logo {
+
+
+.Navbar_Contenedor_Logo:hover {
+  height: 6rem;
+}
+
+.Logo {
   height: 100%; /* La imagen ocupa el 100% del contenedor */
   object-fit: contain; /* Asegura que la imagen no se distorsione */
 }
 
 .Navbar_Contenedor_Links {
   width: auto; /* Ancho según contenido */
-}
-
-.Contenedor_Links {
   display: flex;
-  align-items: center;
-  gap: 3.2rem; 
+  flex-direction: column;
 }
 
-.Navbar_Link {
+@media (min-width: 768px) {
+  .Navbar_Contenedor_Links {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.Link_Acceder, 
+.Link_Nosotros {
+  padding: 1rem;
+  transition: .3s;
+}
+
+.Link_Acceder:hover, 
+.Link_Nosotros:hover {
+  background-color: #D46D07;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.Link {
   color: white;
   text-decoration: none;
   font-size: 19.2px; 
-  
 }
 
-.Navbar_Link_Acceder {
-    background-color: #f49b43;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: bold;
+@media (min-width: 768px) {
+  .Link {
+    border-radius: 0.8rem;
+  }
+  .Link_Acceder {
+      background-color: #FF9A3D;
+      border-radius: 8px;
+      font-weight: bold;
+  }
+
 }
-
-
 

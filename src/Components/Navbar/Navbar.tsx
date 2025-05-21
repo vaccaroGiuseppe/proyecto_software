@@ -5,20 +5,19 @@ import "./Navbar.css";
 function Navbar() {
   return (
     <nav className="Navbar">
-      <div className="Navbar_Contenedor Contenedor">
+      
         <div className="Navbar_Contenedor_Logo">
           <Link to="/">
-            <img src={Logo_Blanco} alt="Logo Unimet" className="Navbar_Logo" />
+            <img src={Logo_Blanco} alt="Logo Unimet" className="Logo" />
           </Link>
         </div>
 
         <div className="Navbar_Contenedor_Links">
-          <div className="Contenedor_Links">
-            <Link className="Navbar_Link" to="/about">Nosotros</Link>
-            <Link className="Navbar_Link Navbar_Link_Acceder" to="/">Acceder</Link>
-          </div>
+            <Link className="Link Link_Nosotros" to="/about">Nosotros</Link>
+            <Link className="Link Link_Acceder" to="/">Acceder</Link>
         </div>
-      </div>
+
+    
     </nav>
   );
 }
