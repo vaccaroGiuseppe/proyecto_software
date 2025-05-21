@@ -21,6 +21,8 @@ function Footer() {
             </div>
 
         </div> {/*Espacio 1*/}
+
+        <div className="Separador"></div>
         <div className="Espacio2">
             <div className="Campus_Contenedor">
 
@@ -30,6 +32,8 @@ function Footer() {
                 El Dorado, CC Guaica Center
                 </p>
 
+                <div className="Separador"></div>
+                
                 <div className="Contacto_Contenedor">
                     <h3 className="Contacto_Titulo">Contacto</h3>
                 </div>
@@ -60,6 +64,8 @@ function Footer() {
                 </div>
                         <p className="Contacto_Info">soportevirtual@unimet.edu.ve</p>
             </div>
+
+        <div className="Separador"></div>
         </div> {/*Espacio 2*/}
 
         <div className="Espacio3">
