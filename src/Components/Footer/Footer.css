@@ -6,6 +6,7 @@
     text-transform: uppercase;
     row-gap: 1rem;
     color: white;
+    background-color: #F67E08;
 }
 
 @media (min-width: 900px) {

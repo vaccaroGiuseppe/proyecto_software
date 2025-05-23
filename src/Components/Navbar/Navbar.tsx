@@ -41,7 +41,7 @@ function Navbar() {
           
           {showDropdown && (
             <div className="dropdown-menu">
-              <Link to="/registro" className="dropdown-item">
+              <Link to="/registrar" className="dropdown-item">
                 Registrarme
               </Link>
               <Link to="/login" className="dropdown-item">
