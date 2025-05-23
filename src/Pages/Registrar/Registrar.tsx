@@ -1,5 +1,6 @@
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
+import { FaUserEdit } from "react-icons/fa"; //
 import "./Registrar.css";
 
 const Registrar = () => {
@@ -9,7 +10,10 @@ const Registrar = () => {
       <div className='Home_Separador'></div>
       
       <div className='Registrar_Cuerpo'>
-        <h1 className='Registrar_Titulo'>Registrar Usuario</h1>
+        <div className='Registrar_Titulo_Contenedor'>
+          <FaUserEdit className='Registrar_Icono_Titulo' />
+          <h1 className='Registrar_Titulo'>Registrar Usuario</h1>
+        </div>
         
         <div className='Registrar_Formulario'>
           <div className='Registrar_Campo'>
