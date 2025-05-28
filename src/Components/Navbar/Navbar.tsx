@@ -44,7 +44,7 @@ function Navbar() {
               <Link to="/registrar" className="dropdown-item">
                 Registrarme
               </Link>
-              <Link to="/login" className="dropdown-item">
+              <Link to="/iniciarsesion" className="dropdown-item">
                 Iniciar Sesión
               </Link>
             </div>
