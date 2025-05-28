@@ -45,7 +45,7 @@
 /* Estilos del formulario */
 .Registrar_Formulario {
   background-color: white;
-  padding: 2.5rem;
+  padding: 2.7rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -71,7 +71,10 @@
 }
 
 .Registrar_Label {
+  font-size: 1.2rem; /* Aumentado de 1.1rem */
+  text-align: left !important; /* Fuerza alineación izquierda */
   display: block;
+  width: 100%;
   margin-bottom: 0.8rem;
   font-weight: 600;
   color: #444;
@@ -90,6 +93,25 @@
 .Registrar_Input:focus {
   border-color: #F67E08;
   outline: none;
+}
+
+.Registrar_Input,
+.Registrar_Select {
+  font-size: 1.1rem; /* Aumentado de 1rem */
+  text-align: left; /* Alinea el texto de entrada a la izquierda */
+}
+
+.Registrar_Boton_Principal {
+  font-size: 1.3rem; /* Aumentado de 1.2rem */
+}
+
+/* Ajustes específicos para alineación */
+.Registrar_Campo {
+  text-align: left; /* Asegura alineación izquierda para todo el campo */
+}
+
+.Select_Container {
+  justify-content: flex-start; /* Alinea el select a la izquierda */
 }
 
 /* Estilos del select */
@@ -156,7 +178,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .Registrar_Titulo {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   
   .Registrar_Formulario {
@@ -164,12 +186,12 @@
   }
   
   .Registrar_Label {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   .Registrar_Input,
   .Registrar_Select {
-    padding: 0.8rem;
+    padding: 1rem;
   }
   
   .Registrar_Boton_Principal {

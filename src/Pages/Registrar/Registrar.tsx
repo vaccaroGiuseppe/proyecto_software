@@ -47,7 +47,7 @@ const Registrar = () => {
         <form className='Registrar_Formulario' onSubmit={handleSubmit}>
           <div className='Formulario_Grupo'>
             <div className='Registrar_Campo'>
-              <label htmlFor='nombre' className='Registrar_Label'>Nombre:</label>
+              <label htmlFor='nombre' className='Registrar_Label' style={{ textAlign: 'left' }}>Nombre:</label>
               <input 
                 type='text' 
                 id='nombre' 
@@ -55,6 +55,7 @@ const Registrar = () => {
                 placeholder='Ej: Luis'
                 className='Registrar_Input'
                 value={formData.nombre}
+                style={{ fontSize: '1.1rem' }}
                 onChange={handleChange}
                 required
               />
