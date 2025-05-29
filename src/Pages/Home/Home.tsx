@@ -5,9 +5,9 @@ import "./Home.css"
 import Footer from "../../Components/Footer/Footer"
 
 // Importa las imágenes correctamente
-import Imagen1 from "../../Images/Carrusel_Inicio/mobile1.png";
-import Imagen2 from "../../Images/Carrusel_Inicio/mobile2.png";
-import Imagen3 from "../../Images/Carrusel_Inicio/mobile3.png";
+import Imagen1 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_1.png"
+import Imagen2 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_2.png"
+import Imagen3 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_3.png"
 
 
 

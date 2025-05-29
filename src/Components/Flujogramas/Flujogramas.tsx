@@ -8,7 +8,7 @@ function Flujogramas() {
     { nombre: "Ingeniería de Producción", link: "https://docs.google.com/spreadsheets/d/1o97owsDH0hSvrEj8Zqfh686cMpUCC2j-/edit?usp=share_link&ouid=115070425939654893584&rtpof=true&sd=true" },
     { nombre: "Ingeniería Química", link: "https://docs.google.com/spreadsheets/d/1o97owsDH0hSvrEj8Zqfh686cMpUCC2j-/edit?usp=share_link&ouid=115070425939654893584&rtpof=true&sd=true" },
     { nombre: "Derecho", link: "https://www.unimet.edu.ve/wp-content/uploads/2025/04/Flujograma-DERECHO-2025.pdf" },
-    { nombre: "Ciencias Administrativas (Ambas Menciones)", link: "https://docs.google.com/spreadsheets/d/1FkctKvPGYNRTO5eda298t4xb5WQ7Yts6/edit?usp=share_link&ouid=115070425939654893584&rtpof=true&sd=true" },
+    { nombre: "Ciencias Administrativas", link: "https://docs.google.com/spreadsheets/d/1FkctKvPGYNRTO5eda298t4xb5WQ7Yts6/edit?usp=share_link&ouid=115070425939654893584&rtpof=true&sd=true" },
     { nombre: "Psicología", link: "https://www.unimet.edu.ve/wp-content/uploads/2025/03/Flujograma-Psicologia-2025.pdf" },
     { nombre: "Comunicación Social y Empresarial", link: "https://www.unimet.edu.ve/wp-content/uploads/2025/03/Flujograma-Comunicacion-Social-y-Empresarial-2025.pdf" },
     { nombre: "Contaduría Pública", link: "https://docs.google.com/spreadsheets/d/1p9r7hYLdzz1Gbr11wLNKyR4bSXFrQNHS/edit?usp=share_link&ouid=115070425939654893584&rtpof=true&sd=true" },
@@ -41,7 +41,7 @@ function Flujogramas() {
             className="Carrera_Item"
           >
             <FiDownload className="Icono_Descarga" />
-            <span className="Nombre_Carrera">Flujograma {carrera.nombre}</span>
+            <span className="Nombre_Carrera">{carrera.nombre}</span>
           </a>
         ))}
       </div>

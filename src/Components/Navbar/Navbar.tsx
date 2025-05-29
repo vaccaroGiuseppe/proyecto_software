@@ -1,23 +1,23 @@
 import { Link } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import Logo_Blanco from "../../Images/Logo_Blanco.png";
 import "./Navbar.css";
 
 function Navbar() {
-  const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Cerrar dropdown al hacer clic fuera
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
+  // Mostrar u ocultar el dropdown al pasar el mouse
+  const handleMouseEnter = () => {
+    if (dropdownRef.current) {
+      dropdownRef.current.classList.add("dropdown-visible");
+    }
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const handleMouseLeave = () => {
+    if (dropdownRef.current) {
+      dropdownRef.current.classList.remove("dropdown-visible");
+    }
+  };
 
   return (
     <nav className="Navbar">
@@ -31,24 +31,24 @@ function Navbar() {
         <Link className="Link Link_Nosotros" to="/about">
           Nosotros
         </Link>
-        <div className="dropdown-container" ref={dropdownRef}>
-          <button 
-            className="Link Link_Acceder"
-            onClick={() => setShowDropdown(!showDropdown)}
-          >
+        <div 
+          className="dropdown-container" 
+          ref={dropdownRef}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <button className="Link Link_Acceder">
             Acceder
           </button>
           
-          {showDropdown && (
-            <div className="dropdown-menu">
-              <Link to="/registrar" className="dropdown-item">
-                Registrarme
-              </Link>
-              <Link to="/login" className="dropdown-item">
-                Iniciar Sesión
-              </Link>
-            </div>
-          )}
+          <div className="dropdown-menu">
+            <Link to="/registrar" className="dropdown-item">
+              Registrarme
+            </Link>
+            <Link to="/login" className="dropdown-item">
+              Iniciar Sesión
+            </Link>
+          </div>
         </div>
       </div>
     </nav>

@@ -17,7 +17,14 @@
 
 .Navbar_Contenedor_Logo {
   transition: .7s;
+  margin-bottom: 1rem;
   height: 5rem; /* Altura fija para el contenedor del logo */
+}
+
+@media (min-width: 768px) {
+  .Navbar_Contenedor_Logo {
+      margin-bottom: 0;
+  }
 }
 
 
@@ -50,12 +57,13 @@
   transition: .3s;
 }
 
-.Link_Acceder:hover, 
+
 .Link_Nosotros:hover {
   background-color: #D46D07;
   font-weight: bold;
   cursor: pointer;
 }
+
 
 .Link {
   color: white;
@@ -68,37 +76,46 @@
     border-radius: 0.8rem;
   }
   .Link_Acceder {
-      background-color: #FF9A3D;
-      border-radius: 8px;
       font-weight: bold;
   }
 
 }
 
-/* Dropdown centrado */
 .dropdown-container {
   position: relative;
   display: flex;
   justify-content: center; /* Centra el dropdown */
 }
 
+.dropdown-visible .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
 .dropdown-menu {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
   position: absolute;
   top: 100%;
   left: 50%; /* Centra horizontalmente */
   transform: translateX(-50%); /* Ajuste fino para el centrado */
   background-color: #F67E08;
-  border-radius: 0.8rem;
   width: 150px;
   z-index: 100;
 }
 
-/* Ajustes para desktop (opcional) */
+.dropdown-menu:last-of-type {
+  border-radius: 8px;
+}
+
 @media (min-width: 768px) {
   .dropdown-menu {
     width: 180px;
   }
 }
+
+
 
 .dropdown-item {
   display: block;
@@ -106,22 +123,22 @@
   color: white;
   text-decoration: none;
   font-size: 16px;
-  transition: background-color 0.3s;
+  border-radius: 8px;
+  transition: 0.3s;
   text-align: center;
 }
 
 .dropdown-item:hover {
   background-color: #D46D07;
-  font-weight: bold;
+  border-radius: 8px;
 }
 
-/* Ajuste para el botón Acceder */
 .Link_Acceder {
   background: none;
-  border: none;
   font-family: inherit;
   font-size: 19.2px;
   cursor: pointer;
+  border-color: transparent;
 }
 
 @media (min-width: 768px) {
