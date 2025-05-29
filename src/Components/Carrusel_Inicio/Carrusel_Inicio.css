@@ -9,18 +9,29 @@
     
 } 
 
-@media (min-width: 768px) {
+@media (min-width: 1400px) {
     .Carrusel_Contenedor {
+        width: 100vw;
+        display: inline;
         height: 40rem;
+        position: relative;
+    
     }
 }
+
 
 .Carrusel_Imagenes {
     height: 100%; /* La imagen ocupa el 100% del contenedor */
     width: 100%;
-    object-fit: fit;
-    
+    object-fit: cover;
 }
+
+@media (min-width: 1400px) {
+.Carrusel_Imagenes {
+    width: 100vw;
+    }
+}
+
 
 .Contenedor_Imagenes {
     position: relative;
@@ -32,17 +43,27 @@
 }
 
 .Boton_Contenedor {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    position: absolute;
-    z-index: 2;
-   
+    display: none;
 }
 
-@media (min-width: 1250px) {
+@media (min-width: 768px) {
     .Boton_Contenedor {
-        width: 1250px;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        position: absolute;
+        z-index: 2;
+    }
+
+}
+
+@media (min-width: 1400px) {
+    .Boton_Contenedor {
+        position: absolute; 
+        width: 100vw;
+        top: 50%;
+        
+        
     }
 }
 
@@ -52,12 +73,12 @@
     background-color: transparent;
     border-color: white;
     border-width: .8rem;
-    transition-duration: 1s;
+    transition-duration: 0.3s;
 }
 
 .Carrusel_Boton:hover {
     cursor: pointer;
-    opacity: 80%;
+    opacity: 70%;
 }
 
 .Boton_Izq {

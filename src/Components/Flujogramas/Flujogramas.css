@@ -1,19 +1,31 @@
 .Flujograma_Contenedor {
   background-color: white;
-  padding: 1.6rem 4.8rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  margin:  auto;
+}
+
+@media (min-width: 768px) {
+  .Flujograma_Contenedor {
+    padding: 1rem 6rem;
+  }
 }
 
 .Contenedor_Titulo {
-  text-align: left;
+  text-align: center;
   width: 100%;
   margin-bottom: 2rem;
+  padding-top: 0
+  ;}
+
+@media (min-width: 768px) {
+  .Contenedor_Titulo {
+    text-align: left;
+  }
 }
 
 .Titulo {
   font-size: 3.22rem;
   color: #333;
+  margin-top: 1rem
 }
 
 /* Grid de carreras - Versión unificada */
@@ -22,6 +34,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   text-align: left;
+  margin-bottom: 1rem;
 }
 
 .Carrera_Item {
@@ -41,19 +54,33 @@
   background-color: #e0e0e0;
   transform: translateY(-2px);
   text-decoration: none;
+  font-size: 2rem;
 }
 
 .Icono_Descarga {
-  font-size: 1.5rem;
+  font-size: 5rem;
   color: #F67E08;
 }
 
+@media (min-width: 768px) {
+  .Icono_Descarga {
+    font-size: 4rem;
+  }
+}
+
 .Nombre_Carrera {
-  font-size: 1.1rem;
+  font-size: 1.7rem;
   color: #333;
-  text-align: left;
+  text-align: center;
   margin-left: 0.5rem;
   width: 100%;
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .Nombre_Carrera {
+    text-align: left;
+  }
 }
 
 /* Responsive */
