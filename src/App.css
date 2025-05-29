@@ -1,14 +1,24 @@
+/*COLORES 
+Principales:
+white: #fffff;
+black: 000000;
+NaranjaUnimet: #F67E08;
+GrisClarito: #f5f5f5;
+
+Secundario:
+NaranjaUnimet clarito: #ff9A3D
+
+Para el Hover: 
+NaranjaUnimet:hover: #D46D07;
+GrisClarito:hover: #e0e0e0;
+
+/*FUENTES
+Primaria: Montserrat;
+*/
+
 #root {
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
 }
-
-/*!COLORES
-Naranja UNIMET: #F67E08 
-Naranja claro: #FF9A3D 
-Naranja oscuro: #D46D07 
-
-*/
-
 
