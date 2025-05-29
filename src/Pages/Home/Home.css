@@ -1,0 +1,15 @@
+.Home_Separador {
+    padding: .8rem;
+    background-color: #FF9A3D;
+    
+}
+
+.Home_Contenedor {
+    background-color: #F67E08;
+}
+
+.Centrar_Footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

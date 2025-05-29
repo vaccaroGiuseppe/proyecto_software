@@ -1,0 +1,80 @@
+.Flujograma_Contenedor {
+  background-color: white;
+  padding: 1.6rem 4.8rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.Contenedor_Titulo {
+  text-align: left;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.Titulo {
+  font-size: 3.22rem;
+  color: #333;
+}
+
+/* Grid de carreras - Versión unificada */
+.Carreras_Grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.Carrera_Item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  padding: 1rem 1rem 1rem 1rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.Carrera_Item:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.Icono_Descarga {
+  font-size: 1.5rem;
+  color: #F67E08;
+}
+
+.Nombre_Carrera {
+  font-size: 1.1rem;
+  color: #333;
+  text-align: left;
+  margin-left: 0.5rem;
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .Carreras_Grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .Flujograma_Contenedor {
+    padding: 1.6rem 2.4rem;
+  }
+
+  .Carreras_Grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .Carreras_Grid {
+    grid-template-columns: 1fr;
+  }
+}

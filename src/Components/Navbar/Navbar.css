@@ -1,47 +1,132 @@
+/*Terminada, por favor NO TOCAR*/
 .Navbar {
+  padding-top: 1rem;
   background-color: #F67E08;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.Navbar_Contenedor {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
+@media (min-width: 768px) {
+  .Navbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 1.5rem 1rem;
+  }
 }
 
 .Navbar_Contenedor_Logo {
-  height: 60px; /* Altura fija para el contenedor del logo */
+  transition: .7s;
+  height: 5rem; /* Altura fija para el contenedor del logo */
 }
 
-.Navbar_Logo {
+
+
+.Navbar_Contenedor_Logo:hover {
+  height: 6rem;
+}
+
+.Logo {
   height: 100%; /* La imagen ocupa el 100% del contenedor */
   object-fit: contain; /* Asegura que la imagen no se distorsione */
 }
 
 .Navbar_Contenedor_Links {
   width: auto; /* Ancho según contenido */
-}
-
-.Contenedor_Links {
   display: flex;
-  align-items: center;
-  gap: 2rem; 
+  flex-direction: column;
 }
 
-.Navbar_Link {
+@media (min-width: 768px) {
+  .Navbar_Contenedor_Links {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.Link_Acceder, 
+.Link_Nosotros {
+  padding: 1rem;
+  transition: .3s;
+}
+
+.Link_Acceder:hover, 
+.Link_Nosotros:hover {
+  background-color: #D46D07;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.Link {
   color: white;
   text-decoration: none;
-  font-size: 1.2rem; 
-  
+  font-size: 19.2px; 
 }
 
-.Navbar_Link_Acceder {
-    background-color: #f49b43;
-    padding: .5rem 1rem;
-    border-radius: 8px;
-    font-weight: bold;
+@media (min-width: 768px) {
+  .Link {
+    border-radius: 0.8rem;
+  }
+  .Link_Acceder {
+      background-color: #FF9A3D;
+      border-radius: 8px;
+      font-weight: bold;
+  }
+
 }
 
+/* Dropdown centrado */
+.dropdown-container {
+  position: relative;
+  display: flex;
+  justify-content: center; /* Centra el dropdown */
+}
 
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%; /* Centra horizontalmente */
+  transform: translateX(-50%); /* Ajuste fino para el centrado */
+  background-color: #F67E08;
+  border-radius: 0.8rem;
+  width: 150px;
+  z-index: 100;
+}
+
+/* Ajustes para desktop (opcional) */
+@media (min-width: 768px) {
+  .dropdown-menu {
+    width: 180px;
+  }
+}
+
+.dropdown-item {
+  display: block;
+  padding: 0.8rem 1rem;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.dropdown-item:hover {
+  background-color: #D46D07;
+  font-weight: bold;
+}
+
+/* Ajuste para el botón Acceder */
+.Link_Acceder {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 19.2px;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .dropdown-menu {
+    width: 180px;
+  }
+}
 
