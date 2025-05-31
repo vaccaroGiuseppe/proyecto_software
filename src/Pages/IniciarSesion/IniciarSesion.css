@@ -1,0 +1,145 @@
+/* Estilos generales */
+.IniciarSesion_Contenedor {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F67E08;
+  
+}
+
+.Home_Separador {
+  height: 2rem;
+}
+
+.IniciarSesion_Cuerpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+    background-color: #f8f9fa;
+
+}
+
+/* Estilos del título */
+.IniciarSesion_Titulo_Contenedor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.IniciarSesion_Icono_Titulo {
+  font-size: 2.8rem;
+  color: #F67E08;
+}
+
+.IniciarSesion_Titulo {
+  font-size: 2.7rem;
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Estilos del formulario */
+.IniciarSesion_Formulario {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+.IniciarSesion_Campo {
+  margin-bottom: 1.8rem;
+}
+
+.Input_Container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.Input_Icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.3rem;
+  color: #F67E08;
+  z-index: 1;
+}
+
+.IniciarSesion_Input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  transition: border-color 0.3s ease;
+}
+
+.IniciarSesion_Input:focus {
+  border-color: #F67E08;
+  outline: none;
+}
+
+/* Estilos del botón */
+.IniciarSesion_Boton {
+  width: 100%;
+  padding: 1.2rem;
+  background-color: #F67E08;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.IniciarSesion_Boton:hover {
+  background-color: #D46D07;
+  transform: translateY(-2px);
+}
+
+.Boton_Icono {
+  font-size: 1.4rem;
+}
+
+/* Footer */
+.Centrar_Footer {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .IniciarSesion_Titulo {
+    font-size: 2.2rem;
+  }
+  
+  .IniciarSesion_Formulario {
+    padding: 1.8rem;
+  }
+  
+  .IniciarSesion_Input {
+    font-size: 1rem;
+    padding-left: 2.8rem;
+  }
+  
+  .IniciarSesion_Boton {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+  
+  .Input_Icon {
+    font-size: 1.1rem;
+    left: 0.8rem;
+  }
+}

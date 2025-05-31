@@ -6,106 +6,168 @@
   background-color: #F67E08;
 }
 
+.Home_Separador {
+  height: 2rem;
+}
+
 .Registrar_Cuerpo {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background-color: #f5f5f5;
-  padding-bottom: 12rem;
-  padding-top: 12rem;
+  padding: 2rem 1rem;
+    background-color: #f8f9fa;
+
 }
 
+/* Estilos del título */
 .Registrar_Titulo_Contenedor {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
-/* Icono del título */
 .Registrar_Icono_Titulo {
-  font-size: 5rem;
-  color: #F67E08; /* Naranja de tu paleta */
-}
-
-/* Título */
-.Registrar_Titulo {
   font-size: 2.8rem;
-  color: #333;
-  margin: 0; /* Elimina el margen por defecto */
+  color: #F67E08;
 }
 
-/* Formulario */
+.Registrar_Titulo {
+  font-size: 2.5rem;
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Estilos del formulario */
 .Registrar_Formulario {
   background-color: white;
-  padding: 2.5rem; /* Aumentado el padding */
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 2.7rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 550px; /* Aumentado el ancho máximo */
+  max-width: 700px;
+}
+
+.Formulario_Grupo {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .Formulario_Grupo {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 
 .Registrar_Campo {
-  margin-bottom: 2rem; /* Aumentado el margen */
-  text-align: left;
-  width: 100%;
+  flex: 1;
+  margin-bottom: 1.5rem;
 }
 
-/* Texto del label más grande */
 .Registrar_Label {
+  font-size: 1.2rem; /* Aumentado de 1.1rem */
+  text-align: left !important; /* Fuerza alineación izquierda */
   display: block;
-  margin-bottom: 0.8rem; /* Aumentado */
-  font-weight: bold;
-  color: #333;
-  text-align: left;
-  font-size: 1.3rem; /* Aumentado de ~1rem */
+  width: 100%;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: #444;
+  font-size: 1.1rem;
 }
 
-/* Input más grande */
 .Registrar_Input {
   width: 100%;
-  padding: 1rem; /* Aumentado de 0.8rem */
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1.2rem; /* Aumentado de 1rem */
-  text-align: left;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
 }
 
-/* Botones más grandes */
-.Registrar_Botones {
+.Registrar_Input:focus {
+  border-color: #F67E08;
+  outline: none;
+}
+
+.Registrar_Input,
+.Registrar_Select {
+  font-size: 1.1rem; /* Aumentado de 1rem */
+  text-align: left; /* Alinea el texto de entrada a la izquierda */
+}
+
+.Registrar_Boton_Principal {
+  font-size: 1.3rem; /* Aumentado de 1.2rem */
+}
+
+/* Ajustes específicos para alineación */
+.Registrar_Campo {
+  text-align: left; /* Asegura alineación izquierda para todo el campo */
+}
+
+.Select_Container {
+  justify-content: flex-start; /* Alinea el select a la izquierda */
+}
+
+/* Estilos del select */
+.Select_Container {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 1.2rem; /* Aumentado */
-  width: 100%;
+  align-items: center;
 }
 
-.Registrar_Boton {
-  padding: 1.2rem; /* Aumentado de 1rem */
+.Registrar_Select {
+  width: 100%;
+  padding: 1rem 3rem 1rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  appearance: none;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.Registrar_Select:focus {
+  border-color: #F67E08;
+  outline: none;
+}
+
+.Select_Icon {
+  position: absolute;
+  right: 1rem;
+  font-size: 1.3rem;
+  color: #F67E08;
+  pointer-events: none;
+}
+
+/* Estilos del botón principal */
+.Registrar_Boton_Principal {
+  width: 100%;
+  padding: 1.2rem;
+  background-color: #F67E08;
+  color: white;
   border: none;
-  border-radius: 5px;
-  font-size: 1.3rem; /* Aumentado de 1rem */
-  font-weight: bold;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: white;
-  width: 100%;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.Registrar_Boton_Estudiante {
-  background-color: #F67E08;
-}
-
-.Registrar_Boton_Profesor {
+.Registrar_Boton_Principal:hover {
   background-color: #D46D07;
-}
-
-.Registrar_Boton:hover {
-  opacity: 0.9;
-  transform: translateY(-2px); /* Efecto adicional */
+  transform: translateY(-2px);
 }
 
 /* Footer */
@@ -119,16 +181,21 @@
     font-size: 2.2rem;
   }
   
-  .Registrar_Label,
-  .Registrar_Boton {
+  .Registrar_Formulario {
+    padding: 1.5rem;
+  }
+  
+  .Registrar_Label {
     font-size: 1.1rem;
   }
-
-  .Registrar_Icono_Titulo {
-  font-size: 2.5rem;
-}
   
-  .Registrar_Input {
-    font-size: 1rem;
+  .Registrar_Input,
+  .Registrar_Select {
+    padding: 1rem;
+  }
+  
+  .Registrar_Boton_Principal {
+    padding: 1rem;
+    font-size: 1.1rem;
   }
 }
