@@ -24,11 +24,8 @@ const Home = () => {
   return (
     <div className='Home_Contenedor'>
       <Navbar />
-      <div className='Home_Separador'></div>
       <Carrusel_Inicio imagenes={imagenesCarrusel} />
-      <div className='Home_Separador'></div>
       <Flujogramas />
-      <div className='Home_Separador'></div>
       <div className='Centrar_Footer'>
         <Footer />  
       </div>
