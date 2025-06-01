@@ -1,0 +1,84 @@
+.about-page {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.about-content {
+  padding: 60px 20px;
+}
+
+/* Intro */
+.intro-section {
+  background-color: #f5f5f5;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.intro-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.intro-logo {
+  max-width: 160px;
+  margin-bottom: 20px;
+}
+
+.intro-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #000000;
+}
+
+.intro-slogan {
+  font-size: 1.2rem;
+  color: #f67e08;
+  font-weight: 500;
+}
+
+/* Misión y Visión */
+.mv-section {
+  padding: 60px 20px;
+  background-color: #ffffff;
+}
+
+.mv-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.mv-card {
+  background-color: #f5f5f5;
+  border-left: 10px solid #f67e08;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.mv-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #f67e08;
+}
+
+.mv-text {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.7;
+}
+
+@media (min-width: 768px) {
+  .mv-container {
+    flex-direction: row;
+  }
+
+  .mv-card {
+    flex: 1;
+  }
+}

@@ -1,44 +1,36 @@
 import Navbar from "../../Components/Navbar/Navbar";
-import Footer from "../../Components/Footer/Footer"; // Asegúrate que este existe
+import Footer from "../../Components/Footer/Footer";
 import "./About.css";
 
 export default function About() {
-  const teamMembers = [
-    {
-      id: 1,
-      name: "Juan Pérez",
-      role: "Fundador & CEO",
-      bio: "Apasionado por la tecnología y la innovación con más de 10 años de experiencia en el sector.",
-      image: "/images/team/juan.jpg"
-    },
-    // ... otros miembros
-  ];
-
   return (
     <div className="about-page">
       <Navbar />
-      
-      <main className="about-content">
-        {/* ... otras secciones ... */}
 
-        {/* Equipo - versión simplificada sin componente */}
-        <section className="team-section">
-          <div className="container">
-            <h2>Conoce a nuestro equipo</h2>
-            <p className="team-description">Un grupo apasionado de profesionales dedicados a hacer la diferencia.</p>
-            <div className="team-grid">
-              {teamMembers.map(member => (
-                <div key={member.id} className="team-member">
-                  <div className="member-image">
-                    <img src={member.image} alt={member.name} />
-                  </div>
-                  <div className="member-info">
-                    <h3>{member.name}</h3>
-                    <p className="role">{member.role}</p>
-                    <p className="bio">{member.bio}</p>
-                  </div>
-                </div>
-              ))}
+      <main className="about-content">
+        <section className="intro-section">
+          <div className="intro-container">
+            <img src="/images/logo-unimet.png" alt="Logo UNIMET" className="intro-logo" />
+            <h1 className="intro-title">Plataforma Académica Integrada UNIMET</h1>
+            <p className="intro-slogan">Centralizando la gestión educativa para una experiencia universitaria fluida</p>
+          </div>
+        </section>
+
+        <section className="mv-section">
+          <div className="mv-container">
+            <div className="mv-card">
+              <h2 className="mv-heading">Misión</h2>
+              <p className="mv-text">
+                Facilitar la organización académica mediante una plataforma unificada que conecte a profesores y estudiantes,
+                optimizando la comunicación de horarios, evaluaciones y tutorías, para potenciar el rendimiento educativo con tecnología intuitiva.
+              </p>
+            </div>
+            <div className="mv-card">
+              <h2 className="mv-heading">Visión</h2>
+              <p className="mv-text">
+                Ser el ecosistema digital esencial de la comunidad universitaria, donde la gestión de información académica sea accesible,
+                colaborativa y en tiempo real, transformando la manera de enseñar y aprender.
+              </p>
             </div>
           </div>
         </section>
