@@ -22,6 +22,10 @@ const IniciarSesion = () => {
     e.preventDefault();
     console.log("Datos de inicio de sesión:", formData);
     // Aquí iría la conexión con Supabase
+
+
+
+    
   };
 
   return (
