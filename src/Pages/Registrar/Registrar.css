@@ -1,152 +1,185 @@
 /* Estilos generales */
-.Registrar_Contenedor {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #F67E08;
+.registro-page {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #f67e08;
+  color: #1e1e1e;
 }
 
-.Registrar_Cuerpo {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
-    background-color: #f8f9fa;
-
-}
-
-/* Estilos del título */
-.Registrar_Titulo_Contenedor {
+/* Hero Section */
+.registro-hero {
+  position: relative;
+  background-color: #f67e08;
+  min-height: 40vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2.5rem;
+  text-align: center;
+  padding: 40px 20px;
 }
 
-.Registrar_Icono_Titulo {
-  font-size: 2.8rem;
-  color: #F67E08;
+.overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
-.Registrar_Titulo {
-  font-size: 2.5rem;
-  color: #333;
-  margin: 0;
-  font-weight: 600;
+/* Actualiza el estilo del DatePicker */
+.react-datepicker-wrapper {
+  width: 100% !important; /* Asegura que ocupe todo el ancho disponible */
 }
 
-/* Estilos del formulario */
-.Registrar_Formulario {
-  background-color: white;
-  padding: 2.7rem;
+.react-datepicker__input-container {
+  width: 100% !important;
+  display: block !important;
+}
+
+.react-datepicker__input-container input {
+  width: 100% !important;
+  padding: 1rem !important;
+  border: 2px solid #e0e3e7 !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  background-color: #f9f9f9 !important;
+  cursor: pointer !important;
+}
+
+.react-datepicker__input-container input:focus {
+  border-color: #f67e08 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(246, 126, 8, 0.2) !important;
+  background-color: white !important;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.hero-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-weight: 400;
+  color: #f5f5f5;
+}
+
+/* Main Content */
+.registro-main {
+  padding: 60px 20px;
+  background-color: #f5f5f5;
+}
+
+.registro-card {
+  max-width: 800px;
+  margin: 0 auto;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 700px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-top: 6px solid #f67e08;
+  border-bottom: 6px solid #f67e08;
 }
 
-.Formulario_Grupo {
-  display: flex;
+/* Form Styles */
+.registro-form {
+  margin-top: 2rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-group {
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
-@media (max-width: 768px) {
-  .Formulario_Grupo {
-    flex-direction: column;
-    gap: 1rem;
-  }
-}
-
-.Registrar_Campo {
-  flex: 1;
-  margin-bottom: 1.5rem;
-}
-
-.Registrar_Label {
-  font-size: 1.2rem; /* Aumentado de 1.1rem */
-  text-align: left !important; /* Fuerza alineación izquierda */
+.form-group label {
   display: block;
-  width: 100%;
   margin-bottom: 0.8rem;
   font-weight: 600;
-  color: #444;
+  color: #2c3e50;
   font-size: 1.1rem;
+  text-align: left; /* Añade esta línea */
+  width: 100%; /* Asegura que ocupe todo el ancho */
+  padding-left: 0.2rem; /* Pequeño ajuste de alineación */
 }
 
-.Registrar_Input {
+
+.form-group label svg {
+  margin-right: 8px;
+  color: #f67e08;
+}
+
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 1rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #e0e3e7;
   border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
 }
 
-.Registrar_Input:focus {
-  border-color: #F67E08;
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #f67e08;
   outline: none;
-}
-
-.Registrar_Input,
-.Registrar_Select {
-  font-size: 1.1rem; /* Aumentado de 1rem */
-  text-align: left; /* Alinea el texto de entrada a la izquierda */
-}
-
-.Registrar_Boton_Principal {
-  font-size: 1.3rem; /* Aumentado de 1.2rem */
-}
-
-/* Ajustes específicos para alineación */
-.Registrar_Campo {
-  text-align: left; /* Asegura alineación izquierda para todo el campo */
-}
-
-.Select_Container {
-  justify-content: flex-start; /* Alinea el select a la izquierda */
-}
-
-/* Estilos del select */
-.Select_Container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.Registrar_Select {
-  width: 100%;
-  padding: 1rem 3rem 1rem 1rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 1rem;
-  appearance: none;
+  box-shadow: 0 0 0 3px rgba(246, 126, 8, 0.2);
   background-color: white;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
 }
 
-.Registrar_Select:focus {
-  border-color: #F67E08;
-  outline: none;
+.password-input {
+  position: relative;
 }
 
-.Select_Icon {
+.password-input button {
   position: absolute;
-  right: 1rem;
-  font-size: 1.3rem;
-  color: #F67E08;
-  pointer-events: none;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #f67e08;
+  cursor: pointer;
+  font-size: 1.2rem;
 }
 
-/* Estilos del botón principal */
-.Registrar_Boton_Principal {
+.full-width {
+  grid-column: span 2;
+}
+
+.error-message {
+  display: block;
+  margin-top: 0.5rem;
+  color: #e74c3c;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Submit Button */
+.submit-button {
   width: 100%;
   padding: 1.2rem;
-  background-color: #F67E08;
+  background-color: #f67e08;
   color: white;
   border: none;
   border-radius: 8px;
@@ -154,43 +187,87 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.Registrar_Boton_Principal:hover {
-  background-color: #D46D07;
+.submit-button:hover {
+  background-color: #d46d07;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(214, 109, 7, 0.3);
 }
 
-/* Footer */
-.Centrar_Footer {
-  width: 100%;
+.submit-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Alert Messages */
+.alert-message {
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.form-group select {
+  height: 52px; /* Misma altura que el datepicker */
+  padding: 1rem; /* Mismo padding */
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f67e08'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.2rem;
+}
+
+/* Asegúrate que el datepicker tenga esta altura */
+.react-datepicker__input-container input {
+  height: 52px;
+  box-sizing: border-box;
+}
+
+.success-message {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.error-message {
+  background-color: #e74c3c;
+  color: white;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .Registrar_Titulo {
-    font-size: 2.2rem;
+  .form-grid {
+    grid-template-columns: 1fr;
   }
   
-  .Registrar_Formulario {
-    padding: 1.5rem;
+  .full-width {
+    grid-column: span 1;
   }
   
-  .Registrar_Label {
+  .registro-card {
+    padding: 30px 20px;
+  }
+  
+  .registro-main {
+    padding: 40px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-subtitle {
     font-size: 1.1rem;
   }
   
-  .Registrar_Input,
-  .Registrar_Select {
-    padding: 1rem;
-  }
-  
-  .Registrar_Boton_Principal {
+  .submit-button {
     padding: 1rem;
     font-size: 1.1rem;
   }
