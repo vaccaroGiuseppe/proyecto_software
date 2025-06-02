@@ -7,7 +7,7 @@ export default function About() {
     <div className="about-page">
       <Navbar />
 
-      {/* Sección de encabezado con imagen de fondo */}
+      {/* Sección de encabezado con imagen */}
       <header className="about-hero">
         <div className="overlay"></div>
         <div className="hero-content">
