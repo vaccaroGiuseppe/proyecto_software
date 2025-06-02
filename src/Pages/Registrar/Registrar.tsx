@@ -1,161 +1,259 @@
-import { useState } from 'react';
-import Navbar from "../../Components/Navbar/Navbar";
-import Footer from "../../Components/Footer/Footer";
-import { FaUserEdit, FaUserGraduate, FaChalkboardTeacher } from "react-icons/fa";
+import { useState, useEffect } from 'react';
+import DatePicker from "react-datepicker";
+import 'react-datepicker/dist/react-datepicker.css';
+import { useForm } from "react-hook-form";
+import { supabase } from '../lib/../../supabaseClient'; // Ajusta la ruta según tu estructura
 import "./Registrar.css";
 
-const Registrar = () => {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    correo: '',
-    clave: '',
-    confirmarClave: '',
-    tipoUsuario: 'estudiante'
-  });
+type UsuarioFormData = {
+  nombre: string;
+  apellido: string;
+  correo: string;
+  tipo: string; 
+  //Recuerda gestionar esto luego, no se hace así-------------------------------------------------------
+  contrasena: string; 
+  confirmar_contrasena: string; 
+  //-------------------------------------------------------------
+  foto_perfil: null; // Esto también está pendiente
+  fecha_nacimiento: string; 
+  sexo: string; 
+};
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+
+export default function UsuarioForm() {
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<UsuarioFormData>();
+  
+  const [SelectedValue, setSelectedValue] = useState("");
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedValue(event.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Validar contraseñas y enviar datos
-    if (formData.clave !== formData.confirmarClave) {
-      alert("Las contraseñas no coinciden");
-      return;
+  // Calendario
+  const [startDate, setStartDate] = useState<Date | null>(null);
+
+  // Contraseña
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // Lógica para obtener el tipo de usuario, de estudiante o profesor
+  const determinarTipoUsuario = (correo: string): string => {
+    const profesor = /@unimet\.edu\.ve$/i;
+    return profesor.test(correo) ? "profesor" : "estudiante";
+  };
+
+  // Función para observar cambios en el correo
+  const correo = watch("correo");
+  useEffect(() => {
+    if (correo) {
+      setValue("tipo", determinarTipoUsuario(correo));
     }
-    console.log("Datos a enviar:", formData);
-    // Aquí iría la conexión con Supabase
+  }, [correo, setValue]);
+
+  // Función para validar fecha
+  useEffect(() => {
+  if (startDate) {
+    setValue('fecha_nacimiento', startDate.toISOString());
+  }
+}, [startDate, setValue]);
+
+  // Observar cambios en la contraseña
+  const contrasena = watch("contrasena");
+
+  const onSubmit = async (formData: UsuarioFormData) => {
+    setLoading(true);
+    setError(null);
+    
+    
+  try {
+    const dataToInsert = {
+      ...formData,
+      fecha_nacimiento: startDate?.toISOString() || null
+    };
+
+    const { data, error } = await supabase
+      .from('usuario')
+      .insert([dataToInsert])
+      .select();
+
+    if (error) {
+      console.error('Error detallado:', error);
+      throw new Error(error.message);
+    }
+
+      if (data) {
+        setSuccess(true);
+        reset();
+        setStartDate(null);
+        setTimeout(() => setSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error('Error completo:', err);
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className='Registrar_Contenedor'>
-      <Navbar />
-      <div className='Home_Separador'></div>
-      
-      <div className='Registrar_Cuerpo'>
-        <div className='Registrar_Titulo_Contenedor'>
-          <FaUserEdit className='Registrar_Icono_Titulo' />
-          <h1 className='Registrar_Titulo'>Registro de Usuario</h1>
+    <div className='Contenedor_Registro'>
+      <h1>Registro</h1>
+      {success && (
+        <div>
+          Usuario registrado exitosamente!
         </div>
-        
-        <form className='Registrar_Formulario' onSubmit={handleSubmit}>
-          <div className='Formulario_Grupo'>
-            <div className='Registrar_Campo'>
-              <label htmlFor='nombre' className='Registrar_Label' style={{ textAlign: 'left' }}>Nombre:</label>
-              <input 
-                type='text' 
-                id='nombre' 
-                name='nombre'
-                placeholder='Ej: Luis'
-                className='Registrar_Input'
-                value={formData.nombre}
-                style={{ fontSize: '1.1rem' }}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            
-            <div className='Registrar_Campo'>
-              <label htmlFor='apellido' className='Registrar_Label'>Apellido:</label>
-              <input 
-                type='text' 
-                id='apellido' 
-                name='apellido'
-                placeholder='Ej: Pérez'
-                className='Registrar_Input'
-                value={formData.apellido}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-          
-          <div className='Registrar_Campo'>
-            <label htmlFor='correo' className='Registrar_Label'>Correo electrónico:</label>
-            <input 
-              type='email' 
-              id='correo' 
-              name='correo'
-              placeholder='correo@unimet.edu.ve'
-              className='Registrar_Input'
-              value={formData.correo}
-              onChange={handleChange}
-              required
+      )}
+      
+      {error && (
+        <div>
+          Error: {error}
+        </div>
+      )}
+
+      <div className="Contenedor_Formulario">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* NOMBRE */}
+          <label htmlFor="nombre">Nombre</label>
+          <input 
+            type="text" 
+            {...register("nombre", {required: "este campo es obligatorio"})} 
+          />
+          {errors.nombre && <span>{errors.nombre.message}</span>}
+
+          {/* APELLIDO */}
+          <label htmlFor="apellido">Apellido</label>
+          <input 
+            type="text" 
+            {...register("apellido", {required: "este campo es obligatorio"})} 
+          />
+          {errors.apellido && <span>{errors.apellido.message}</span>}
+
+          {/* CORREO */}
+          <label htmlFor="correo">Correo Unimet</label>
+          <input 
+            type="text" 
+            {...register("correo", {
+              required: "este campo es obligatorio", 
+              pattern: {
+                value: /@(correo\.unimet\.edu\.ve|unimet\.edu\.ve)$/i,
+                message: "Necesitas ingresar con tu correo institucional",
+              } 
+            })}
+          />
+          {errors.correo && <span>{errors.correo.message}</span>}
+
+{/*------------------------------------------------------------------------------------------------------------*/}
+          {/* CONTRASEÑA */}
+          <div className='Contrasena_Contenedor'>
+            <label htmlFor="contrasena">Contraseña</label>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              {...register('contrasena', {
+                required: 'La contraseña es obligatoria',
+                minLength: {
+                  value: 8,
+                  message: 'Mínimo 8 caracteres'
+                },
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
+                  message: 'Debe contener: mayúscula, minúscula, número y carácter especial'
+                }
+              })} 
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "Ocultar" : 'Mostrar'}
+            </button>
+            {errors.contrasena && <span>{errors.contrasena.message}</span>}
           </div>
-          
-          <div className='Formulario_Grupo'>
-            <div className='Registrar_Campo'>
-              <label htmlFor='clave' className='Registrar_Label'>Contraseña:</label>
-              <input 
-                type='password' 
-                id='clave' 
-                name='clave'
-                placeholder='Mínimo 8 caracteres'
-                className='Registrar_Input'
-                value={formData.clave}
-                onChange={handleChange}
-                minLength={8}
-                required
-              />
-            </div>
-            
-            <div className='Registrar_Campo'>
-              <label htmlFor='confirmarClave' className='Registrar_Label'>Confirmar Contraseña:</label>
-              <input 
-                type='password' 
-                id='confirmarClave' 
-                name='confirmarClave'
-                placeholder='Repite tu contraseña'
-                className='Registrar_Input'
-                value={formData.confirmarClave}
-                onChange={handleChange}
-                minLength={8}
-                required
-              />
-            </div>
+
+          {/* Verificación de Contraseña */}
+          <div className='Confirmar_Contenedor'>
+            <label htmlFor="confirmar_contrasena">Confirmar contraseña</label>
+            <input 
+              type={showConfirmation ? 'text' : 'password'}
+              {...register("confirmar_contrasena", {
+                required: "Por favor confirma tu contraseña", 
+                validate: (value) => 
+                  value === contrasena || 'Las contraseñas no coinciden'
+              })} 
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmation(!showConfirmation)}
+            >
+              {showConfirmation ? 'Ocultar' : 'Mostrar'}
+            </button>
+            {errors.confirmar_contrasena && <span>{errors.confirmar_contrasena.message}</span>}
           </div>
-          
-          <div className='Registrar_Campo'>
-            <label htmlFor='tipoUsuario' className='Registrar_Label'>Registrarme como:</label>
-            <div className='Select_Container'>
-              <select 
-                id='tipoUsuario' 
-                name='tipoUsuario'
-                className='Registrar_Select'
-                value={formData.tipoUsuario}
-                onChange={handleChange}
-                required
-              >
-                <option value='estudiante'>Estudiante</option>
-                <option value='profesor'>Profesor</option>
-              </select>
-              {formData.tipoUsuario === 'estudiante' ? (
-                <FaUserGraduate className='Select_Icon' />
-              ) : (
-                <FaChalkboardTeacher className='Select_Icon' />
-              )}
-            </div>
+
+{/*------------------------------------------------------------------------------------------------------------*/}
+
+
+          {/* IMAGEN DE USUARIO */}
+          <label htmlFor="foto_perfil">Imágen</label>
+          <input 
+            type="text" 
+            {...register("foto_perfil")} 
+          />
+          {errors.foto_perfil && <span>{errors.foto_perfil.message}</span>}
+
+          {/* FECHA DE NACIMIENTO */}
+          <div>
+            <label htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
+            <DatePicker
+              id="fecha_nacimiento"
+              selected={startDate}
+              onChange={(date: Date | null) => {
+                setStartDate(date);
+                if (date) {
+                  setValue('fecha_nacimiento', date.toISOString().split('T')[0]);
+                }
+              }}
+              dateFormat="yyyy/MM/dd"
+              placeholderText="Selecciona una fecha"
+              showYearDropdown
+              dropdownMode="select"
+              maxDate={new Date()}
+              yearDropdownItemNumber={100}
+              scrollableYearDropdown
+              required
+              customInput={
+                <input  
+                  style={{cursor: "pointer"}}
+                  onKeyDown={(e) => e.preventDefault()} 
+                />
+              }
+            />
+            {errors.fecha_nacimiento && <span>{errors.fecha_nacimiento.message}</span>}
           </div>
-          
-          <button type='submit' className='Registrar_Boton_Principal'>
-            Confirmar Registro
+
+          {/* SEXO */}
+          <div>
+            <label htmlFor="sexo">Sexo:</label>
+            <select
+              id="sexo"
+              {...register("sexo", { required: "Este campo es obligatorio" })}
+            >
+              <option value="">Seleccione una opción</option>
+              <option value="masculino">Masculino</option>
+              <option value="femenino">Femenino</option>
+              <option value="otro">Otro</option>
+              <option value="prefiero no decir">Prefiero no decir</option>
+            </select>
+            {errors.sexo && <span>{errors.sexo.message}</span>}
+          </div>
+
+          <button type="submit" disabled={loading}>
+            {loading ? 'Enviando...' : 'Enviar'}
           </button>
         </form>
       </div>
-      
-      <div className='Home_Separador'></div>
-      <div className='Centrar_Footer'>
-        <Footer />  
-      </div>
     </div>
   );
-};
-
-export default Registrar;
+}
