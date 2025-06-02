@@ -78,148 +78,151 @@ export default function UsuarioForm() {
     <div className='registro-page'>
       <Navbar />
       
-      <div className="registro-hero">
-        <div className="overlay"></div>
-        <div className="hero-content">
-          <FaUserEdit className="hero-icon" />
-          <h1 className="hero-title">Registro de Usuario</h1>
-          <p className="hero-subtitle">Únete a nuestra comunidad académica</p>
-        </div>
-      </div>
+      <div className="registro-container">
+        {/* Panel de formulario (izquierda en desktop) */}
+        <div className="form-container">
+          <div className="registro-card">
+            {success && <div className="alert-message success-message">Usuario registrado exitosamente!</div>}
+            {error && <div className="alert-message error-message">Error: {error}</div>}
 
-      <div className="registro-main">
-        <div className="registro-card mv-orange">
-          {success && <div className="alert-message success-message">Usuario registrado exitosamente!</div>}
-          {error && <div className="alert-message error-message">Error: {error}</div>}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="registro-form">
-            <div className="form-grid">
-              {/* Nombre y Apellido */}
-              <div className="form-group">
-                <label htmlFor="nombre">Nombre</label>
-                <input 
-                  type="text" 
-                  id="nombre"
-                  {...register("nombre", {required: "Este campo es obligatorio"})} 
-                />
-                {errors.nombre && <span className="error-message">{errors.nombre.message}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="apellido">Apellido</label>
-                <input 
-                  type="text" 
-                  id="apellido"
-                  {...register("apellido", {required: "Este campo es obligatorio"})} 
-                />
-                {errors.apellido && <span className="error-message">{errors.apellido.message}</span>}
-              </div>
-
-              {/* Correo */}
-              <div className="form-group full-width">
-                <label htmlFor="correo">Correo Unimet</label>
-                <input 
-                  type="email" 
-                  id="correo"
-                  {...register("correo", {
-                    required: "Este campo es obligatorio", 
-                    pattern: {
-                      value: /@(correo\.unimet\.edu\.ve|unimet\.edu\.ve)$/i,
-                      message: "Debe ser un correo institucional",
-                    } 
-                  })}
-                />
-                {errors.correo && <span className="error-message">{errors.correo.message}</span>}
-              </div>
-
-              {/* Contraseñas */}
-              <div className="form-group">
-                <label htmlFor="contrasena">Contraseña</label>
-                <div className="password-input">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="contrasena"
-                    {...register('contrasena', {
-                      required: 'La contraseña es obligatoria',
-                      minLength: { value: 8, message: 'Mínimo 8 caracteres' },
-                      pattern: {
-                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
-                        message: 'Debe contener mayúscula, minúscula, número y carácter especial'
-                      }
-                    })} 
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-                {errors.contrasena && <span className="error-message">{errors.contrasena.message}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="confirmar_contrasena">Confirmar Contraseña</label>
-                <div className="password-input">
+            <form onSubmit={handleSubmit(onSubmit)} className="registro-form">
+              <div className="form-grid">
+                {/* Nombre y Apellido */}
+                <div className="form-group">
+                  <label htmlFor="nombre">Nombre</label>
                   <input 
-                    type={showConfirmation ? 'text' : 'password'}
-                    id="confirmar_contrasena"
-                    {...register("confirmar_contrasena", {
-                      required: "Por favor confirma tu contraseña", 
-                      validate: (value) => 
-                        value === contrasena || 'Las contraseñas no coinciden'
-                    })} 
+                    type="text" 
+                    id="nombre"
+                    {...register("nombre", {required: "Este campo es obligatorio"})} 
                   />
-                  <button type="button" onClick={() => setShowConfirmation(!showConfirmation)}>
-                    {showConfirmation ? <FaEyeSlash /> : <FaEye />}
-                  </button>
+                  {errors.nombre && <span className="error-message">{errors.nombre.message}</span>}
                 </div>
-                {errors.confirmar_contrasena && <span className="error-message">{errors.confirmar_contrasena.message}</span>}
-              </div>
 
-              {/* Fecha de Nacimiento */}
-              <div className="form-group">
-                <label htmlFor="fecha_nacimiento">
-                  <FaCalendarAlt /> Fecha de Nacimiento
-                </label>
-                <DatePicker
-                  id="fecha_nacimiento"
-                  selected={startDate}
-                  onChange={setStartDate}
-                  dateFormat="yyyy/MM/dd"
-                  placeholderText="Selecciona una fecha"
-                  showYearDropdown
-                  dropdownMode="select"
-                  maxDate={new Date()}
-                  yearDropdownItemNumber={100}
-                  scrollableYearDropdown
-                  customInput={
-                    <input onKeyDown={(e) => e.preventDefault()} />
-                  }
-                />
-                {errors.fecha_nacimiento && <span className="error-message">{errors.fecha_nacimiento.message}</span>}
-              </div>
+                <div className="form-group">
+                  <label htmlFor="apellido">Apellido</label>
+                  <input 
+                    type="text" 
+                    id="apellido"
+                    {...register("apellido", {required: "Este campo es obligatorio"})} 
+                  />
+                  {errors.apellido && <span className="error-message">{errors.apellido.message}</span>}
+                </div>
 
-              {/* Sexo */}
-              <div className="form-group">
-                <label htmlFor="sexo">
-                  <FaVenusMars /> Sexo
-                </label>
-                <select
-                  id="sexo"
-                  {...register("sexo", { required: "Este campo es obligatorio" })}
-                  style={{ height: '52px' }} /* Altura explícita */
-                >
-                  <option value="">Seleccione una opción</option>
-                  <option value="masculino">Masculino</option>
-                  <option value="femenino">Femenino</option>
-                  <option value="otro">Otro</option>
-                  <option value="prefiero no decir">Prefiero no decir</option>
-                </select>
-                {errors.sexo && <span className="error-message">{errors.sexo.message}</span>}
+                {/* Correo */}
+                <div className="form-group full-width">
+                  <label htmlFor="correo">Correo Unimet</label>
+                  <input 
+                    type="email" 
+                    id="correo"
+                    {...register("correo", {
+                      required: "Este campo es obligatorio", 
+                      pattern: {
+                        value: /@(correo\.unimet\.edu\.ve|unimet\.edu\.ve)$/i,
+                        message: "Debe ser un correo institucional",
+                      } 
+                    })}
+                  />
+                  {errors.correo && <span className="error-message">{errors.correo.message}</span>}
+                </div>
+
+                {/* Contraseñas */}
+                <div className="form-group">
+                  <label htmlFor="contrasena">Contraseña</label>
+                  <div className="password-input">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="contrasena"
+                      {...register('contrasena', {
+                        required: 'La contraseña es obligatoria',
+                        minLength: { value: 8, message: 'Mínimo 8 caracteres' },
+                        pattern: {
+                          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
+                          message: 'Debe contener mayúscula, minúscula, número y carácter especial'
+                        }
+                      })} 
+                    />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                  {errors.contrasena && <span className="error-message">{errors.contrasena.message}</span>}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="confirmar_contrasena">Confirmar Contraseña</label>
+                  <div className="password-input">
+                    <input 
+                      type={showConfirmation ? 'text' : 'password'}
+                      id="confirmar_contrasena"
+                      {...register("confirmar_contrasena", {
+                        required: "Por favor confirma tu contraseña", 
+                        validate: (value) => 
+                          value === contrasena || 'Las contraseñas no coinciden'
+                      })} 
+                    />
+                    <button type="button" onClick={() => setShowConfirmation(!showConfirmation)}>
+                      {showConfirmation ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                  {errors.confirmar_contrasena && <span className="error-message">{errors.confirmar_contrasena.message}</span>}
+                </div>
+
+                {/* Fecha de Nacimiento */}
+                <div className="form-group">
+                  <label htmlFor="fecha_nacimiento">
+                    <FaCalendarAlt /> Fecha de Nacimiento
+                  </label>
+                  <DatePicker
+                    id="fecha_nacimiento"
+                    selected={startDate}
+                    onChange={setStartDate}
+                    dateFormat="yyyy/MM/dd"
+                    placeholderText="Selecciona una fecha"
+                    showYearDropdown
+                    dropdownMode="select"
+                    maxDate={new Date()}
+                    yearDropdownItemNumber={100}
+                    scrollableYearDropdown
+                    customInput={
+                      <input onKeyDown={(e) => e.preventDefault()} />
+                    }
+                  />
+                  {errors.fecha_nacimiento && <span className="error-message">{errors.fecha_nacimiento.message}</span>}
+                </div>
+
+                {/* Sexo */}
+                <div className="form-group">
+                  <label htmlFor="sexo">
+                    <FaVenusMars /> Sexo
+                  </label>
+                  <select
+                    id="sexo"
+                    {...register("sexo", { required: "Este campo es obligatorio" })}
+                    style={{ height: '52px' }}
+                  >
+                    <option value="">Seleccione una opción</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
+                    <option value="otro">Otro</option>
+                    <option value="prefiero no decir">Prefiero no decir</option>
+                  </select>
+                  {errors.sexo && <span className="error-message">{errors.sexo.message}</span>}
+                </div>
               </div>
-            </div>
-            <button type="submit" className="submit-button" disabled={loading}>
-              {loading ? 'Enviando...' : 'Registrarse'}
-            </button>
-          </form>
+              <button type="submit" className="submit-button" disabled={loading}>
+                {loading ? 'Enviando...' : 'Registrarse'}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Panel naranja (derecha en desktop) */}
+        <div className="orange-panel">
+          <div className="panel-content">
+            <FaUserEdit className="hero-icon" />
+            <h1 className="hero-title">Registro de Usuario</h1>
+            <p className="hero-subtitle">Únete a nuestra comunidad académica</p>
+          </div>
         </div>
       </div>
 
