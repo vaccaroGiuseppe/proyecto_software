@@ -309,7 +309,7 @@
 }
 
 /* Responsive - Móvil */
-@media (max-width: 768px) {
+@media (max-width: 1026px) {
   .registro-container {
     flex-direction: column;
   }
