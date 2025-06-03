@@ -29,7 +29,7 @@
 
 /* Actualiza el estilo del DatePicker */
 .react-datepicker-wrapper {
-  width: 100% !important;
+  width: 100% !important; /* Asegura que ocupe todo el ancho disponible */
 }
 
 /* Contenedor principal */
@@ -38,6 +38,7 @@
   flex-grow: 1;
   background-color: #f5f5f5;
 }
+
 
 .react-datepicker__input-container {
   width: 100% !important;
@@ -157,7 +158,7 @@
   font-weight: 400;
 }
 
-/* Estilos de la tarjeta de formulario */
+/* Estilos de la tarjeta de formulario (mantén los mismos que antes) */
 .registro-card {
   width: 100%;
   max-width: 600px;
@@ -185,10 +186,11 @@
   font-weight: 600;
   color: #2c3e50;
   font-size: 1.1rem;
-  text-align: left;
-  width: 100%;
-  padding-left: 0.2rem;
+  text-align: left; /* Añade esta línea */
+  width: 100%; /* Asegura que ocupe todo el ancho */
+  padding-left: 0.2rem; /* Pequeño ajuste de alineación */
 }
+
 
 .form-group label svg {
   margin-right: 8px;
@@ -281,8 +283,8 @@
 }
 
 .form-group select {
-  height: 52px;
-  padding: 1rem;
+  height: 52px; /* Misma altura que el datepicker */
+  padding: 1rem; /* Mismo padding */
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f67e08'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
@@ -290,6 +292,7 @@
   background-size: 1.2rem;
 }
 
+/* Asegúrate que el datepicker tenga esta altura */
 .react-datepicker__input-container input {
   height: 52px;
   box-sizing: border-box;
@@ -305,82 +308,6 @@
   color: white;
 }
 
-/* Estilos para la subida de fotos */
-.photo-upload-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.photo-preview {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid #f67e08;
-  background-color: #f9f9f9;
-}
-
-.photo-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.photo-placeholder {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px dashed #f67e08;
-  color: #f67e08;
-  font-size: 2rem;
-}
-
-.remove-photo {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.upload-label input[type="file"] {
-  display: none;
-}
-
-.upload-button {
-  display: inline-block;
-  padding: 0.8rem 1.5rem;
-  background-color: #f67e08;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  border: none;
-}
-
-.upload-button:hover {
-  background-color: #d46d07;
-}
-
 /* Responsive - Móvil */
 @media (max-width: 1026px) {
   .registro-container {
@@ -390,7 +317,7 @@
   .orange-panel {
     width: 100%;
     padding: 10px 20px;
-    order: -1;
+    order: -1; /* Lo coloca arriba */
   }
 
   .form-container {
@@ -407,21 +334,5 @@
 
   .registro-card {
     padding: 30px 20px;
-  }
-
-  .photo-preview,
-  .photo-placeholder {
-    width: 100px;
-    height: 100px;
-  }
-}
-
-@media (max-width: 480px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .full-width {
-    grid-column: span 1;
   }
 }
