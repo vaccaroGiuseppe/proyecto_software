@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { supabase } from '../lib/../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-import { FaUserEdit, FaEye, FaEyeSlash, FaCalendarAlt, FaVenusMars } from 'react-icons/fa';
+import { FaUserEdit, FaEye, FaEyeSlash, FaCalendarAlt, FaVenusMars, FaCamera } from 'react-icons/fa';
 import "./Registrar.css";
 
 type UsuarioFormData = {
@@ -15,7 +15,7 @@ type UsuarioFormData = {
   tipo: string;
   contrasena: string;
   confirmar_contrasena: string;
-  foto_perfil: null;
+  foto_perfil: FileList | null;
   fecha_nacimiento: string;
   sexo: string;
 };
@@ -28,6 +28,7 @@ export default function UsuarioForm() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const determinarTipoUsuario = (correo: string): string => {
     const profesor = /@unimet\.edu\.ve$/i;
@@ -45,14 +46,53 @@ export default function UsuarioForm() {
 
   const contrasena = watch("contrasena");
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewImage(null);
+    }
+  };
+
   const onSubmit = async (formData: UsuarioFormData) => {
     setLoading(true);
     setError(null);
     
     try {
+      let fotoUrl = null;
+      if (formData.foto_perfil && formData.foto_perfil.length > 0) {
+        const file = formData.foto_perfil[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `fotos_perfil/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+        fotoUrl = urlData.publicUrl;
+      }
+
       const dataToInsert = {
-        ...formData,
-        fecha_nacimiento: startDate?.toISOString() || null
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        correo: formData.correo,
+        tipo: formData.tipo,
+        contrasena: formData.contrasena,
+        fecha_nacimiento: startDate?.toISOString() || null,
+        sexo: formData.sexo,
+        foto_perfil: fotoUrl
       };
 
       const { data, error } = await supabase
@@ -60,11 +100,13 @@ export default function UsuarioForm() {
         .insert([dataToInsert])
         .select();
 
-      if (error) throw new Error(error.message);
+      if (error) throw error;
+      
       if (data) {
         setSuccess(true);
         reset();
         setStartDate(null);
+        setPreviewImage(null);
         setTimeout(() => setSuccess(false), 3000);
       }
     } catch (err) {
@@ -79,7 +121,6 @@ export default function UsuarioForm() {
       <Navbar />
       
       <div className="registro-container">
-        {/* Panel de formulario (izquierda en desktop) */}
         <div className="form-container">
           <div className="registro-card">
             {success && <div className="alert-message success-message">Usuario registrado exitosamente!</div>}
@@ -87,7 +128,46 @@ export default function UsuarioForm() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="registro-form">
               <div className="form-grid">
-                {/* Nombre y Apellido */}
+                <div className="form-group full-width">
+                  <label htmlFor="foto_perfil">Foto de Perfil</label>
+                  <div className="photo-upload-container">
+                    {previewImage ? (
+                      <div className="photo-preview">
+                        <img src={previewImage} alt="Vista previa" />
+                        <button 
+                          type="button" 
+                          className="remove-photo"
+                          onClick={() => {
+                            setPreviewImage(null);
+                            setValue('foto_perfil', null);
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="photo-placeholder">
+                        <FaCamera />
+                      </div>
+                    )}
+                    <label className="upload-label">
+                      <input
+                        type="file"
+                        id="foto_perfil"
+                        accept="image/*"
+                        {...register('foto_perfil')}
+                        onChange={(e) => {
+                          handleImageChange(e);
+                          register('foto_perfil').onChange(e);
+                        }}
+                      />
+                      <span className="upload-button">
+                        {previewImage ? 'Cambiar imagen' : 'Seleccionar imagen'}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label htmlFor="nombre">Nombre</label>
                   <input 
@@ -108,7 +188,6 @@ export default function UsuarioForm() {
                   {errors.apellido && <span className="error-message">{errors.apellido.message}</span>}
                 </div>
 
-                {/* Correo */}
                 <div className="form-group full-width">
                   <label htmlFor="correo">Correo Unimet</label>
                   <input 
@@ -125,7 +204,6 @@ export default function UsuarioForm() {
                   {errors.correo && <span className="error-message">{errors.correo.message}</span>}
                 </div>
 
-                {/* Contraseñas */}
                 <div className="form-group">
                   <label htmlFor="contrasena">Contraseña</label>
                   <div className="password-input">
@@ -167,7 +245,6 @@ export default function UsuarioForm() {
                   {errors.confirmar_contrasena && <span className="error-message">{errors.confirmar_contrasena.message}</span>}
                 </div>
 
-                {/* Fecha de Nacimiento */}
                 <div className="form-group">
                   <label htmlFor="fecha_nacimiento">
                     <FaCalendarAlt /> Fecha de Nacimiento
@@ -190,7 +267,6 @@ export default function UsuarioForm() {
                   {errors.fecha_nacimiento && <span className="error-message">{errors.fecha_nacimiento.message}</span>}
                 </div>
 
-                {/* Sexo */}
                 <div className="form-group">
                   <label htmlFor="sexo">
                     <FaVenusMars /> Sexo
@@ -216,7 +292,6 @@ export default function UsuarioForm() {
           </div>
         </div>
 
-        {/* Panel naranja (derecha en desktop) */}
         <div className="orange-panel">
           <div className="panel-content">
             <FaUserEdit className="hero-icon" />
