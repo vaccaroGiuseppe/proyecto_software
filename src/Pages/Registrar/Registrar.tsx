@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+ import { useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import { useForm } from "react-hook-form";
 import { supabase } from '../lib/../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-import { FaUserEdit, FaEye, FaEyeSlash, FaCalendarAlt, FaVenusMars } from 'react-icons/fa';
+import { FaUserEdit, FaEye, FaEyeSlash, FaCalendarAlt, FaVenusMars, FaCamera, FaTimes } from 'react-icons/fa';
 import "./Registrar.css";
 
 type UsuarioFormData = {
@@ -15,7 +15,7 @@ type UsuarioFormData = {
   tipo: string;
   contrasena: string;
   confirmar_contrasena: string;
-  foto_perfil: null;
+  foto_perfil: string | null;
   fecha_nacimiento: string;
   sexo: string;
 };
@@ -28,6 +28,7 @@ export default function UsuarioForm() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const determinarTipoUsuario = (correo: string): string => {
     const profesor = /@unimet\.edu\.ve$/i;
@@ -45,30 +46,61 @@ export default function UsuarioForm() {
 
   const contrasena = watch("contrasena");
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setError('Por favor, selecciona un archivo de imagen válido');
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        setError('La imagen no puede superar los 5MB');
+        return;
+      }
+
+      setError(null);
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setPreviewImage(base64String);
+        setValue('foto_perfil', base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const onSubmit = async (formData: UsuarioFormData) => {
     setLoading(true);
     setError(null);
     
     try {
-      const dataToInsert = {
-        ...formData,
-        fecha_nacimiento: startDate?.toISOString() || null
-      };
-
-      const { data, error } = await supabase
+      const { error: insertError } = await supabase
         .from('usuario')
-        .insert([dataToInsert])
-        .select();
+        .insert([{
+          nombre: formData.nombre,
+          apellido: formData.apellido,
+          correo: formData.correo,
+          tipo: formData.tipo,
+          contrasena: formData.contrasena,
+          confirmar_contrasena: formData.confirmar_contrasena,
+          fecha_nacimiento: startDate?.toISOString(),
+          sexo: formData.sexo,
+          foto_perfil: formData.foto_perfil
+        }]);
 
-      if (error) throw new Error(error.message);
-      if (data) {
-        setSuccess(true);
-        reset();
-        setStartDate(null);
-        setTimeout(() => setSuccess(false), 3000);
-      }
+      if (insertError) throw new Error(insertError.message);
+
+      setSuccess(true);
+      reset();
+      setStartDate(null);
+      setPreviewImage(null);
+      setTimeout(() => setSuccess(false), 5000);
+      
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');
+      console.error('Error detallado:', err);
     } finally {
       setLoading(false);
     }
@@ -79,15 +111,65 @@ export default function UsuarioForm() {
       <Navbar />
       
       <div className="registro-container">
-        {/* Panel de formulario (izquierda en desktop) */}
         <div className="form-container">
           <div className="registro-card">
-            {success && <div className="alert-message success-message">Usuario registrado exitosamente!</div>}
-            {error && <div className="alert-message error-message">Error: {error}</div>}
+            {success && (
+              <div className="alert-message success-message">
+                ¡Usuario registrado exitosamente!
+                <button onClick={() => setSuccess(false)} className="close-alert">
+                  <FaTimes />
+                </button>
+              </div>
+            )}
+            
+            {error && (
+              <div className="alert-message error-message">
+                Error: {error}
+                <button onClick={() => setError(null)} className="close-alert">
+                  <FaTimes />
+                </button>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="registro-form">
               <div className="form-grid">
-                {/* Nombre y Apellido */}
+                <div className="form-group full-width">
+                  <label htmlFor="foto_perfil">Foto de Perfil</label>
+                  <div className="photo-upload-container">
+                    {previewImage ? (
+                      <div className="photo-preview">
+                        <img src={previewImage} alt="Vista previa" />
+                        <button 
+                          type="button" 
+                          className="remove-photo"
+                          onClick={() => {
+                            setPreviewImage(null);
+                            setValue('foto_perfil', null);
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="photo-placeholder">
+                        <FaCamera />
+                      </div>
+                    )}
+                    <label className="upload-label">
+                      <input
+                        type="file"
+                        id="foto_perfil"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                      <span className="upload-button">
+                        {previewImage ? 'Cambiar imagen' : 'Seleccionar imagen'}
+                      </span>
+                    </label>
+                    <p className="file-hint">Formatos: JPG, PNG (Máx. 5MB)</p>
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label htmlFor="nombre">Nombre</label>
                   <input 
@@ -108,7 +190,6 @@ export default function UsuarioForm() {
                   {errors.apellido && <span className="error-message">{errors.apellido.message}</span>}
                 </div>
 
-                {/* Correo */}
                 <div className="form-group full-width">
                   <label htmlFor="correo">Correo Unimet</label>
                   <input 
@@ -125,7 +206,6 @@ export default function UsuarioForm() {
                   {errors.correo && <span className="error-message">{errors.correo.message}</span>}
                 </div>
 
-                {/* Contraseñas */}
                 <div className="form-group">
                   <label htmlFor="contrasena">Contraseña</label>
                   <div className="password-input">
@@ -167,7 +247,6 @@ export default function UsuarioForm() {
                   {errors.confirmar_contrasena && <span className="error-message">{errors.confirmar_contrasena.message}</span>}
                 </div>
 
-                {/* Fecha de Nacimiento */}
                 <div className="form-group">
                   <label htmlFor="fecha_nacimiento">
                     <FaCalendarAlt /> Fecha de Nacimiento
@@ -187,10 +266,8 @@ export default function UsuarioForm() {
                       <input onKeyDown={(e) => e.preventDefault()} />
                     }
                   />
-                  {errors.fecha_nacimiento && <span className="error-message">{errors.fecha_nacimiento.message}</span>}
                 </div>
 
-                {/* Sexo */}
                 <div className="form-group">
                   <label htmlFor="sexo">
                     <FaVenusMars /> Sexo
@@ -216,7 +293,6 @@ export default function UsuarioForm() {
           </div>
         </div>
 
-        {/* Panel naranja (derecha en desktop) */}
         <div className="orange-panel">
           <div className="panel-content">
             <FaUserEdit className="hero-icon" />
