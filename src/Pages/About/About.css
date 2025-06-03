@@ -7,12 +7,12 @@
 /* HERO CON IMAGEN DE FONDO RESPONSIVE */
 .about-hero {
   position: relative;
-  background-image: url("/foto-about.jpg"); /* Asegúrate que esté en public/images/ */
+  background-image: url("/foto-about.jpg"); 
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   min-height: 60vh;
-  height: 80vh;
+  height: 40rem;
   display: flex;
   align-items: center;
   justify-content: center;
