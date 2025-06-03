@@ -336,3 +336,107 @@
     padding: 30px 20px;
   }
 }
+
+/* Estilos para la subida de fotos */
+.photo-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.photo-preview {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #f67e08;
+  background-color: #f9f9f9;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed #f67e08;
+  color: #f67e08;
+  font-size: 2rem;
+}
+
+.remove-photo {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-label input[type="file"] {
+  display: none;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  background-color: #f67e08;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  border: none;
+}
+
+.upload-button:hover {
+  background-color: #d46d07;
+}
+
+.file-hint {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.close-alert {
+  background: none;
+  border: none;
+  color: white;
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Resjjejejponsive para la foto */
+@media (max-width: 768px) {
+  .photo-preview,
+  .photo-placeholder {
+    width: 100px;
+    height: 100px;
+  }
+}
