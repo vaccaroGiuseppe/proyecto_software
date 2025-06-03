@@ -13,9 +13,10 @@ type UsuarioFormData = {
   apellido: string;
   correo: string;
   tipo: string;
+  //--------------------------------------------------
   contrasena: string;
   confirmar_contrasena: string;
-  foto_perfil: string | null;
+  foto_perfil: string;
   fecha_nacimiento: string;
   sexo: string;
 };
