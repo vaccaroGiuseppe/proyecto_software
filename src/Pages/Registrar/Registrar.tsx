@@ -1,4 +1,4 @@
- import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import { useForm } from "react-hook-form";
@@ -7,6 +7,7 @@ import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import { FaUserEdit, FaEye, FaEyeSlash, FaCalendarAlt, FaVenusMars, FaCamera, FaTimes } from 'react-icons/fa';
 import "./Registrar.css";
+import { useNavigate } from 'react-router-dom';
 
 type UsuarioFormData = {
   nombre: string;
@@ -29,6 +30,7 @@ export default function UsuarioForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const determinarTipoUsuario = (correo: string): string => {
     const profesor = /@unimet\.edu\.ve$/i;
@@ -71,40 +73,85 @@ export default function UsuarioForm() {
     }
   };
 
+  const uploadImage = async (file: File) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars') // Asegúrate de tener este bucket creado en Supabase Storage
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
   const onSubmit = async (formData: UsuarioFormData) => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const { error: insertError } = await supabase
-        .from('usuario')
-        .insert([{
+  setLoading(true);
+  setError(null);
+  
+  try {
+    // 1. Registrar usuario en Auth de Supabase
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: formData.correo,
+      password: formData.contrasena,
+      options: {
+        data: {
           nombre: formData.nombre,
           apellido: formData.apellido,
-          correo: formData.correo,
-          tipo: formData.tipo,
-          contrasena: formData.contrasena,
-          confirmar_contrasena: formData.confirmar_contrasena,
-          fecha_nacimiento: startDate?.toISOString(),
-          sexo: formData.sexo,
-          foto_perfil: formData.foto_perfil
-        }]);
+        }
+      }
+    });
 
-      if (insertError) throw new Error(insertError.message);
+    if (authError) throw new Error(authError.message);
 
-      setSuccess(true);
-      reset();
-      setStartDate(null);
-      setPreviewImage(null);
-      setTimeout(() => setSuccess(false), 5000);
-      
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');
-      console.error('Error detallado:', err);
-    } finally {
-      setLoading(false);
+    // 2. Subir imagen si existe
+    let imageUrl = null;
+    if (previewImage) {
+      const fileInput = document.getElementById('foto_perfil') as HTMLInputElement;
+      if (fileInput?.files?.[0]) {
+        imageUrl = await uploadImage(fileInput.files[0]);
+      }
     }
-  };
+
+    // 3. Insertar datos adicionales en la tabla usuario (SIN contraseña)
+    const { error: insertError } = await supabase
+      .from('usuario')
+      .insert([{
+        id_usuario: authData.user?.id,
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        correo: formData.correo,
+        tipo: formData.tipo,
+        fecha_creacion: new Date().toISOString(),
+        fecha_nacimiento: startDate?.toISOString(),
+        sexo: formData.sexo,
+        foto_perfil: imageUrl
+      }]);
+
+    if (insertError) throw new Error(insertError.message);
+
+    setSuccess(true);
+    reset();
+    setStartDate(null);
+    setPreviewImage(null);
+    
+    setTimeout(() => {
+      navigate('/');
+    }, 10);
+    
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');
+    console.error('Error detallado:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className='registro-page'>
@@ -115,7 +162,7 @@ export default function UsuarioForm() {
           <div className="registro-card">
             {success && (
               <div className="alert-message success-message">
-                ¡Usuario registrado exitosamente!
+                ¡Usuario registrado exitosamente! Redirigiendo...
                 <button onClick={() => setSuccess(false)} className="close-alert">
                   <FaTimes />
                 </button>
