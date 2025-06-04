@@ -92,7 +92,7 @@ function Navbar() {
             
             <div className="dropdown-menu">
               <Link to="/perfil" className="dropdown-item">
-                Mi Perfil
+                Perfil
               </Link>
               <button onClick={handleSignOut} className="dropdown-item">
                 Cerrar Sesión
