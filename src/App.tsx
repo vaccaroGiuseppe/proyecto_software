@@ -4,7 +4,7 @@ import Home from "./Pages/Home/Home";
 import "./App.css"
 import Registrar from "./Pages/Registrar/Registrar";
 import IniciarSesion from "./Pages/IniciarSesion/IniciarSesion";
-import UserAccountPage from "./Pages/StudentProfile/UserAccountPage";
+import Perfil from "./Pages/Perfil/Perfil";
 
 function App() {
   return (
@@ -14,7 +14,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/registrar" element={<Registrar />} />
         <Route path="/iniciarsesion" element={<IniciarSesion />} />
-        <Route path="/Perfil" element={<UserAccountPage />} />
+        <Route path="/Perfil" element={<Perfil />} />
       </Routes>
     </Router>
   );
