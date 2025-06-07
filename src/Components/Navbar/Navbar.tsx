@@ -3,11 +3,13 @@ import { useRef, useEffect, useState } from "react";
 import Logo_Blanco from "../../Images/Logo_Blanco.png";
 import "./Navbar.css";
 import { supabase } from '../lib/../../supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
   // Verificar el estado de autenticación al cargar el componente
   useEffect(() => {
@@ -48,6 +50,7 @@ function Navbar() {
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
+      navigate('/');
       // No necesitas navegar aquí, el listener de onAuthStateChange ya manejará el estado
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
@@ -94,9 +97,16 @@ function Navbar() {
               <Link to="/perfil" className="dropdown-item">
                 Perfil
               </Link>
-              <button onClick={handleSignOut} className="dropdown-item">
+              <Link 
+                to="#" 
+                className="dropdown-item" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSignOut();
+                }}
+              >
                 Cerrar Sesión
-              </button>
+              </Link>
             </div>
           </div>
         ) : (
