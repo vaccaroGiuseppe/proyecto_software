@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-import { FaUser, FaEnvelope, FaUserTie, FaUserGraduate, FaEdit } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaUserTie, FaUserGraduate, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 import "./Perfil.css";
 import { useNavigate } from 'react-router-dom';
 
@@ -19,6 +19,10 @@ export default function Perfil() {
   const [userData, setUserData] = useState<UserProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState(false);
+  const [tempNombre, setTempNombre] = useState('');
+  const [tempApellido, setTempApellido] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,6 +65,55 @@ export default function Perfil() {
 
     fetchUserData();
   }, [navigate]);
+
+  const startEditingName = () => {
+    if (userData) {
+      setTempNombre(userData.nombre);
+      setTempApellido(userData.apellido);
+      setEditingName(true);
+    }
+  };
+
+  const cancelEditingName = () => {
+    setEditingName(false);
+  };
+
+  const saveNameChanges = async () => {
+    if (!userData) return;
+
+    setIsUpdating(true);
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error(sessionError?.message || 'No hay sesión activa');
+      }
+
+      const { error: updateError } = await supabase
+        .from('usuario')
+        .update({ 
+          nombre: tempNombre,
+          apellido: tempApellido
+        })
+        .eq('id_usuario', session.user.id);
+
+      if (updateError) throw updateError;
+
+      // Actualizar el estado local
+      setUserData({
+        ...userData,
+        nombre: tempNombre,
+        apellido: tempApellido
+      });
+
+      setEditingName(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al actualizar el nombre');
+      console.error('Error detallado:', err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -125,12 +178,52 @@ export default function Perfil() {
               <div className="perfil-details">
                 <div className="perfil-detail">
                   <span className="detail-label">Nombre completo:</span>
-                  <span className="detail-value">
-                    {userData.nombre} {userData.apellido}
-                    <button className="edit-button">
-                      <FaEdit />
-                    </button>
-                  </span>
+                  {editingName ? (
+                    <div className="edit-field">
+                      <div className="name-edit-fields">
+                        <input
+                          type="text"
+                          value={tempNombre}
+                          onChange={(e) => setTempNombre(e.target.value)}
+                          className="edit-input"
+                          placeholder="Nombre"
+                        />
+                        <input
+                          type="text"
+                          value={tempApellido}
+                          onChange={(e) => setTempApellido(e.target.value)}
+                          className="edit-input"
+                          placeholder="Apellido"
+                        />
+                      </div>
+                      <div className="edit-buttons">
+                        <button 
+                          onClick={saveNameChanges} 
+                          className="save-button"
+                          disabled={isUpdating}
+                        >
+                          <FaSave />
+                        </button>
+                        <button 
+                          onClick={cancelEditingName} 
+                          className="cancel-button"
+                          disabled={isUpdating}
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="detail-value">
+                      {userData.nombre} {userData.apellido}
+                      <button 
+                        className="edit-button"
+                        onClick={startEditingName}
+                      >
+                        <FaEdit />
+                      </button>
+                    </span>
+                  )}
                 </div>
 
                 <div className="perfil-detail">
@@ -139,9 +232,6 @@ export default function Perfil() {
                   </span>
                   <span className="detail-value">
                     {userData.correo}
-                    <button className="edit-button">
-                      <FaEdit />
-                    </button>
                   </span>
                 </div>
 
