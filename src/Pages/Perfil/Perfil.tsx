@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-import { FaUser, FaEnvelope, FaUserTie, FaUserGraduate, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaUserTie, FaUserGraduate, FaEdit, FaSave, FaTimes, FaCamera, FaSpinner } from 'react-icons/fa';
 import "./Perfil.css";
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +23,8 @@ export default function Perfil() {
   const [tempNombre, setTempNombre] = useState('');
   const [tempApellido, setTempApellido] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -115,6 +117,63 @@ export default function Perfil() {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0 || !userData) {
+      return;
+    }
+
+    const file = e.target.files[0];
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    setIsUploading(true);
+
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error(sessionError?.message || 'No hay sesión activa');
+      }
+
+      // 1. Subir la imagen al bucket de Supabase
+      const { error: uploadError } = await supabase.storage
+        .from('avatars') // Asegúrate de que este bucket existe en tu almacenamiento de Supabase
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Obtener la URL pública de la imagen
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // 3. Actualizar la referencia de la imagen en la tabla de usuario
+      const { error: updateError } = await supabase
+        .from('usuario')
+        .update({ foto_perfil: publicUrl })
+        .eq('id_usuario', session.user.id);
+
+      if (updateError) throw updateError;
+
+      // 4. Actualizar el estado local
+      setUserData({
+        ...userData,
+        foto_perfil: publicUrl
+      });
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir la imagen');
+      console.error('Error detallado:', err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   if (loading) {
     return (
       <div className="perfil-page">
@@ -163,16 +222,38 @@ export default function Perfil() {
             <div className="perfil-content">
               <div className="perfil-avatar-container">
                 {userData.foto_perfil ? (
-                  <img 
-                    src={userData.foto_perfil} 
-                    alt="Foto de perfil" 
-                    className="perfil-avatar"
-                  />
+                  <>
+                    <img 
+                      src={userData.foto_perfil} 
+                      alt="Foto de perfil" 
+                      className="perfil-avatar"
+                    />
+                    <button 
+                      className="change-avatar-button"
+                      onClick={triggerFileInput}
+                      disabled={isUploading}
+                    >
+                      {isUploading ? <FaSpinner className="spinner" /> : <FaCamera />}
+                    </button>
+                  </>
                 ) : (
-                  <div className="perfil-avatar-placeholder">
+                  <div 
+                    className="perfil-avatar-placeholder"
+                    onClick={triggerFileInput}
+                  >
                     <FaUser />
+                    <div className="camera-icon">
+                      <FaCamera />
+                    </div>
                   </div>
                 )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                />
               </div>
 
               <div className="perfil-details">
@@ -202,7 +283,7 @@ export default function Perfil() {
                           className="save-button"
                           disabled={isUpdating}
                         >
-                          <FaSave />
+                          {isUpdating ? <FaSpinner className="spinner" /> : <FaSave />}
                         </button>
                         <button 
                           onClick={cancelEditingName} 
