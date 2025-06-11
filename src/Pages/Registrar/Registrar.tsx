@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import { useForm } from "react-hook-form";
 import { supabase } from '../lib/../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-import { FaUserEdit, FaEye, FaEyeSlash, FaCalendarAlt, FaVenusMars, FaCamera, FaTimes } from 'react-icons/fa';
+import { FaUserEdit, FaEye, FaEyeSlash, FaCalendarAlt, FaVenusMars, FaCamera, FaTimes, FaSpinner } from 'react-icons/fa';
 import "./Registrar.css";
 import { useNavigate } from 'react-router-dom';
 
@@ -30,6 +30,8 @@ export default function UsuarioForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const determinarTipoUsuario = (correo: string): string => {
@@ -67,91 +69,105 @@ export default function UsuarioForm() {
       reader.onloadend = () => {
         const base64String = reader.result as string;
         setPreviewImage(base64String);
-        setValue('foto_perfil', base64String);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const uploadImage = async (file: File) => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
+  const uploadImageToSupabase = async (file: File): Promise<string> => {
+    setIsUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('avatars') // Asegúrate de tener este bucket creado en Supabase Storage
-      .upload(filePath, file);
+      // 1. Subir la imagen al bucket de Supabase
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
 
-    if (uploadError) throw uploadError;
+      if (uploadError) throw uploadError;
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(filePath);
+      // 2. Obtener la URL pública de la imagen
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
 
-    return publicUrl;
+      return publicUrl;
+    } catch (err) {
+      throw new Error('Error al subir la imagen: ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const onSubmit = async (formData: UsuarioFormData) => {
-  setLoading(true);
-  setError(null);
-  
-  try {
-    // 1. Registrar usuario en Auth de Supabase
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: formData.correo,
-      password: formData.contrasena,
-      options: {
-        data: {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // 1. Validar que las contraseñas coincidan
+      if (formData.contrasena !== formData.confirmar_contrasena) {
+        throw new Error('Las contraseñas no coinciden');
+      }
+
+      // 2. Subir imagen si existe
+      let imageUrl = null;
+      if (previewImage && fileInputRef.current?.files?.[0]) {
+        imageUrl = await uploadImageToSupabase(fileInputRef.current.files[0]);
+      }
+
+      // 3. Registrar usuario en Auth de Supabase
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.correo,
+        password: formData.contrasena,
+        options: {
+          data: {
+            nombre: formData.nombre,
+            apellido: formData.apellido,
+          }
+        }
+      });
+
+      if (authError) throw new Error(authError.message);
+
+      // 4. Insertar datos adicionales en la tabla usuario
+      const { error: insertError } = await supabase
+        .from('usuario')
+        .insert([{
+          id_usuario: authData.user?.id,
           nombre: formData.nombre,
           apellido: formData.apellido,
-        }
-      }
-    });
+          correo: formData.correo,
+          tipo: formData.tipo,
+          fecha_creacion: new Date().toISOString(),
+          fecha_nacimiento: startDate?.toISOString(),
+          sexo: formData.sexo,
+          foto_perfil: imageUrl
+        }]);
 
-    if (authError) throw new Error(authError.message);
+      if (insertError) throw new Error(insertError.message);
 
-    // 2. Subir imagen si existe
-    let imageUrl = null;
-    if (previewImage) {
-      const fileInput = document.getElementById('foto_perfil') as HTMLInputElement;
-      if (fileInput?.files?.[0]) {
-        imageUrl = await uploadImage(fileInput.files[0]);
-      }
+      setSuccess(true);
+      reset();
+      setStartDate(null);
+      setPreviewImage(null);
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');
+      console.error('Error detallado:', err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // 3. Insertar datos adicionales en la tabla usuario (SIN contraseña)
-    const { error: insertError } = await supabase
-      .from('usuario')
-      .insert([{
-        id_usuario: authData.user?.id,
-        nombre: formData.nombre,
-        apellido: formData.apellido,
-        correo: formData.correo,
-        tipo: formData.tipo,
-        fecha_creacion: new Date().toISOString(),
-        fecha_nacimiento: startDate?.toISOString(),
-        sexo: formData.sexo,
-        foto_perfil: imageUrl
-      }]);
-
-    if (insertError) throw new Error(insertError.message);
-
-    setSuccess(true);
-    reset();
-    setStartDate(null);
-    setPreviewImage(null);
-    
-    setTimeout(() => {
-      navigate('/');
-    }, 10);
-    
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');
-    console.error('Error detallado:', err);
-  } finally {
-    setLoading(false);
-  }
-};
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <div className='registro-page'>
@@ -191,28 +207,45 @@ export default function UsuarioForm() {
                           className="remove-photo"
                           onClick={() => {
                             setPreviewImage(null);
-                            setValue('foto_perfil', null);
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = '';
+                            }
                           }}
+                          disabled={isUploadingImage}
                         >
                           ×
                         </button>
                       </div>
                     ) : (
-                      <div className="photo-placeholder">
+                      <div 
+                        className="photo-placeholder"
+                        onClick={triggerFileInput}
+                      >
                         <FaCamera />
                       </div>
                     )}
-                    <label className="upload-label">
-                      <input
-                        type="file"
-                        id="foto_perfil"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                      />
-                      <span className="upload-button">
-                        {previewImage ? 'Cambiar imagen' : 'Seleccionar imagen'}
-                      </span>
-                    </label>
+                    <input
+                      type="file"
+                      id="foto_perfil"
+                      ref={fileInputRef}
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      style={{ display: 'none' }}
+                    />
+                    <button
+                      type="button"
+                      className="upload-button"
+                      onClick={triggerFileInput}
+                      disabled={isUploadingImage}
+                    >
+                      {isUploadingImage ? (
+                        <FaSpinner className="spinner" />
+                      ) : previewImage ? (
+                        'Cambiar imagen'
+                      ) : (
+                        'Seleccionar imagen'
+                      )}
+                    </button>
                     <p className="file-hint">Formatos: JPG, PNG (Máx. 5MB)</p>
                   </div>
                 </div>
@@ -333,8 +366,16 @@ export default function UsuarioForm() {
                   {errors.sexo && <span className="error-message">{errors.sexo.message}</span>}
                 </div>
               </div>
-              <button type="submit" className="submit-button" disabled={loading}>
-                {loading ? 'Enviando...' : 'Registrarse'}
+              <button 
+                type="submit" 
+                className="submit-button" 
+                disabled={loading || isUploadingImage}
+              >
+                {(loading || isUploadingImage) ? (
+                  <FaSpinner className="spinner" />
+                ) : (
+                  'Registrarse'
+                )}
               </button>
             </form>
           </div>
