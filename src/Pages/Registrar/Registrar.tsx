@@ -154,8 +154,8 @@ export default function UsuarioForm() {
       setPreviewImage(null);
       
       setTimeout(() => {
-        navigate('/');
-      }, 3000);
+        navigate('/confirmacion-correo');
+      }, 1000);
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');

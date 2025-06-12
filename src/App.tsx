@@ -5,6 +5,7 @@ import "./App.css"
 import Registrar from "./Pages/Registrar/Registrar";
 import IniciarSesion from "./Pages/IniciarSesion/IniciarSesion";
 import Perfil from "./Pages/Perfil/Perfil";
+import ConfirmacionCorreo from "./Pages/ConfirmacionCorreo/ConfirmacionCorreo";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/registrar" element={<Registrar />} />
         <Route path="/iniciarsesion" element={<IniciarSesion />} />
         <Route path="/Perfil" element={<Perfil />} />
+        <Route path="/confirmacion-correo" element={<ConfirmacionCorreo />} />
       </Routes>
     </Router>
   );
