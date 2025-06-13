@@ -29,12 +29,10 @@ const IniciarSesion = () => {
     setError(null);
 
     try {
-      // Validar que el correo sea institucional
       if (!formData.correo.endsWith('@unimet.edu.ve') && !formData.correo.endsWith('@correo.unimet.edu.ve')) {
         throw new Error('Debe usar un correo institucional UNIMET');
       }
 
-      // Iniciar sesión con Supabase Auth
       const { error: authError } = await supabase.auth.signInWithPassword({
         email: formData.correo,
         password: formData.clave
@@ -44,7 +42,6 @@ const IniciarSesion = () => {
         throw new Error(authError.message);
       }
 
-      // Si el inicio de sesión es exitoso, redirigir al home
       navigate('/');
 
     } catch (err) {
@@ -54,18 +51,30 @@ const IniciarSesion = () => {
       setLoading(false);
     }
   };
+const handleGoogleLogin = async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "http://localhost:5173/perfil"
+    }
+  });
+
+  if (error) {
+    console.error("Error al iniciar sesión con Google:", error.message);
+    alert("Ocurrió un error al iniciar sesión con Google.");
+  }
+};
 
   return (
     <div className='IniciarSesion_Contenedor'>
       <Navbar />
       <div className='Home_Separador'></div>
-      
       <div className='IniciarSesion_Cuerpo'>
         <div className='IniciarSesion_Titulo_Contenedor'>
           <FaSignInAlt className='IniciarSesion_Icono_Titulo' />
           <h1 className='IniciarSesion_Titulo'>Iniciar Sesión</h1>
         </div>
-        
+
         {error && (
           <div className="IniciarSesion_Error">
             Error: {error}
@@ -74,7 +83,7 @@ const IniciarSesion = () => {
             </button>
           </div>
         )}
-        
+
         <form className='IniciarSesion_Formulario' onSubmit={handleSubmit}>
           <div className='IniciarSesion_Campo'>
             <div className='Input_Container'>
@@ -90,7 +99,7 @@ const IniciarSesion = () => {
               />
             </div>
           </div>
-          
+
           <div className='IniciarSesion_Campo'>
             <div className='Input_Container'>
               <FaLock className='Input_Icon' />
@@ -105,7 +114,7 @@ const IniciarSesion = () => {
               />
             </div>
           </div>
-          
+
           <button 
             type='submit' 
             className='IniciarSesion_Boton'
@@ -114,9 +123,20 @@ const IniciarSesion = () => {
             <FaSignInAlt className='Boton_Icono' />
             {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </button>
+
+          <button type="button" className="google-button" onClick={handleGoogleLogin}>
+          <img src="/googleicon.png" alt="Google" className="google-icon" />
+           Iniciar sesión con Google
+          </button>
         </form>
+        <div className="google-login-wrapper">
+          <p style={{ textAlign: "center", margin: "1.5rem 0", fontWeight: 500 }}>
+                    </p>
+         
+        </div>
       </div>
-      
+
+
       <div className='Home_Separador'></div>
       <div className='Centrar_Footer'>
         <Footer />
