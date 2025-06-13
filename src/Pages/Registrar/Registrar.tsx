@@ -166,8 +166,22 @@ export default function UsuarioForm() {
   };
 
   const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
+  fileInputRef.current?.click();
+};
+
+const handleGoogleLogin = async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "http://localhost:5173/perfil" // cámbialo por tu URL en producción
+    }
+  });
+  if (error) {
+    console.error("Error al iniciar sesión con Google:", error.message);
+    alert("Ocurrió un error al iniciar sesión con Google.");
+  }
+};
+
 
   return (
     <div className='registro-page'>
@@ -378,6 +392,15 @@ export default function UsuarioForm() {
                 )}
               </button>
             </form>
+            <div className="google-login-wrapper">
+  <p style={{ textAlign: "center", margin: "1.5rem 0", fontWeight: 500 }}>
+  </p>
+  <button type="button" className="google-button" onClick={handleGoogleLogin}>
+    <img src="/googleicon.png" alt="Google" className="google-icon" />
+    Iniciar sesión con Google
+  </button>
+</div>
+
           </div>
         </div>
 
