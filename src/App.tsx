@@ -6,6 +6,8 @@ import Registrar from "./Pages/Registrar/Registrar";
 import IniciarSesion from "./Pages/IniciarSesion/IniciarSesion";
 import Perfil from "./Pages/Perfil/Perfil";
 import ConfirmacionCorreo from "./Pages/ConfirmacionCorreo/ConfirmacionCorreo";
+import AbrirSeccion from "./Pages/AbrirSeccion/AbrirSeccion";
+
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
         <Route path="/iniciarsesion" element={<IniciarSesion />} />
         <Route path="/Perfil" element={<Perfil />} />
         <Route path="/confirmacion-correo" element={<ConfirmacionCorreo />} />
+        <Route path="/abrir-seccion" element={<AbrirSeccion />} />
       </Routes>
     </Router>
   );
