@@ -6,7 +6,7 @@ import Registrar from "./Pages/Registrar/Registrar";
 import IniciarSesion from "./Pages/IniciarSesion/IniciarSesion";
 import Perfil from "./Pages/Perfil/Perfil";
 import ConfirmacionCorreo from "./Pages/ConfirmacionCorreo/ConfirmacionCorreo";
-import CrearMateria from "./Pages/CrearMateria/CrearMateria";
+import AbrirSeccion from "./Pages/AbrirSeccion/AbrirSeccion";
 
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
         <Route path="/iniciarsesion" element={<IniciarSesion />} />
         <Route path="/Perfil" element={<Perfil />} />
         <Route path="/confirmacion-correo" element={<ConfirmacionCorreo />} />
-        <Route path="/crear-materia" element={<CrearMateria />} />
+        <Route path="/abrir-seccion" element={<AbrirSeccion />} />
       </Routes>
     </Router>
   );

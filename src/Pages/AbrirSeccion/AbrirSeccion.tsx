@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { supabase } from '../lib/../../supabaseClient';
+import { supabase } from '../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import { FaBook, FaCalendarAlt, FaClock, FaSave, FaSpinner, FaChalkboardTeacher } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import "./CrearMateria.css";
+import "./AbrirSeccion.css";
 
 type Seccion = {
   dias: string;
@@ -13,13 +13,9 @@ type Seccion = {
 };
 
 export default function CrearMateria() {
-  const [nombreMateria, setNombreMateria] = useState('');
-  const [numeroSecciones, setNumeroSecciones] = useState(1);
-  const [secciones, setSecciones] = useState<Seccion[]>(Array(1).fill({ 
-    dias: '', 
-    horario: '', 
-    cedula_profesor: '' 
-  }));
+  const [codigoMateria, setCodigoMateria] = useState('');
+  const [numeroSecciones, setNumeroSecciones] = useState('');
+  const [secciones, setSecciones] = useState<Seccion[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -41,12 +37,20 @@ export default function CrearMateria() {
     { value: '5:30 PM - 7:00 PM', label: '5:30 PM - 7:00 PM' }
   ];
 
-  const handleNumeroSeccionesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const num = parseInt(e.target.value);
-    setNumeroSecciones(num);
-    setSecciones(Array(num).fill({ dias: '', horario: '', cedula_profesor: '' }).map((_, i) => 
-      secciones[i] || { dias: '', horario: '', cedula_profesor: '' }
-    ));
+  const handleNumeroSeccionesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Permitir solo números
+    if (/^\d*$/.test(value)) {
+      setNumeroSecciones(value);
+      
+      // Convertir a número y generar las secciones
+      const num = value === '' ? 0 : parseInt(value);
+      if (num >= 0 && num <= 15) { // Limitamos a 15 secciones máximo
+        setSecciones(Array(num).fill({ dias: '', horario: '', cedula_profesor: '' }).map((_, i) => 
+          secciones[i] || { dias: '', horario: '', cedula_profesor: '' }
+        ));
+      }
+    }
   };
 
   const handleSeccionChange = (index: number, field: keyof Seccion, value: string) => {
@@ -63,8 +67,12 @@ export default function CrearMateria() {
 
     try {
       // Validar campos
-      if (!nombreMateria.trim()) {
-        throw new Error('El nombre de la materia es requerido');
+      if (!codigoMateria.trim()) {
+        throw new Error('El código de la materia es requerido');
+      }
+
+      if (!numeroSecciones || parseInt(numeroSecciones) <= 0) {
+        throw new Error('Debes ingresar un número válido de secciones');
       }
 
       for (let i = 0; i < secciones.length; i++) {
@@ -83,7 +91,7 @@ export default function CrearMateria() {
       const { data: materiaData, error: materiaError } = await supabase
         .from('materias')
         .insert([{ 
-          nombre: nombreMateria
+          codigo: codigoMateria
         }])
         .select()
         .single();
@@ -104,12 +112,12 @@ export default function CrearMateria() {
 
       if (seccionesError) throw seccionesError;
 
-      setSuccess('Materia creada exitosamente con sus secciones!');
+      setSuccess('Secciones creadas exitosamente!');
       setTimeout(() => {
         navigate('/materias');
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear la materia');
+      setError(err instanceof Error ? err.message : 'Error al crear las secciones');
       console.error('Error detallado:', err);
     } finally {
       setIsSubmitting(false);
@@ -122,7 +130,7 @@ export default function CrearMateria() {
       
       <div className="crear-materia-container">
         <div className="header-section">
-          <h1 className="main-title">Crear Materia</h1>
+          <h1 className="main-title">Apertura de Secciones</h1>
           <p className="subtitle">Organiza el aprendizaje de tus estudiantes</p>
         </div>
 
@@ -142,16 +150,16 @@ export default function CrearMateria() {
 
             <form onSubmit={handleSubmit} className="crear-materia-form">
               <div className="form-group">
-                <label htmlFor="nombreMateria" className="form-label">
-                  <FaBook /> Nombre de la Materia:
+                <label htmlFor="codigoMateria" className="form-label">
+                  <FaBook /> Código de la Materia:
                 </label>
                 <input
                   type="text"
-                  id="nombreMateria"
-                  value={nombreMateria}
-                  onChange={(e) => setNombreMateria(e.target.value)}
+                  id="codigoMateria"
+                  value={codigoMateria}
+                  onChange={(e) => setCodigoMateria(e.target.value)}
                   className="form-input"
-                  placeholder="Ej: Matemáticas Avanzadas"
+                  placeholder="Ej: MAT-101"
                 />
               </div>
 
@@ -159,16 +167,15 @@ export default function CrearMateria() {
                 <label htmlFor="numeroSecciones" className="form-label">
                   Número de Secciones:
                 </label>
-                <select
+                <input
+                  type="text"
                   id="numeroSecciones"
                   value={numeroSecciones}
                   onChange={handleNumeroSeccionesChange}
-                  className="form-select"
-                >
-                  {[1, 2, 3, 4, 5].map(num => (
-                    <option key={num} value={num}>{num}</option>
-                  ))}
-                </select>
+                  className="form-input"
+                  placeholder="Ej: 2"
+                  inputMode="numeric"
+                />
               </div>
 
               {secciones.map((seccion, index) => (
@@ -228,10 +235,10 @@ export default function CrearMateria() {
               <button 
                 type="submit" 
                 className="submit-button"
-                disabled={isSubmitting}
+                disabled={isSubmitting || secciones.length === 0}
               >
                 {isSubmitting ? <FaSpinner className="spinner" /> : <FaSave />}
-                {isSubmitting ? ' Creando...' : ' Crear Materia'}
+                {isSubmitting ? ' Creando...' : ' Crear Secciones'}
               </button>
             </form>
           </div>
