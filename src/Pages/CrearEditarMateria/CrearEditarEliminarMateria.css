@@ -1,5 +1,5 @@
 /* Estilos generales */
-.crear-editar-materia-page {
+.crear-editar-eliminar-materia-page {
   font-family: 'Montserrat', sans-serif;
   background-color: #f67e08;
   color: #1e1e1e;
@@ -9,13 +9,13 @@
 }
 
 /* Contenedor principal */
-.crear-editar-materia-container {
+.crear-editar-eliminar-materia-container {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #f5f5f5;
   padding: 20px;
+  background-color: #f5f5f5;
 }
 
 .header-section {
@@ -47,7 +47,7 @@
 }
 
 /* Estilos de la tarjeta */
-.crear-editar-materia-card {
+.crear-editar-eliminar-materia-card {
   width: 100%;
   background: white;
   border-radius: 12px;
@@ -85,7 +85,7 @@
   color: #f67e08;
 }
 
-.crear-editar-materia-form {
+.crear-editar-eliminar-materia-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -121,6 +121,30 @@
   border-color: #f67e08;
 }
 
+.separator {
+  text-align: center;
+  margin: 1rem 0;
+  color: #666;
+  font-weight: 600;
+  position: relative;
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+  margin: auto;
+}
+
+.separator::before {
+  margin-right: 10px;
+}
+
+.separator::after {
+  margin-left: 10px;
+}
+
 .submit-button {
   background-color: #f67e08;
   color: white;
@@ -138,8 +162,16 @@
   margin-top: 1rem;
 }
 
+.submit-button.delete-button {
+  background-color: #e74c3c;
+}
+
 .submit-button:hover {
   background-color: #d46d07;
+}
+
+.submit-button.delete-button:hover {
+  background-color: #c0392b;
 }
 
 .submit-button:disabled {
@@ -177,7 +209,7 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .crear-editar-materia-container {
+  .crear-editar-eliminar-materia-container {
     padding: 15px;
   }
 
@@ -189,7 +221,7 @@
     font-size: 1.1rem;
   }
 
-  .crear-editar-materia-card {
+  .crear-editar-eliminar-materia-card {
     padding: 30px 20px;
   }
 
