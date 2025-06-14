@@ -94,7 +94,7 @@ function Navbar() {
             </button>
             
             <div className="dropdown-menu">
-              <Link to="/perfil" className="dropdown-item">
+              <Link to="/crear-editar-materia" className="dropdown-item">
                 Perfil
               </Link>
               <Link 
