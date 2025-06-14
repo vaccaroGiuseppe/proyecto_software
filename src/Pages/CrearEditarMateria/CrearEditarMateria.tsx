@@ -3,7 +3,6 @@ import { supabase } from '../lib/../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import { FaBook, FaEdit, FaSave, FaSpinner, FaSearch } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import "./CrearEditarMateria.css";
 
 type Materia = {
@@ -26,7 +25,6 @@ export default function CrearEditarMateria() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [mode, setMode] = useState<'crear' | 'editar'>('crear');
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMaterias = async () => {
