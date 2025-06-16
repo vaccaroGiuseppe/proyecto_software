@@ -170,28 +170,68 @@ export default function UsuarioForm() {
 };
 
 const handleGoogleLogin = async () => {
-  setLoading(true); // Activar spinner de carga
-  setError(null); // Limpiar errores anteriores
+  setLoading(true);
+  setError(null);
 
   try {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/perfil`, // URL dinámica
+        redirectTo: `${window.location.origin}/perfil`, // Redirige directo al perfil
         queryParams: {
-          prompt: "select_account", // Fuerza selector de cuentas
-          access_type: "offline" // Para obtener refresh token
+          prompt: "select_account",
+          access_type: "offline"
         }
       }
     });
 
     if (error) throw error;
 
+    // Escuchar cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" && session?.user) {
+          // Verificar si el usuario ya existe
+          const { data: usuario, error: userError } = await supabase
+            .from('usuario')
+            .select('*')
+            .eq('id_usuario', session.user.id)
+            .maybeSingle();
+
+          if (userError) throw userError;
+
+          if (!usuario) {
+            // Extraer nombre y apellido de los datos de Google
+            const fullName = session.user.user_metadata?.full_name || '';
+            const [nombre = 'Usuario', apellido = ''] = fullName.split(' ');
+            
+            // Crear perfil con datos de Google
+            const { error: upsertError } = await supabase
+              .from('usuario')
+              .upsert({
+                id_usuario: session.user.id,
+                nombre,
+                apellido,
+                correo: session.user.email,
+                tipo: session.user.email?.endsWith('@unimet.edu.ve') ? 'profesor' : 'estudiante',
+                foto_perfil: session.user.user_metadata?.avatar_url || null,
+                fecha_creacion: new Date().toISOString(),
+                // Puedes añadir valores por defecto para otros campos
+                sexo: 'prefiero no decir'
+              });
+
+            if (upsertError) throw upsertError;
+          }
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   } catch (err) {
     setError("Error al iniciar sesión con Google");
     console.error("Error detallado:", err);
   } finally {
-    setLoading(false); // Detener spinner
+    setLoading(false);
   }
 };
 
