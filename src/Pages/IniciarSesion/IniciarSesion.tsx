@@ -4,7 +4,7 @@ import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import "./IniciarSesion.css";
 import { supabase } from '../lib/../../supabaseClient';
-import { useNavigate , Link} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const IniciarSesion = () => {
   const [formData, setFormData] = useState({
@@ -51,19 +51,20 @@ const IniciarSesion = () => {
       setLoading(false);
     }
   };
-const handleGoogleLogin = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: "http://localhost:5173/perfil"
-    }
-  });
 
-  if (error) {
-    console.error("Error al iniciar sesión con Google:", error.message);
-    alert("Ocurrió un error al iniciar sesión con Google.");
-  }
-};
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:5173/perfil"
+      }
+    });
+
+    if (error) {
+      console.error("Error al iniciar sesión con Google:", error.message);
+      setError("Ocurrió un error al iniciar sesión con Google.");
+    }
+  };
 
   return (
     <div className='IniciarSesion_Contenedor'>
@@ -77,8 +78,12 @@ const handleGoogleLogin = async () => {
 
         {error && (
           <div className="IniciarSesion_Error">
-            Error: {error}
-            <button onClick={() => setError(null)} className="IniciarSesion_Cerrar_Error">
+            <span>Error: {error}</span>
+            <button 
+              onClick={() => setError(null)} 
+              className="IniciarSesion_Cerrar_Error"
+              aria-label="Cerrar mensaje de error"
+            >
               <FaTimes />
             </button>
           </div>
@@ -96,6 +101,7 @@ const handleGoogleLogin = async () => {
                 value={formData.correo}
                 onChange={handleChange}
                 required
+                autoComplete='username'
               />
             </div>
           </div>
@@ -111,36 +117,51 @@ const handleGoogleLogin = async () => {
                 value={formData.clave}
                 onChange={handleChange}
                 required
+                autoComplete='current-password'
               />
             </div>
           </div>
+
           <div className="olvido-contrasena">
-              <Link to="/" className="olvido-contrasena-link">
-                ¿Olvidó su Contraseña?
-              </Link>
+            <Link 
+              to="/recuperar-contrasena" 
+              className="olvido-contrasena-link"
+              aria-label="Recuperar contraseña"
+            >
+              ¿Olvidó su Contraseña?
+            </Link>
           </div>
 
           <button 
             type='submit' 
             className='IniciarSesion_Boton'
             disabled={loading}
+            aria-busy={loading}
           >
             <FaSignInAlt className='Boton_Icono' />
             {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </button>
 
-          <button type="button" className="google-button" onClick={handleGoogleLogin}>
-          <img src="/googleicon.png" alt="Google" className="google-icon" />
-           Iniciar sesión con Google
-          </button>
+          <div className="google-login-wrapper">
+            <button 
+              type="button" 
+              className="google-button" 
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              aria-label="Iniciar sesión con Google"
+            >
+              <img 
+                src="/googleicon.png" 
+                alt="Logo de Google" 
+                className="google-icon" 
+                width={20}
+                height={20}
+              />
+              Iniciar sesión con Google
+            </button>
+          </div>
         </form>
-        <div className="google-login-wrapper">
-          <p style={{ textAlign: "center", margin: "1.5rem 0", fontWeight: 500 }}>
-                    </p>
-         
-        </div>
       </div>
-
 
       <div className='Home_Separador'></div>
       <div className='Centrar_Footer'>

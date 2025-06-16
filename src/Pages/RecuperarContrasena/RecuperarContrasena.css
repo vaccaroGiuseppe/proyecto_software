@@ -1,0 +1,232 @@
+/* Estilos generales */
+.RecuperarContrasena_Contenedor {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F67E08;
+}
+
+.RecuperarContrasena_Cuerpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: #f8f9fa;
+}
+
+/* Estilos del título */
+.RecuperarContrasena_Titulo_Contenedor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.RecuperarContrasena_Icono_Titulo {
+  font-size: 2.5rem;
+  color: #F67E08;
+}
+
+.RecuperarContrasena_Titulo {
+  font-size: 2.2rem;
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+.RecuperarContrasena_Instrucciones {
+  text-align: center;
+  color: #555;
+  margin-bottom: 2rem;
+  max-width: 500px;
+  padding: 0 1rem;
+}
+
+/* Estilos del formulario */
+.RecuperarContrasena_Formulario {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 1.5rem;
+}
+
+.RecuperarContrasena_Campo {
+  margin-bottom: 1.5rem;
+}
+
+.Input_Container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.Input_Icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.2rem;
+  color: #F67E08;
+  z-index: 1;
+}
+
+.RecuperarContrasena_Input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.RecuperarContrasena_Input:focus {
+  border-color: #F67E08;
+  outline: none;
+}
+
+/* Estilos del botón */
+.RecuperarContrasena_Boton {
+  width: 100%;
+  padding: 1rem;
+  background-color: #F67E08;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.RecuperarContrasena_Boton:hover {
+  background-color: #D46D07;
+  transform: translateY(-2px);
+}
+
+.RecuperarContrasena_Boton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Estilos de mensajes */
+.RecuperarContrasena_Error {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 500px;
+  width: 100%;
+}
+
+.RecuperarContrasena_Cerrar_Error {
+  background: none;
+  border: none;
+  color: #c62828;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.RecuperarContrasena_Success {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.RecuperarContrasena_Success_Content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.RecuperarContrasena_Success_Icon {
+  font-size: 3rem;
+  color: #4caf50;
+}
+
+/* Estilos del enlace volver */
+.RecuperarContrasena_Volver_Contenedor {
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.RecuperarContrasena_Volver_Link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #F67E08;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.RecuperarContrasena_Volver_Link:hover {
+  color: #D46D07;
+  text-decoration: underline;
+}
+
+.RecuperarContrasena_Volver_Icono {
+  font-size: 1rem;
+}
+
+.RecuperarContrasena_Volver {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.8rem;
+  background-color: #F67E08;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.RecuperarContrasena_Volver:hover {
+  background-color: #D46D07;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .RecuperarContrasena_Titulo {
+    font-size: 1.8rem;
+  }
+  
+  .RecuperarContrasena_Formulario,
+  .RecuperarContrasena_Success {
+    padding: 1.5rem;
+  }
+  
+  .RecuperarContrasena_Input {
+    padding: 0.8rem 0.8rem 0.8rem 2.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .RecuperarContrasena_Boton {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+  
+  .Input_Icon {
+    font-size: 1rem;
+    left: 0.8rem;
+  }
+}

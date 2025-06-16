@@ -8,7 +8,8 @@ import Perfil from "./Pages/Perfil/Perfil";
 import ConfirmacionCorreo from "./Pages/ConfirmacionCorreo/ConfirmacionCorreo";
 import AbrirSeccion from "./Pages/AbrirSeccion/AbrirSeccion";
 import CrearEditarEliminarMateria from "./Pages/CrearEditarMateria/CrearEditarEliminarMateria";
-
+import RecuperarContrasena from "./Pages/RecuperarContrasena/RecuperarContrasena";
+import ActualizarContrasena from "./Pages/RecuperarContrasena/ActualizarContrasena";
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
         <Route path="/confirmacion-correo" element={<ConfirmacionCorreo />} />
         <Route path="/abrir-seccion" element={<AbrirSeccion />} />
         <Route path="/crear-editar-eliminar-materia" element={<CrearEditarEliminarMateria />} />
+        <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
+        <Route path="/actualizar-contrasena" element={<ActualizarContrasena />} />
       </Routes>
     </Router>
   );
