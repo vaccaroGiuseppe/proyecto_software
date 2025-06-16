@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import "./AbrirSeccion.css";
 
 type Seccion = {
-  id_horario: string; // Nuevo campo para guardar el ID del horario
-  cedula_profesor: string;
+  id_horario: string;
+  id_profesor: string; // Cambiado de cedula_profesor a id_profesor para coincidir con la tabla
 };
 
 type Profesor = {
@@ -98,8 +98,8 @@ export default function AbrirSeccion() {
       
       const num = value === '' ? 0 : parseInt(value);
       if (num >= 0 && num <= 15) {
-        setSecciones(Array(num).fill({ id_horario: '', cedula_profesor: '' }).map((_, i) => 
-          secciones[i] || { id_horario: '', cedula_profesor: '' }
+        setSecciones(Array(num).fill({ id_horario: '', id_profesor: '' }).map((_, i) => 
+          secciones[i] || { id_horario: '', id_profesor: '' }
         ));
       }
     }
@@ -131,37 +131,28 @@ export default function AbrirSeccion() {
         if (!secciones[i].id_horario) {
           throw new Error(`Debes seleccionar un horario para la sección ${i + 1}`);
         }
-        if (!secciones[i].cedula_profesor) {
+        if (!secciones[i].id_profesor) {
           throw new Error(`Debes seleccionar un profesor para la sección ${i + 1}`);
         }
       }
 
-      // Insertar secciones con sus respectivos profesores y horarios
-      const seccionesToInsert = secciones.map(seccion => {
-        const horarioSeleccionado = horariosClase.find(h => h.id_horario_clase === seccion.id_horario);
-        
-        return {
-          codigo_materia: codigoMateria,
-          id_horario_clase: seccion.id_horario,
-          cedula_profesor: seccion.cedula_profesor,
-          // Incluimos los datos del horario por si los necesitas en otras consultas
-          dia_semana: horarioSeleccionado?.dia_semana,
-          hora_inicio: horarioSeleccionado?.hora_inicio,
-          hora_fin: horarioSeleccionado?.hora_fin,
-          modalidad: horarioSeleccionado?.modalidad,
-        };
-      });
+      // Insertar secciones en la tabla "seccion"
+      const seccionesToInsert = secciones.map(seccion => ({
+        codigo_materia: codigoMateria,
+        id_horario: seccion.id_horario,
+        id_profesor: seccion.id_profesor
+      }));
 
       const { error: seccionesError } = await supabase
-        .from('secciones')
+        .from('seccion') 
         .insert(seccionesToInsert);
 
       if (seccionesError) throw seccionesError;
 
       setSuccess('Secciones creadas exitosamente!');
       setTimeout(() => {
-        navigate('/materias');
-      }, 2000);
+        navigate('/');
+      }, 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear las secciones');
       console.error('Error detallado:', err);
@@ -263,7 +254,7 @@ export default function AbrirSeccion() {
                         <option value="">Seleccione un horario...</option>
                         {horariosClase.map(horario => (
                           <option key={horario.id_horario_clase} value={horario.id_horario_clase}>
-                            {horario.dia_semana} - {formatHora(horario.hora_inicio)} a {formatHora(horario.hora_fin)}, ({horario.modalidad})
+                            {horario.dia_semana} - {formatHora(horario.hora_inicio)} a {formatHora(horario.hora_fin)} ({horario.modalidad})
                           </option>
                         ))}
                       </select>
@@ -275,8 +266,8 @@ export default function AbrirSeccion() {
                       </label>
                       <select
                         id={`profesor-${index}`}
-                        value={seccion.cedula_profesor}
-                        onChange={(e) => handleSeccionChange(index, 'cedula_profesor', e.target.value)}
+                        value={seccion.id_profesor}
+                        onChange={(e) => handleSeccionChange(index, 'id_profesor', e.target.value)}
                         className="form-select"
                       >
                         <option value="">Seleccione un profesor...</option>
