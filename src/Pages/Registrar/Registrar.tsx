@@ -170,15 +170,28 @@ export default function UsuarioForm() {
 };
 
 const handleGoogleLogin = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: "http://localhost:5173/perfil" 
-    }
-  });
-  if (error) {
-    console.error("Error al iniciar sesión con Google:", error.message);
-    alert("Ocurrió un error al iniciar sesión con Google.");
+  setLoading(true); // Activar spinner de carga
+  setError(null); // Limpiar errores anteriores
+
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/perfil`, // URL dinámica
+        queryParams: {
+          prompt: "select_account", // Fuerza selector de cuentas
+          access_type: "offline" // Para obtener refresh token
+        }
+      }
+    });
+
+    if (error) throw error;
+
+  } catch (err) {
+    setError("Error al iniciar sesión con Google");
+    console.error("Error detallado:", err);
+  } finally {
+    setLoading(false); // Detener spinner
   }
 };
 
@@ -392,12 +405,30 @@ const handleGoogleLogin = async () => {
                 )}
               </button>
             </form>
+            
             <div className="google-login-wrapper">
-  <p style={{ textAlign: "center", margin: "1.5rem 0", fontWeight: 500 }}>
-  </p>
-  <button type="button" className="google-button" onClick={handleGoogleLogin}>
-    <img src="/googleicon.png" alt="Google" className="google-icon" />
-    Iniciar sesión con Google
+  
+  <button 
+    type="button" 
+    className="google-button" 
+    onClick={handleGoogleLogin}
+    disabled={loading}
+  >
+    {loading ? (
+      <>
+        <FaSpinner className="spinner" />
+        Procesando...
+      </>
+    ) : (
+      <>
+        <img 
+          src="/googleicon.png" 
+          alt="Logo de Google" 
+          className="google-icon" 
+        />
+        Registrarse con Google
+      </>
+    )}
   </button>
 </div>
 
