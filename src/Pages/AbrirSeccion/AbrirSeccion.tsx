@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-import { FaBook, FaCalendarAlt, FaClock, FaSave, FaSpinner, FaChalkboardTeacher } from 'react-icons/fa';
+import { FaBook, FaClock, FaSave, FaSpinner, FaChalkboardTeacher } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import "./AbrirSeccion.css";
 
 type Seccion = {
-  dias: string;
-  horario: string;
+  id_horario: string; // Nuevo campo para guardar el ID del horario
   cedula_profesor: string;
 };
 
@@ -23,36 +22,30 @@ type Materia = {
   nombre: string;
 };
 
+type HorarioClase = {
+  id_horario_clase: string;
+  dia_semana: string;
+  hora_inicio: string;
+  hora_fin: string;
+  modalidad: string;
+};
+
 export default function AbrirSeccion() {
   const [codigoMateria, setCodigoMateria] = useState('');
   const [numeroSecciones, setNumeroSecciones] = useState('');
   const [secciones, setSecciones] = useState<Seccion[]>([]);
   const [profesores, setProfesores] = useState<Profesor[]>([]);
   const [materias, setMaterias] = useState<Materia[]>([]);
+  const [horariosClase, setHorariosClase] = useState<HorarioClase[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loadingProfesores, setLoadingProfesores] = useState(true);
   const [loadingMaterias, setLoadingMaterias] = useState(true);
+  const [loadingHorarios, setLoadingHorarios] = useState(true);
   const navigate = useNavigate();
 
-  const diasOptions = [
-    { value: 'Lunes y Miércoles', label: 'Lunes y Miércoles' },
-    { value: 'Martes y Jueves', label: 'Martes y Jueves' },
-    { value: 'Miércoles y Viernes', label: 'Miércoles y Viernes' }
-  ];
-
-  const horarioOptions = [
-    { value: '7:00 AM - 8:30 AM', label: '7:00 AM - 8:30 AM' },
-    { value: '8:45 AM - 10:15 AM', label: '8:45 AM - 10:15 AM' },
-    { value: '10:30 AM - 12:00 PM', label: '10:30 AM - 12:00 PM' },
-    { value: '12:15 PM - 1:45 PM', label: '12:15 PM - 1:45 PM' },
-    { value: '2:00 PM - 3:30 PM', label: '2:00 PM - 3:30 PM' },
-    { value: '3:45 PM - 5:15 PM', label: '3:45 PM - 5:15 PM' },
-    { value: '5:30 PM - 7:00 PM', label: '5:30 PM - 7:00 PM' }
-  ];
-
-  // Cargar profesores y materias al iniciar
+  // Cargar profesores, materias y horarios al iniciar
   useEffect(() => {
     const cargarDatosIniciales = async () => {
       try {
@@ -75,12 +68,23 @@ export default function AbrirSeccion() {
         if (materiasError) throw materiasError;
         setMaterias(materiasData || []);
 
+        // Cargar horarios de clase
+        const { data: horariosData, error: horariosError } = await supabase
+          .from('horario_clase')
+          .select('id_horario_clase, dia_semana, hora_inicio, hora_fin, modalidad')
+          .order('dia_semana', { ascending: true })
+          .order('hora_inicio', { ascending: true });
+
+        if (horariosError) throw horariosError;
+        setHorariosClase(horariosData || []);
+
       } catch (err) {
         setError('Error al cargar los datos iniciales');
         console.error('Error al cargar datos iniciales:', err);
       } finally {
         setLoadingProfesores(false);
         setLoadingMaterias(false);
+        setLoadingHorarios(false);
       }
     };
 
@@ -94,8 +98,8 @@ export default function AbrirSeccion() {
       
       const num = value === '' ? 0 : parseInt(value);
       if (num >= 0 && num <= 15) {
-        setSecciones(Array(num).fill({ dias: '', horario: '', cedula_profesor: '' }).map((_, i) => 
-          secciones[i] || { dias: '', horario: '', cedula_profesor: '' }
+        setSecciones(Array(num).fill({ id_horario: '', cedula_profesor: '' }).map((_, i) => 
+          secciones[i] || { id_horario: '', cedula_profesor: '' }
         ));
       }
     }
@@ -124,24 +128,29 @@ export default function AbrirSeccion() {
       }
 
       for (let i = 0; i < secciones.length; i++) {
-        if (!secciones[i].dias) {
-          throw new Error(`Debes seleccionar los días para la sección ${i + 1}`);
-        }
-        if (!secciones[i].horario) {
-          throw new Error(`Debes seleccionar el horario para la sección ${i + 1}`);
+        if (!secciones[i].id_horario) {
+          throw new Error(`Debes seleccionar un horario para la sección ${i + 1}`);
         }
         if (!secciones[i].cedula_profesor) {
           throw new Error(`Debes seleccionar un profesor para la sección ${i + 1}`);
         }
       }
 
-      // Insertar secciones con sus respectivos profesores
-      const seccionesToInsert = secciones.map(seccion => ({
-        codigo_materia: codigoMateria,
-        dias: seccion.dias,
-        horario: seccion.horario,
-        cedula_profesor: seccion.cedula_profesor
-      }));
+      // Insertar secciones con sus respectivos profesores y horarios
+      const seccionesToInsert = secciones.map(seccion => {
+        const horarioSeleccionado = horariosClase.find(h => h.id_horario_clase === seccion.id_horario);
+        
+        return {
+          codigo_materia: codigoMateria,
+          id_horario_clase: seccion.id_horario,
+          cedula_profesor: seccion.cedula_profesor,
+          // Incluimos los datos del horario por si los necesitas en otras consultas
+          dia_semana: horarioSeleccionado?.dia_semana,
+          hora_inicio: horarioSeleccionado?.hora_inicio,
+          hora_fin: horarioSeleccionado?.hora_fin,
+          modalidad: horarioSeleccionado?.modalidad,
+        };
+      });
 
       const { error: seccionesError } = await supabase
         .from('secciones')
@@ -159,6 +168,11 @@ export default function AbrirSeccion() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Función para formatear la hora
+  const formatHora = (hora: string) => {
+    return new Date(`1970-01-01T${hora}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -227,9 +241,9 @@ export default function AbrirSeccion() {
                 />
               </div>
 
-              {loadingProfesores ? (
+              {loadingProfesores || loadingHorarios ? (
                 <div className="loading-profesores">
-                  <FaSpinner className="spinner" /> Cargando profesores...
+                  <FaSpinner className="spinner" /> Cargando datos...
                 </div>
               ) : (
                 secciones.map((seccion, index) => (
@@ -237,35 +251,20 @@ export default function AbrirSeccion() {
                     <h3 className="seccion-title">Sección {index + 1}</h3>
                     
                     <div className="form-group">
-                      <label htmlFor={`dias-${index}`} className="form-label">
-                        <FaCalendarAlt /> Días de Clase:
-                      </label>
-                      <select
-                        id={`dias-${index}`}
-                        value={seccion.dias}
-                        onChange={(e) => handleSeccionChange(index, 'dias', e.target.value)}
-                        className="form-select"
-                      >
-                        <option value="">Seleccione los días...</option>
-                        {diasOptions.map(option => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="form-group">
                       <label htmlFor={`horario-${index}`} className="form-label">
                         <FaClock /> Horario:
                       </label>
                       <select
                         id={`horario-${index}`}
-                        value={seccion.horario}
-                        onChange={(e) => handleSeccionChange(index, 'horario', e.target.value)}
+                        value={seccion.id_horario}
+                        onChange={(e) => handleSeccionChange(index, 'id_horario', e.target.value)}
                         className="form-select"
                       >
-                        <option value="">Seleccione el horario...</option>
-                        {horarioOptions.map(option => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
+                        <option value="">Seleccione un horario...</option>
+                        {horariosClase.map(horario => (
+                          <option key={horario.id_horario_clase} value={horario.id_horario_clase}>
+                            {horario.dia_semana} - {formatHora(horario.hora_inicio)} a {formatHora(horario.hora_fin)}, ({horario.modalidad})
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -295,7 +294,7 @@ export default function AbrirSeccion() {
               <button 
                 type="submit" 
                 className="submit-button"
-                disabled={isSubmitting || secciones.length === 0 || loadingProfesores || loadingMaterias}
+                disabled={isSubmitting || secciones.length === 0 || loadingProfesores || loadingMaterias || loadingHorarios}
               >
                 {isSubmitting ? <FaSpinner className="spinner" /> : <FaSave />}
                 {isSubmitting ? ' Creando...' : ' Crear Secciones'}
