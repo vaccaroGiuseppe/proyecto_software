@@ -4,7 +4,7 @@ import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import "./IniciarSesion.css";
 import { supabase } from '../lib/../../supabaseClient';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , Link} from 'react-router-dom';
 
 const IniciarSesion = () => {
   const [formData, setFormData] = useState({
@@ -113,6 +113,11 @@ const handleGoogleLogin = async () => {
                 required
               />
             </div>
+          </div>
+          <div className="olvido-contrasena">
+              <Link to="/" className="olvido-contrasena-link">
+                ¿Olvidó su Contraseña?
+              </Link>
           </div>
 
           <button 
