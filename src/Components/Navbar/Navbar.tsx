@@ -9,14 +9,33 @@ function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+  const [userType, setUserType] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // Verificar el estado de autenticación al cargar el componente
+  // Verificar el estado de autenticación y tipo de usuario
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuthAndUserType = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
+        const authenticated = !!session;
+        setIsAuthenticated(authenticated);
+
+        if (authenticated && session?.user?.id) {
+          // Consulta directa usando el UID de auth como id_usuario
+          const { data: userData, error } = await supabase
+            .from('usuario')
+            .select('tipo')
+            .eq('id_usuario', session.user.id)
+            .single();
+
+          if (error) {
+            console.error('Error al obtener tipo de usuario:', error);
+          } else if (userData) {
+            setUserType(userData.tipo);
+          }
+        } else {
+          setUserType(null);
+        }
       } catch (error) {
         console.error('Error al verificar autenticación:', error);
       } finally {
@@ -24,11 +43,29 @@ function Navbar() {
       }
     };
 
-    checkAuth();
+    checkAuthAndUserType();
 
     // Escuchar cambios en el estado de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_,session) => {
+      const authenticated = !!session;
+      setIsAuthenticated(authenticated);
+
+      if (authenticated && session?.user?.id) {
+        // Obtener el tipo de usuario cuando cambia la autenticación
+        const { data: userData, error } = await supabase
+          .from('usuario')
+          .select('tipo')
+          .eq('id_usuario', session.user.id)
+          .single();
+
+        if (error) {
+          console.error('Error al obtener tipo de usuario:', error);
+        } else if (userData) {
+          setUserType(userData.tipo);
+        }
+      } else {
+        setUserType(null);
+      }
     });
 
     return () => subscription?.unsubscribe();
@@ -51,7 +88,6 @@ function Navbar() {
     try {
       await supabase.auth.signOut();
       navigate('/');
-      // No necesitas navegar aquí, el listener de onAuthStateChange ya manejará el estado
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
@@ -81,6 +117,18 @@ function Navbar() {
         <Link className="Link Link_Nosotros" to="/about">
           Nosotros
         </Link>
+        
+        {/* Mostrar enlaces adicionales para admin */}
+        {isAuthenticated && userType === 'admin' && (
+          <>
+            <Link className="Link Link_Nosotros" to="/crear-editar-eliminar-materia">
+              Materias
+            </Link>
+            <Link className="Link Link_Nosotros" to="/abrir-seccion">
+              Secciones
+            </Link>
+          </>
+        )}
         
         {isAuthenticated ? (
           <div 
