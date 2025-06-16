@@ -11,3 +11,12 @@
 html {
   overflow-x: hidden; /* Evita scroll horizontal */
 }
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  font-size: 1.2rem;
+  color: #333;
+}
