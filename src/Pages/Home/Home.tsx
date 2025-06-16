@@ -14,7 +14,7 @@ import Imagen3 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_3.png";
 
 const Home = () => {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  //const [loading, setLoading] = useState(true);
   const imagenesCarrusel = [Imagen1, Imagen2, Imagen3];
 
   useEffect(() => {
@@ -38,14 +38,14 @@ const Home = () => {
       } catch (error) {
         console.error('Error al verificar estado de admin:', error);
       } finally {
-        setLoading(false);
+        //setLoading(false);
       }
     };
 
     checkAdminStatus();
 
     // Escuchar cambios en la autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_, session) => {
       if (session) {
         const { data: userData } = await supabase
           .from('usuario')
@@ -62,7 +62,7 @@ const Home = () => {
     return () => subscription?.unsubscribe();
   }, []);
 
-  if (loading) {
+  /*if (loading) {
     return (
       <div className='Home_Contenedor'>
         <Navbar />
@@ -72,7 +72,7 @@ const Home = () => {
         <Footer />
       </div>
     );
-  }
+  }*/
 
   return (
     <div className='Home_Contenedor'>
