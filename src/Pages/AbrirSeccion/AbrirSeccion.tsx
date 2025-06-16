@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
@@ -12,13 +12,28 @@ type Seccion = {
   cedula_profesor: string;
 };
 
-export default function CrearMateria() {
+type Profesor = {
+  id_usuario: string;
+  nombre: string;
+  apellido: string;
+};
+
+type Materia = {
+  codigo_materia: string;
+  nombre: string;
+};
+
+export default function AbrirSeccion() {
   const [codigoMateria, setCodigoMateria] = useState('');
   const [numeroSecciones, setNumeroSecciones] = useState('');
   const [secciones, setSecciones] = useState<Seccion[]>([]);
+  const [profesores, setProfesores] = useState<Profesor[]>([]);
+  const [materias, setMaterias] = useState<Materia[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [loadingProfesores, setLoadingProfesores] = useState(true);
+  const [loadingMaterias, setLoadingMaterias] = useState(true);
   const navigate = useNavigate();
 
   const diasOptions = [
@@ -37,15 +52,48 @@ export default function CrearMateria() {
     { value: '5:30 PM - 7:00 PM', label: '5:30 PM - 7:00 PM' }
   ];
 
+  // Cargar profesores y materias al iniciar
+  useEffect(() => {
+    const cargarDatosIniciales = async () => {
+      try {
+        // Cargar profesores
+        const { data: profesoresData, error: profesoresError } = await supabase
+          .from('usuario')
+          .select('id_usuario, nombre, apellido')
+          .eq('tipo', 'profesor')
+          .order('nombre', { ascending: true });
+
+        if (profesoresError) throw profesoresError;
+        setProfesores(profesoresData || []);
+
+        // Cargar materias
+        const { data: materiasData, error: materiasError } = await supabase
+          .from('materia')
+          .select('codigo_materia, nombre')
+          .order('nombre', { ascending: true });
+
+        if (materiasError) throw materiasError;
+        setMaterias(materiasData || []);
+
+      } catch (err) {
+        setError('Error al cargar los datos iniciales');
+        console.error('Error al cargar datos iniciales:', err);
+      } finally {
+        setLoadingProfesores(false);
+        setLoadingMaterias(false);
+      }
+    };
+
+    cargarDatosIniciales();
+  }, []);
+
   const handleNumeroSeccionesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Permitir solo números
     if (/^\d*$/.test(value)) {
       setNumeroSecciones(value);
       
-      // Convertir a número y generar las secciones
       const num = value === '' ? 0 : parseInt(value);
-      if (num >= 0 && num <= 15) { // Limitamos a 15 secciones máximo
+      if (num >= 0 && num <= 15) {
         setSecciones(Array(num).fill({ dias: '', horario: '', cedula_profesor: '' }).map((_, i) => 
           secciones[i] || { dias: '', horario: '', cedula_profesor: '' }
         ));
@@ -68,7 +116,7 @@ export default function CrearMateria() {
     try {
       // Validar campos
       if (!codigoMateria.trim()) {
-        throw new Error('El código de la materia es requerido');
+        throw new Error('Debes seleccionar una materia');
       }
 
       if (!numeroSecciones || parseInt(numeroSecciones) <= 0) {
@@ -82,25 +130,14 @@ export default function CrearMateria() {
         if (!secciones[i].horario) {
           throw new Error(`Debes seleccionar el horario para la sección ${i + 1}`);
         }
-        if (!secciones[i].cedula_profesor.trim()) {
-          throw new Error(`Debes ingresar la cédula del profesor para la sección ${i + 1}`);
+        if (!secciones[i].cedula_profesor) {
+          throw new Error(`Debes seleccionar un profesor para la sección ${i + 1}`);
         }
       }
 
-      // Insertar materia en la base de datos
-      const { data: materiaData, error: materiaError } = await supabase
-        .from('materias')
-        .insert([{ 
-          codigo: codigoMateria
-        }])
-        .select()
-        .single();
-
-      if (materiaError) throw materiaError;
-
       // Insertar secciones con sus respectivos profesores
       const seccionesToInsert = secciones.map(seccion => ({
-        id_materia: materiaData.id,
+        codigo_materia: codigoMateria,
         dias: seccion.dias,
         horario: seccion.horario,
         cedula_profesor: seccion.cedula_profesor
@@ -151,16 +188,28 @@ export default function CrearMateria() {
             <form onSubmit={handleSubmit} className="crear-materia-form">
               <div className="form-group">
                 <label htmlFor="codigoMateria" className="form-label">
-                  <FaBook /> Código de la Materia:
+                  <FaBook /> Seleccionar Materia:
                 </label>
-                <input
-                  type="text"
-                  id="codigoMateria"
-                  value={codigoMateria}
-                  onChange={(e) => setCodigoMateria(e.target.value)}
-                  className="form-input"
-                  placeholder="Ej: MAT-101"
-                />
+                {loadingMaterias ? (
+                  <div className="loading-profesores">
+                    <FaSpinner className="spinner" /> Cargando materias...
+                  </div>
+                ) : (
+                  <select
+                    id="codigoMateria"
+                    value={codigoMateria}
+                    onChange={(e) => setCodigoMateria(e.target.value)}
+                    className="form-select"
+                    disabled={loadingMaterias}
+                  >
+                    <option value="">Seleccione una materia...</option>
+                    {materias.map((materia) => (
+                      <option key={materia.codigo_materia} value={materia.codigo_materia}>
+                        {materia.nombre} ({materia.codigo_materia})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div className="form-group">
@@ -178,64 +227,75 @@ export default function CrearMateria() {
                 />
               </div>
 
-              {secciones.map((seccion, index) => (
-                <div key={index} className="seccion-group">
-                  <h3 className="seccion-title">Sección {index + 1}</h3>
-                  
-                  <div className="form-group">
-                    <label htmlFor={`dias-${index}`} className="form-label">
-                      <FaCalendarAlt /> Días de Clase:
-                    </label>
-                    <select
-                      id={`dias-${index}`}
-                      value={seccion.dias}
-                      onChange={(e) => handleSeccionChange(index, 'dias', e.target.value)}
-                      className="form-select"
-                    >
-                      <option value="">Seleccione los días...</option>
-                      {diasOptions.map(option => (
-                        <option key={option.value} value={option.value}>{option.label}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor={`horario-${index}`} className="form-label">
-                      <FaClock /> Horario:
-                    </label>
-                    <select
-                      id={`horario-${index}`}
-                      value={seccion.horario}
-                      onChange={(e) => handleSeccionChange(index, 'horario', e.target.value)}
-                      className="form-select"
-                    >
-                      <option value="">Seleccione el horario...</option>
-                      {horarioOptions.map(option => (
-                        <option key={option.value} value={option.value}>{option.label}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor={`cedula-${index}`} className="form-label">
-                      <FaChalkboardTeacher /> Cédula del Profesor:
-                    </label>
-                    <input
-                      type="text"
-                      id={`cedula-${index}`}
-                      value={seccion.cedula_profesor}
-                      onChange={(e) => handleSeccionChange(index, 'cedula_profesor', e.target.value)}
-                      className="form-input"
-                      placeholder={`Cédula profesor sección ${index + 1}`}
-                    />
-                  </div>
+              {loadingProfesores ? (
+                <div className="loading-profesores">
+                  <FaSpinner className="spinner" /> Cargando profesores...
                 </div>
-              ))}
+              ) : (
+                secciones.map((seccion, index) => (
+                  <div key={index} className="seccion-group">
+                    <h3 className="seccion-title">Sección {index + 1}</h3>
+                    
+                    <div className="form-group">
+                      <label htmlFor={`dias-${index}`} className="form-label">
+                        <FaCalendarAlt /> Días de Clase:
+                      </label>
+                      <select
+                        id={`dias-${index}`}
+                        value={seccion.dias}
+                        onChange={(e) => handleSeccionChange(index, 'dias', e.target.value)}
+                        className="form-select"
+                      >
+                        <option value="">Seleccione los días...</option>
+                        {diasOptions.map(option => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor={`horario-${index}`} className="form-label">
+                        <FaClock /> Horario:
+                      </label>
+                      <select
+                        id={`horario-${index}`}
+                        value={seccion.horario}
+                        onChange={(e) => handleSeccionChange(index, 'horario', e.target.value)}
+                        className="form-select"
+                      >
+                        <option value="">Seleccione el horario...</option>
+                        {horarioOptions.map(option => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor={`profesor-${index}`} className="form-label">
+                        <FaChalkboardTeacher /> Profesor:
+                      </label>
+                      <select
+                        id={`profesor-${index}`}
+                        value={seccion.cedula_profesor}
+                        onChange={(e) => handleSeccionChange(index, 'cedula_profesor', e.target.value)}
+                        className="form-select"
+                      >
+                        <option value="">Seleccione un profesor...</option>
+                        {profesores.map(profesor => (
+                          <option key={profesor.id_usuario} value={profesor.id_usuario}>
+                            {profesor.nombre} {profesor.apellido} 
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                ))
+              )}
 
               <button 
                 type="submit" 
                 className="submit-button"
-                disabled={isSubmitting || secciones.length === 0}
+                disabled={isSubmitting || secciones.length === 0 || loadingProfesores || loadingMaterias}
               >
                 {isSubmitting ? <FaSpinner className="spinner" /> : <FaSave />}
                 {isSubmitting ? ' Creando...' : ' Crear Secciones'}
