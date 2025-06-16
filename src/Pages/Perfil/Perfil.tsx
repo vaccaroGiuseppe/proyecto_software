@@ -7,12 +7,15 @@ import "./Perfil.css";
 import { useNavigate } from 'react-router-dom';
 
 type UserProfileData = {
+  id_usuario?: string;
   nombre: string;
   apellido: string;
   correo: string;
   tipo: string;
   foto_perfil: string | null;
   fecha_creacion: string;
+  fecha_nacimiento?: string;
+  sexo?: string;
 };
 
 export default function Perfil() {
@@ -28,44 +31,80 @@ export default function Perfil() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchOrCreateProfile = async () => {
       try {
-        // 1. Obtener la sesión actual
+        setLoading(true);
+        setError(null);
+        
+        // 1. Obtener sesión activa
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError || !session) {
-          throw new Error(sessionError?.message || 'No hay sesión activa');
+          navigate('/iniciarsesion');
+          return;
         }
 
-        // 2. Obtener datos del usuario desde la tabla 'usuario'
-        const { data: userProfile, error: profileError } = await supabase
+        // 2. Verificar si existe en la tabla 'usuario'
+        const { data: existingProfile, error: fetchError } = await supabase
           .from('usuario')
-          .select('nombre, apellido, correo, tipo, foto_perfil, fecha_creacion')
+          .select('*')
           .eq('id_usuario', session.user.id)
-          .single();
+          .maybeSingle();
 
-        if (profileError) throw profileError;
+        if (fetchError) throw fetchError;
 
-        // 3. Actualizar el estado con los datos
-        setUserData({
-          nombre: userProfile.nombre,
-          apellido: userProfile.apellido,
-          correo: userProfile.correo,
-          tipo: userProfile.tipo,
-          foto_perfil: userProfile.foto_perfil,
-          fecha_creacion: userProfile.fecha_creacion
-        });
+        // 3. Si NO existe, crear perfil automáticamente
+        if (!existingProfile) {
+          // Extraer datos de Google Auth si están disponibles
+          const fullName = session.user.user_metadata?.full_name || 'Usuario';
+          const [nombre, apellido = ''] = fullName.split(' ');
+          
+          const profileData = {
+            id_usuario: session.user.id,
+            nombre: nombre || 'Usuario',
+            apellido,
+            correo: session.user.email || '',
+            tipo: session.user.email?.endsWith('@unimet.edu.ve') ? 'profesor' : 'estudiante',
+            foto_perfil: session.user.user_metadata?.avatar_url || null,
+            fecha_creacion: new Date().toISOString(),
+            sexo: 'prefiero no decir'
+          };
+
+          const { error: upsertError } = await supabase
+            .from('usuario')
+            .upsert(profileData);
+
+          if (upsertError) throw upsertError;
+          
+          // Actualizar estado local con los nuevos datos
+          setUserData(profileData);
+        } else {
+          // Si ya existe, mostrar los datos
+          setUserData(existingProfile);
+        }
 
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error al cargar datos del perfil');
-        console.error('Error detallado:', err);
+        setError("Error al cargar el perfil");
+        console.error("Error detallado:", err);
         navigate('/iniciarsesion');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
+    fetchOrCreateProfile();
+
+    // Escuchar cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/iniciarsesion');
+      }
+      if (event === 'SIGNED_IN') {
+        fetchOrCreateProfile(); // Recargar al iniciar sesión
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const startEditingName = () => {
@@ -84,6 +123,8 @@ export default function Perfil() {
     if (!userData) return;
 
     setIsUpdating(true);
+    setError(null);
+    
     try {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
@@ -91,11 +132,16 @@ export default function Perfil() {
         throw new Error(sessionError?.message || 'No hay sesión activa');
       }
 
+      // Validar campos
+      if (!tempNombre.trim()) {
+        throw new Error('El nombre no puede estar vacío');
+      }
+
       const { error: updateError } = await supabase
         .from('usuario')
         .update({ 
-          nombre: tempNombre,
-          apellido: tempApellido
+          nombre: tempNombre.trim(),
+          apellido: tempApellido.trim()
         })
         .eq('id_usuario', session.user.id);
 
@@ -104,8 +150,8 @@ export default function Perfil() {
       // Actualizar el estado local
       setUserData({
         ...userData,
-        nombre: tempNombre,
-        apellido: tempApellido
+        nombre: tempNombre.trim(),
+        apellido: tempApellido.trim()
       });
 
       setEditingName(false);
@@ -123,11 +169,20 @@ export default function Perfil() {
     }
 
     const file = e.target.files[0];
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
+    
+    // Validaciones de archivo
+    if (!file.type.startsWith('image/')) {
+      setError('Por favor, selecciona un archivo de imagen válido');
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+      setError('La imagen no puede superar los 5MB');
+      return;
+    }
 
     setIsUploading(true);
+    setError(null);
 
     try {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -136,10 +191,18 @@ export default function Perfil() {
         throw new Error(sessionError?.message || 'No hay sesión activa');
       }
 
+      // Generar nombre único para el archivo
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
       // 1. Subir la imagen al bucket de Supabase
       const { error: uploadError } = await supabase.storage
-        .from('avatars') // Asegúrate de que este bucket existe en tu almacenamiento de Supabase
-        .upload(filePath, file);
+        .from('avatars')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) throw uploadError;
 
@@ -167,6 +230,9 @@ export default function Perfil() {
       console.error('Error detallado:', err);
     } finally {
       setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -179,6 +245,7 @@ export default function Perfil() {
       <div className="perfil-page">
         <Navbar />
         <div className="perfil-loading">
+          <FaSpinner className="spinner" />
           <p>Cargando perfil...</p>
         </div>
         <Footer />
@@ -192,6 +259,7 @@ export default function Perfil() {
         <Navbar />
         <div className="perfil-error">
           <p>No se pudieron cargar los datos del perfil</p>
+          {error && <p className="error-detail">{error}</p>}
         </div>
         <Footer />
       </div>
@@ -215,7 +283,10 @@ export default function Perfil() {
             
             {error && (
               <div className="alert-message error-message">
-                Error: {error}
+                {error}
+                <button onClick={() => setError(null)} className="close-alert">
+                  <FaTimes />
+                </button>
               </div>
             )}
 
@@ -232,6 +303,7 @@ export default function Perfil() {
                       className="change-avatar-button"
                       onClick={triggerFileInput}
                       disabled={isUploading}
+                      aria-label="Cambiar foto de perfil"
                     >
                       {isUploading ? <FaSpinner className="spinner" /> : <FaCamera />}
                     </button>
@@ -240,6 +312,7 @@ export default function Perfil() {
                   <div 
                     className="perfil-avatar-placeholder"
                     onClick={triggerFileInput}
+                    aria-label="Agregar foto de perfil"
                   >
                     <FaUser />
                     <div className="camera-icon">
@@ -268,6 +341,7 @@ export default function Perfil() {
                           onChange={(e) => setTempNombre(e.target.value)}
                           className="edit-input"
                           placeholder="Nombre"
+                          aria-label="Editar nombre"
                         />
                         <input
                           type="text"
@@ -275,6 +349,7 @@ export default function Perfil() {
                           onChange={(e) => setTempApellido(e.target.value)}
                           className="edit-input"
                           placeholder="Apellido"
+                          aria-label="Editar apellido"
                         />
                       </div>
                       <div className="edit-buttons">
@@ -282,6 +357,7 @@ export default function Perfil() {
                           onClick={saveNameChanges} 
                           className="save-button"
                           disabled={isUpdating}
+                          aria-label="Guardar cambios"
                         >
                           {isUpdating ? <FaSpinner className="spinner" /> : <FaSave />}
                         </button>
@@ -289,6 +365,7 @@ export default function Perfil() {
                           onClick={cancelEditingName} 
                           className="cancel-button"
                           disabled={isUpdating}
+                          aria-label="Cancelar edición"
                         >
                           <FaTimes />
                         </button>
@@ -300,6 +377,7 @@ export default function Perfil() {
                       <button 
                         className="edit-button"
                         onClick={startEditingName}
+                        aria-label="Editar nombre"
                       >
                         <FaEdit />
                       </button>
@@ -329,6 +407,27 @@ export default function Perfil() {
                   <span className="detail-label">Miembro desde:</span>
                   <span className="detail-value">{formattedDate}</span>
                 </div>
+
+                {/* Sección para campos adicionales (fecha_nacimiento, sexo) */}
+                {userData.fecha_nacimiento && (
+                  <div className="perfil-detail">
+                    <span className="detail-label">Fecha de nacimiento:</span>
+                    <span className="detail-value">
+                      {new Date(userData.fecha_nacimiento).toLocaleDateString('es-ES')}
+                    </span>
+                  </div>
+                )}
+
+                {userData.sexo && (
+                  <div className="perfil-detail">
+                    <span className="detail-label">Sexo:</span>
+                    <span className="detail-value">
+                      {userData.sexo === 'masculino' ? 'Masculino' : 
+                       userData.sexo === 'femenino' ? 'Femenino' : 
+                       userData.sexo === 'otro' ? 'Otro' : 'Prefiero no decir'}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
