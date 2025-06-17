@@ -10,6 +10,7 @@ import AbrirSeccion from "./Pages/AbrirSeccion/AbrirSeccion";
 import CrearEditarEliminarMateria from "./Pages/CrearEditarMateria/CrearEditarEliminarMateria";
 import RecuperarContrasena from "./Components/RecuperarContrasena/RecuperarContrasena";
 import ActualizarContrasena from "./Components/RecuperarContrasena/ActualizarContrasena";
+import AsignarSalon from "./Pages/AsignarSalon/AsignarSalon";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/crear-editar-eliminar-materia" element={<CrearEditarEliminarMateria />} />
         <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
         <Route path="/actualizar-contrasena" element={<ActualizarContrasena />} />
+        <Route path="/asignar-salon" element={<AsignarSalon />} />
       </Routes>
     </Router>
   );
