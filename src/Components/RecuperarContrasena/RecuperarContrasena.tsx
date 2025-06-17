@@ -37,6 +37,7 @@ const RecuperarContrasena = () => {
       console.error('Error detallado:', err);
     } finally {
       setLoading(false);
+      supabase.auth.signOut().finally()
     }
   };
 
