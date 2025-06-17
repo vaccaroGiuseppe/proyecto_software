@@ -3,17 +3,17 @@ import { FaSignInAlt, FaEnvelope, FaLock, FaTimes } from 'react-icons/fa';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import "./IniciarSesion.css";
-import { supabase } from '../lib/../../supabaseClient';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const IniciarSesion = () => {
   const [formData, setFormData] = useState({
     correo: '',
     clave: ''
   });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { loginWithEmail, loginWithGoogle, loading } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,44 +25,17 @@ const IniciarSesion = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-
+    
     try {
       if (!formData.correo.endsWith('@unimet.edu.ve') && !formData.correo.endsWith('@correo.unimet.edu.ve')) {
         throw new Error('Debe usar un correo institucional UNIMET');
       }
 
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email: formData.correo,
-        password: formData.clave
-      });
-
-      if (authError) {
-        throw new Error(authError.message);
-      }
-
+      await loginWithEmail(formData.correo, formData.clave);
       navigate('/');
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocurrió un error durante el inicio de sesión');
       console.error('Error detallado:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: "http://localhost:5173/perfil"
-      }
-    });
-
-    if (error) {
-      console.error("Error al iniciar sesión con Google:", error.message);
-      setError("Ocurrió un error al iniciar sesión con Google.");
     }
   };
 
@@ -146,7 +119,7 @@ const IniciarSesion = () => {
             <button 
               type="button" 
               className="google-button" 
-              onClick={handleGoogleLogin}
+              onClick={loginWithGoogle}
               disabled={loading}
               aria-label="Iniciar sesión con Google"
             >

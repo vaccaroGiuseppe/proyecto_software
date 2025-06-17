@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import { useForm } from "react-hook-form";
-import { supabase } from '../lib/../../supabaseClient';
+import { supabase } from '../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import { FaUserEdit, FaEye, FaEyeSlash, FaCalendarAlt, FaVenusMars, FaCamera, FaTimes, FaSpinner } from 'react-icons/fa';
 import "./Registrar.css";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 type UsuarioFormData = {
   nombre: string;
@@ -22,7 +23,6 @@ type UsuarioFormData = {
 };
 
 export default function UsuarioForm() {
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<UsuarioFormData>();
@@ -33,6 +33,7 @@ export default function UsuarioForm() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { signUp, loginWithGoogle, loading: authLoading } = useAuth();
 
   const determinarTipoUsuario = (correo: string): string => {
     const profesor = /@unimet\.edu\.ve$/i;
@@ -81,14 +82,12 @@ export default function UsuarioForm() {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // 1. Subir la imagen al bucket de Supabase
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      // 2. Obtener la URL pública de la imagen
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
@@ -102,51 +101,30 @@ export default function UsuarioForm() {
   };
 
   const onSubmit = async (formData: UsuarioFormData) => {
-    setLoading(true);
     setError(null);
     
     try {
-      // 1. Validar que las contraseñas coincidan
       if (formData.contrasena !== formData.confirmar_contrasena) {
         throw new Error('Las contraseñas no coinciden');
       }
 
-      // 2. Subir imagen si existe
       let imageUrl = null;
       if (previewImage && fileInputRef.current?.files?.[0]) {
         imageUrl = await uploadImageToSupabase(fileInputRef.current.files[0]);
       }
 
-      // 3. Registrar usuario en Auth de Supabase
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.correo,
-        password: formData.contrasena,
-        options: {
-          data: {
-            nombre: formData.nombre,
-            apellido: formData.apellido,
-          }
-        }
-      });
-
-      if (authError) throw new Error(authError.message);
-
-      // 4. Insertar datos adicionales en la tabla usuario
-      const { error: insertError } = await supabase
-        .from('usuario')
-        .insert([{
-          id_usuario: authData.user?.id,
+      await signUp(
+        formData.correo,
+        formData.contrasena,
+        {
           nombre: formData.nombre,
           apellido: formData.apellido,
-          correo: formData.correo,
           tipo: formData.tipo,
-          fecha_creacion: new Date().toISOString(),
           fecha_nacimiento: startDate?.toISOString(),
           sexo: formData.sexo,
           foto_perfil: imageUrl
-        }]);
-
-      if (insertError) throw new Error(insertError.message);
+        }
+      );
 
       setSuccess(true);
       reset();
@@ -160,81 +138,14 @@ export default function UsuarioForm() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');
       console.error('Error detallado:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
   const triggerFileInput = () => {
-  fileInputRef.current?.click();
-};
+    fileInputRef.current?.click();
+  };
 
-const handleGoogleLogin = async () => {
-  setLoading(true);
-  setError(null);
-
-  try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/perfil`, // Redirige directo al perfil
-        queryParams: {
-          prompt: "select_account",
-          access_type: "offline"
-        }
-      }
-    });
-
-    if (error) throw error;
-
-    // Escuchar cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "SIGNED_IN" && session?.user) {
-          // Verificar si el usuario ya existe
-          const { data: usuario, error: userError } = await supabase
-            .from('usuario')
-            .select('*')
-            .eq('id_usuario', session.user.id)
-            .maybeSingle();
-
-          if (userError) throw userError;
-
-          if (!usuario) {
-            // Extraer nombre y apellido de los datos de Google
-            const fullName = session.user.user_metadata?.full_name || '';
-            const [nombre = 'Usuario', apellido = ''] = fullName.split(' ');
-            
-            // Crear perfil con datos de Google
-            const { error: upsertError } = await supabase
-              .from('usuario')
-              .upsert({
-                id_usuario: session.user.id,
-                nombre,
-                apellido,
-                correo: session.user.email,
-                tipo: session.user.email?.endsWith('@unimet.edu.ve') ? 'profesor' : 'estudiante',
-                foto_perfil: session.user.user_metadata?.avatar_url || null,
-                fecha_creacion: new Date().toISOString(),
-                // Puedes añadir valores por defecto para otros campos
-                sexo: 'prefiero no decir'
-              });
-
-            if (upsertError) throw upsertError;
-          }
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  } catch (err) {
-    setError("Error al iniciar sesión con Google");
-    console.error("Error detallado:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  const loading = authLoading || isUploadingImage;
 
   return (
     <div className='registro-page'>
@@ -447,31 +358,29 @@ const handleGoogleLogin = async () => {
             </form>
             
             <div className="google-login-wrapper">
-  
-  <button 
-    type="button" 
-    className="google-button" 
-    onClick={handleGoogleLogin}
-    disabled={loading}
-  >
-    {loading ? (
-      <>
-        <FaSpinner className="spinner" />
-        Procesando...
-      </>
-    ) : (
-      <>
-        <img 
-          src="/googleicon.png" 
-          alt="Logo de Google" 
-          className="google-icon" 
-        />
-        Registrarse con Google
-      </>
-    )}
-  </button>
-</div>
-
+              <button 
+                type="button" 
+                className="google-button" 
+                onClick={loginWithGoogle}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <FaSpinner className="spinner" />
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    <img 
+                      src="/googleicon.png" 
+                      alt="Logo de Google" 
+                      className="google-icon" 
+                    />
+                    Registrarse con Google
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
