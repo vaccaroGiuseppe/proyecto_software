@@ -8,8 +8,8 @@ import Perfil from "./Pages/Perfil/Perfil";
 import ConfirmacionCorreo from "./Pages/ConfirmacionCorreo/ConfirmacionCorreo";
 import AbrirSeccion from "./Pages/AbrirSeccion/AbrirSeccion";
 import CrearEditarEliminarMateria from "./Pages/CrearEditarMateria/CrearEditarEliminarMateria";
-import RecuperarContrasena from "./Pages/RecuperarContrasena/RecuperarContrasena";
-import ActualizarContrasena from "./Pages/RecuperarContrasena/ActualizarContrasena";
+import RecuperarContrasena from "./Components/RecuperarContrasena/RecuperarContrasena";
+import ActualizarContrasena from "./Components/RecuperarContrasena/ActualizarContrasena";
 
 function App() {
   return (

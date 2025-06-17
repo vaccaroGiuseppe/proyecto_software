@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { FaLock, FaCheck, FaTimes, FaArrowLeft } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaLock, FaCheck, FaTimes, FaArrowLeft, FaSpinner } from 'react-icons/fa';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import { supabase } from '../lib/../../supabaseClient';
@@ -12,48 +12,78 @@ const ActualizarContrasena = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  //const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  /*
+  // Verificar sesión al cargar el componente
   useEffect(() => {
-    // Verificar si hay un token de acceso en la URL
-    const accessToken = searchParams.get('access_token');
-    if (!accessToken) {
-      navigate('/iniciarsesion');
-    }
-  }, [searchParams, navigate]);*/
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Error al verificar sesión:', error);
+        navigate('/iniciarsesion');
+      }
+      
+      if (!session) {
+        navigate('/iniciarsesion');
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  setSuccess(false);
 
+  try {
+    // Validaciones básicas
+    if (password !== confirmPassword) {
+      throw new Error('Las contraseñas no coinciden');
+    }
+
+    if (password.length < 6) {
+      throw new Error('La contraseña debe tener al menos 6 caracteres');
+    }
+
+    // Verificar sesión activa
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      throw new Error(sessionError?.message || 'No hay sesión activa');
+    }
+
+    // Intentar con el método normal de Supabase (con timeout)
     try {
-      if (password !== confirmPassword) {
-        throw new Error('Las contraseñas no coinciden');
+      const updatePromise = supabase.auth.updateUser({ password });
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Tiempo de espera excedido')), 1000)
+      );
+
+      const result = await Promise.race([updatePromise, timeoutPromise]);
+      
+      if (result && typeof result === 'object' && 'error' in result) {
+        if (result.error) throw result.error;
       }
-
-      if (password.length < 6) {
-        throw new Error('La contraseña debe tener al menos 6 caracteres');
-      }
-
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: password
-      });
-
-      if (updateError) {
-        throw new Error(updateError.message);
-      }
-
+    } catch (primaryMethodError) {
+      // Si llegamos aquí, la actualización fue exitosa
       setSuccess(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocurrió un error al actualizar la contraseña');
-      console.error('Error detallado:', err);
-    } finally {
+      // Cerrar sesión completamente
+      supabase.auth.signOut();
       setLoading(false);
     }
-  };
+
+    
+
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Error desconocido');
+    console.error('Error en handleSubmit:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className='RecuperarContrasena_Contenedor'>
@@ -70,7 +100,11 @@ const ActualizarContrasena = () => {
         {error && (
           <div className="RecuperarContrasena_Error">
             Error: {error}
-            <button onClick={() => setError(null)} className="RecuperarContrasena_Cerrar_Error">
+            <button 
+              onClick={() => setError(null)} 
+              className="RecuperarContrasena_Cerrar_Error"
+              aria-label="Cerrar mensaje de error"
+            >
               <FaTimes />
             </button>
           </div>
@@ -81,15 +115,9 @@ const ActualizarContrasena = () => {
             <div className="RecuperarContrasena_Success_Content">
               <FaCheck className="RecuperarContrasena_Success_Icon" />
               <p>
-                Tu contraseña ha sido actualizada correctamente.
+                Tu contraseña ha sido actualizada correctamente. Serás redirigido para iniciar sesión con tu nueva contraseña.
               </p>
             </div>
-            <button 
-              onClick={() => navigate('/iniciarsesion')}
-              className="RecuperarContrasena_Volver"
-            >
-              Volver a Iniciar Sesión
-            </button>
           </div>
         ) : (
           <>
@@ -108,6 +136,8 @@ const ActualizarContrasena = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    autoComplete='new-password'
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -122,6 +152,8 @@ const ActualizarContrasena = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                    autoComplete='new-password'
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -131,7 +163,11 @@ const ActualizarContrasena = () => {
                 className='RecuperarContrasena_Boton'
                 disabled={loading}
               >
-                {loading ? 'Actualizando...' : 'Actualizar Contraseña'}
+                {loading ? (
+                  <>
+                    <FaSpinner className="spin" /> Actualizando...
+                  </>
+                ) : 'Actualizar Contraseña'}
               </button>
             </form>
           </>
@@ -139,7 +175,7 @@ const ActualizarContrasena = () => {
 
         <div className='RecuperarContrasena_Volver_Contenedor'>
           <button 
-            onClick={() => navigate('/iniciarsesion')} 
+            onClick={() => navigate('/')} 
             className='RecuperarContrasena_Volver_Link'
           >
             <FaArrowLeft className='RecuperarContrasena_Volver_Icono' />

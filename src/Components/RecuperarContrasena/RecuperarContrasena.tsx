@@ -3,7 +3,7 @@ import { FaEnvelope, FaArrowLeft, FaCheck, FaTimes } from 'react-icons/fa';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import { supabase } from '../../supabaseClient';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import "./RecuperarContrasena.css";
 
 const RecuperarContrasena = () => {
@@ -24,7 +24,7 @@ const RecuperarContrasena = () => {
       }
 
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'http://localhost:5173/actualizar-contrasena',
+        redirectTo: `${window.location.origin}/actualizar-contrasena`,
       });
 
       if (resetError) {
@@ -55,7 +55,11 @@ const RecuperarContrasena = () => {
         {error && (
           <div className="RecuperarContrasena_Error">
             Error: {error}
-            <button onClick={() => setError(null)} className="RecuperarContrasena_Cerrar_Error">
+            <button 
+              onClick={() => setError(null)} 
+              className="RecuperarContrasena_Cerrar_Error"
+              aria-label="Cerrar mensaje de error"
+            >
               <FaTimes />
             </button>
           </div>
@@ -73,6 +77,7 @@ const RecuperarContrasena = () => {
             <button 
               onClick={() => navigate('/iniciarsesion')}
               className="RecuperarContrasena_Volver"
+              disabled={loading}
             >
               Volver a Iniciar Sesión
             </button>
@@ -94,6 +99,7 @@ const RecuperarContrasena = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -103,17 +109,27 @@ const RecuperarContrasena = () => {
                 className='RecuperarContrasena_Boton'
                 disabled={loading}
               >
-                {loading ? 'Enviando...' : 'Enviar Enlace'}
+                {loading ? (
+                  <span className="loading-indicator">
+                    <span className="loading-dot">.</span>
+                    <span className="loading-dot">.</span>
+                    <span className="loading-dot">.</span>
+                  </span>
+                ) : 'Enviar Enlace'}
               </button>
             </form>
           </>
         )}
 
         <div className='RecuperarContrasena_Volver_Contenedor'>
-          <Link to="/iniciarsesion" className='RecuperarContrasena_Volver_Link'>
+          <button 
+            onClick={() => navigate('/iniciarsesion')} 
+            className='RecuperarContrasena_Volver_Link'
+            disabled={loading}
+          >
             <FaArrowLeft className='RecuperarContrasena_Volver_Icono' />
             Volver a Iniciar Sesión
-          </Link>
+          </button>
         </div>
       </div>
       <div className='Home_Separador'></div>

@@ -3,14 +3,14 @@ import { useRef, useEffect, useState } from "react";
 import Logo_Blanco from "../../Images/Logo_Blanco.png";
 import "./Navbar.css";
 import { supabase } from '../lib/../../supabaseClient';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate, useLocation } from 'react-router-dom';
 
 function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [userType, setUserType] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Verificar el estado de autenticación y tipo de usuario
   useEffect(() => {
@@ -38,8 +38,6 @@ function Navbar() {
         }
       } catch (error) {
         console.error('Error al verificar autenticación:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -93,18 +91,6 @@ function Navbar() {
     }
   };
 
-  if (loading) {
-    return (
-      <nav className="Navbar">
-        <div className="Navbar_Contenedor_Logo">
-          <Link to="/">
-            <img src={Logo_Blanco} alt="Logo Unimet" className="Logo" />
-          </Link>
-        </div>
-      </nav>
-    );
-  }
-
   return (
     <nav className="Navbar">
       <div className="Navbar_Contenedor_Logo">
@@ -119,7 +105,7 @@ function Navbar() {
         </Link>
         
         {/* Mostrar enlaces adicionales para admin */}
-        {isAuthenticated && userType === 'admin' && (
+        {isAuthenticated && location.pathname !== '/actualizar-contrasena'&& userType === 'admin' && (
           <>
             <Link className="Link Link_Nosotros" to="/crear-editar-eliminar-materia">
               Materias
@@ -130,7 +116,7 @@ function Navbar() {
           </>
         )}
         
-        {isAuthenticated ? (
+        {isAuthenticated && location.pathname !== '/actualizar-contrasena'? (
           <div 
             className="dropdown-container" 
             ref={dropdownRef}
