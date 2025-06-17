@@ -83,13 +83,26 @@ function Navbar() {
   };
 
   const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate('/');
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-    }
-  };
+  try {
+    // 1. Cerrar sesión en Supabase
+    const { error } = await supabase.auth.signOut();
+    
+    if (error) throw error;
+    
+    // 2. Limpiar estados locales inmediatamente
+    setIsAuthenticated(false);
+    setUserType(null);
+    
+    // 3. Redirigir a la página de inicio
+    navigate('/');
+    
+    // 4. Forzar recarga si es necesario (opcional)
+    window.location.reload();
+    
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+  }
+};
 
   return (
     <nav className="Navbar">
@@ -135,7 +148,7 @@ function Navbar() {
                 Perfil
               </Link>
               <Link 
-                to="#" 
+                to="/" 
                 className="dropdown-item" 
                 onClick={(e) => {
                   e.preventDefault();
