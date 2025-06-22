@@ -15,6 +15,7 @@ import { AuthCallback } from './context/AuthCallBack';
 import { PrivateRoute } from './Components/PrivateRoute';
 import { CompletarPerfil } from './Pages/CompletarPerfil/CompletarPerfil';
 import AsignarSalon from "./Pages/AsignarSalon/AsignarSalon";
+import GestionarMateria from "./Pages/CrearEditarMateria/CrearEditarEliminarMateria"
 
 function App() {
   return (
@@ -74,6 +75,24 @@ function App() {
               element={
                 <PrivateRoute>
                   <AsignarSalon />
+                </PrivateRoute>
+              } 
+            />
+
+            <Route 
+              path="/gestionar-materias" 
+              element={
+                <PrivateRoute>
+                  <GestionarMateria />
+                </PrivateRoute>
+              } 
+            />
+
+            <Route 
+              path="/gestionar-materias" 
+              element={
+                <PrivateRoute>
+                  <GestionarMateria />
                 </PrivateRoute>
               } 
             />

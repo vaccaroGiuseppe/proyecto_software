@@ -8,7 +8,7 @@ import "./AbrirSeccion.css";
 
 type Seccion = {
   id_horario: string;
-  id_profesor: string; // Cambiado de cedula_profesor a id_profesor para coincidir con la tabla
+  id_profesor: string; 
 };
 
 type Profesor = {

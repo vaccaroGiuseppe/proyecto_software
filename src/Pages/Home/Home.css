@@ -12,3 +12,10 @@ html {
   overflow-x: hidden; /* Evita scroll horizontal */
 }
 
+
+.loading-container {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  color: #666;
+}
