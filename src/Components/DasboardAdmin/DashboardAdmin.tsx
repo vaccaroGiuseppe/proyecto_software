@@ -1,9 +1,45 @@
-import { FaChalkboardTeacher, FaBook, FaDoorOpen } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaBook, FaDoorOpen, FaSyncAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../supabaseClient'; // Asegúrate de que la ruta sea correcta
 import './DashboardAdmin.css';
+import { useState } from 'react';
 
 function DashboardAdmin() {
   const navigate = useNavigate();
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleResetSections = async () => {
+    if (!window.confirm('¿Estás seguro que deseas vaciar todas las secciones? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+       // Verificamos primero si la tabla existe y tenemos permisos
+    const { error: fetchError } = await supabase
+      .from('seccion')
+      .select('id')
+      .limit(1);
+
+    if (fetchError) throw fetchError;
+
+    // Eliminamos todos los registros (usando .neq() como protección adicional)
+    const { error: deleteError } = await supabase
+      .from('seccion')
+      .delete()
+      .neq('id', 0); // Alternativa: .match({id: null}) si no funciona
+
+    if (deleteError) throw deleteError;
+
+    alert('✅ Todas las secciones han sido reiniciadas correctamente');
+      
+    } catch (error) {
+      console.error('Error al reiniciar secciones:', error);
+      alert('Ocurrió un error al reiniciar las secciones');
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   return (
     <div className="todoesto">
@@ -42,6 +78,20 @@ function DashboardAdmin() {
             </div>
             <h2 className="card-title">Gestionar Materias</h2>
             <p className="card-description">Crear, editar o eliminar materias académicas</p>
+          </div>
+
+          <div 
+            className={`dashboard-card ${isResetting ? 'disabled-card' : ''}`}
+            onClick={!isResetting ? handleResetSections : undefined}
+            aria-disabled={isResetting}
+          >
+            <div className="card-icon">
+              <FaSyncAlt size={60} className={isResetting ? 'spin-animation' : ''} />
+            </div>
+            <h2 className="card-title">
+              {isResetting ? 'Reiniciando...' : 'Reiniciar Secciones'}
+            </h2>
+            <p className="card-description">Vaciar todas las secciones de la base de datos</p>
           </div>
         </div>
       </div>
