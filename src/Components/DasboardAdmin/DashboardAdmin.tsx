@@ -9,37 +9,26 @@ function DashboardAdmin() {
   const [isResetting, setIsResetting] = useState(false);
 
   const handleResetSections = async () => {
-    if (!window.confirm('¿Estás seguro que deseas vaciar todas las secciones? Esta acción no se puede deshacer.')) {
-      return;
-    }
+  if (!window.confirm('¿Estás seguro que deseas vaciar todas las secciones? Esta acción no se puede deshacer.')) {
+    return;
+  }
 
-    setIsResetting(true);
-    try {
-       // Verificamos primero si la tabla existe y tenemos permisos
-    const { error: fetchError } = await supabase
-      .from('seccion')
-      .select('id')
-      .limit(1);
+  setIsResetting(true);
+  try {
+    // Solución 2: Llamar a una función RPC
+    const { error } = await supabase
+      .rpc('truncate_seccion');
 
-    if (fetchError) throw fetchError;
-
-    // Eliminamos todos los registros (usando .neq() como protección adicional)
-    const { error: deleteError } = await supabase
-      .from('seccion')
-      .delete()
-      .neq('id', 0); // Alternativa: .match({id: null}) si no funciona
-
-    if (deleteError) throw deleteError;
+    if (error) throw error;
 
     alert('✅ Todas las secciones han sido reiniciadas correctamente');
-      
-    } catch (error) {
-      console.error('Error al reiniciar secciones:', error);
-      alert('Ocurrió un error al reiniciar las secciones');
-    } finally {
-      setIsResetting(false);
-    }
-  };
+  } catch (error) {
+    console.error('Error al reiniciar secciones:', error);
+    alert('❌ Ocurrió un error al reiniciar las secciones');
+  } finally {
+    setIsResetting(false);
+  }
+};
 
   return (
     <div className="todoesto">
