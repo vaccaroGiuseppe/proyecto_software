@@ -4,7 +4,6 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #F67E08;
-  
 }
 
 .Home_Separador {
@@ -18,8 +17,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-    background-color: #f8f9fa;
-
+  background-color: #f8f9fa;
 }
 
 /* Estilos del título */
@@ -138,32 +136,29 @@
   width: 100%;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .IniciarSesion_Titulo {
-    font-size: 2.2rem;
-  }
-  
-  .IniciarSesion_Formulario {
-    padding: 1.8rem;
-  }
-  
-  .IniciarSesion_Input {
-    font-size: 1rem;
-    padding-left: 2.8rem;
-  }
-  
-  .IniciarSesion_Boton {
-    font-size: 1.1rem;
-    padding: 1rem;
-  }
-  
-  .Input_Icon {
-    font-size: 1.1rem;
-    left: 0.8rem;
-  }
+/* Estilos para el ojito */
+.password-container {
+  position: relative;
 }
 
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #777;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+}
+
+.password-toggle:hover {
+  color: #F67E08;
+}
+
+/* Google Login */
 .Google_Login_Wrapper {
   margin-top: 2rem;
   text-align: center;
@@ -197,24 +192,132 @@
   width: 24px;
   height: 24px;
 }
-/* Estilos para el ojito */
-.password-container {
-  position: relative;
+
+/* ================= RESPONSIVE ================= */
+/* Tablet (768px) */
+@media (min-width: 768px) and (max-width: 989px) {
+  .IniciarSesion_Titulo {
+    font-size: 2.4rem;
+  }
+  
+  .IniciarSesion_Formulario {
+    padding: 2rem;
+    max-width: 450px;
+  }
+  
+  .IniciarSesion_Input {
+    font-size: 1.05rem;
+  }
+  
+  .IniciarSesion_Boton {
+    font-size: 1.2rem;
+  }
 }
 
-.password-toggle {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #777;
-  font-size: 1.2rem;
-  padding: 0.5rem;
+/* Teléfonos (hasta 767px) */
+@media (max-width: 767px) {
+  .IniciarSesion_Titulo_Contenedor {
+    margin-bottom: 2rem;
+  }
+  
+  .IniciarSesion_Titulo {
+    font-size: 2.2rem;
+  }
+  
+  .IniciarSesion_Icono_Titulo {
+    font-size: 2.4rem;
+  }
+  
+  .IniciarSesion_Formulario {
+    padding: 1.8rem;
+    max-width: 400px;
+  }
+  
+  .IniciarSesion_Input {
+    font-size: 1rem;
+    padding-left: 2.8rem;
+  }
+  
+  .IniciarSesion_Boton {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+  
+  .Input_Icon {
+    font-size: 1.1rem;
+    left: 0.8rem;
+  }
+  
+  .olvido-contrasena-link {
+    font-size: 1rem;
+  }
+  
+  .Google_Button {
+    font-size: 0.95rem;
+    padding: 10px 16px;
+  }
 }
 
-.password-toggle:hover {
-  color: #F67E08;
+/* Computadoras (990px en adelante) */
+@media (min-width: 990px) {
+  .IniciarSesion_Formulario {
+    max-width: 520px;
+    padding: 3rem;
+  }
+  
+  .IniciarSesion_Titulo {
+    font-size: 2.8rem;
+  }
+  
+  .IniciarSesion_Icono_Titulo {
+    font-size: 3rem;
+  }
+  
+  .IniciarSesion_Input {
+    font-size: 1.15rem;
+    padding-left: 3.2rem;
+  }
+  
+  .Input_Icon {
+    font-size: 1.4rem;
+    left: 1.1rem;
+  }
+  
+  .IniciarSesion_Boton {
+    font-size: 1.35rem;
+    padding: 1.3rem;
+  }
+  
+  .Google_Button {
+    max-width: 320px;
+    font-size: 1.05rem;
+    padding: 14px 22px;
+  }
+}
+
+/* Pequeños teléfonos (menos de 400px) */
+@media (max-width: 400px) {
+  .IniciarSesion_Titulo {
+    font-size: 2rem;
+  }
+  
+  .IniciarSesion_Icono_Titulo {
+    font-size: 2.2rem;
+  }
+  
+  .IniciarSesion_Formulario {
+    padding: 1.5rem;
+  }
+  
+  .IniciarSesion_Input {
+    padding-left: 2.5rem;
+  }
+  
+  .Input_Icon {
+    left: 0.7rem;
+  }
+  
+  .olvido-contrasena-link {
+    font-size: 0.95rem;
+  }
 }
