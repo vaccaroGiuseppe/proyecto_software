@@ -113,6 +113,26 @@
   font-size: 1.4rem;
 }
 
+.olvido-contrasena {
+  text-align: center;
+  margin: -0.5rem 0 1.5rem;
+}
+
+.olvido-contrasena-link {
+  display: inline-block;
+  color: #4d22e9;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-decoration: underline;
+  padding: 0.3rem 0;
+  transition: all 0.2s ease;
+}
+
+.olvido-contrasena-link:hover {
+  color: #D46D07;
+  text-decoration: none;
+}
+
 /* Footer */
 .Centrar_Footer {
   width: 100%;
@@ -176,4 +196,25 @@
 .Google_Icon {
   width: 24px;
   height: 24px;
+}
+/* Estilos para el ojito */
+.password-container {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #777;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+}
+
+.password-toggle:hover {
+  color: #F67E08;
 }

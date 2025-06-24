@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaSignInAlt, FaEnvelope, FaLock, FaTimes } from 'react-icons/fa';
+import { FaSignInAlt, FaEnvelope, FaLock, FaTimes, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import "./IniciarSesion.css";
@@ -12,6 +12,7 @@ const IniciarSesion = () => {
     clave: ''
   });
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { loginWithEmail, loginWithGoogle, loading } = useAuth();
 
@@ -22,7 +23,9 @@ const IniciarSesion = () => {
       [name]: value
     }));
   };
-
+    const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -80,20 +83,28 @@ const IniciarSesion = () => {
           </div>
 
           <div className='IniciarSesion_Campo'>
-            <div className='Input_Container'>
-              <FaLock className='Input_Icon' />
-              <input 
-                type='password' 
-                name='clave'
-                placeholder='Ingresa tu contraseña'
-                className='IniciarSesion_Input'
-                value={formData.clave}
-                onChange={handleChange}
-                required
-                autoComplete='current-password'
-              />
-            </div>
+          <div className='Input_Container password-container'>
+            <FaLock className='Input_Icon' />
+            <input 
+              type={showPassword ? 'text' : 'password'} 
+              name='clave'
+              placeholder='Ingresa tu contraseña'
+              className='IniciarSesion_Input'
+              value={formData.clave}
+              onChange={handleChange}
+              required
+              autoComplete='current-password'
+            />
+            <button 
+              type="button" 
+              className="password-toggle"
+              onClick={togglePasswordVisibility}
+              aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
+        </div>
 
           <div className="olvido-contrasena">
             <Link 
