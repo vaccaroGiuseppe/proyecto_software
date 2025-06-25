@@ -1,0 +1,356 @@
+/* Estilos generales */
+.publicar-cronograma-page {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #F67E08;
+  color: #1e1e1e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Contenedor principal */
+.publicar-cronograma-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.main-title {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  color: #7f8c8d;
+  font-weight: 400;
+}
+
+/* Panel de formulario */
+.form-container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilos de la tarjeta */
+.publicar-cronograma-card {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-top: 6px solid #F67E08;
+  border-bottom: 6px solid #F67E08;
+}
+
+.seleccion-seccion {
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 1rem;
+  text-align: left;
+  font-size: 1.3rem;
+}
+
+.form-select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+  transition: border-color 0.3s;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1em;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #f6f6f6;
+}
+
+.acciones-cronograma {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.botones-accion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  border: none;
+}
+
+.download-button {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.download-button:hover {
+  background-color: #27ae60;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.file-upload-label {
+  background-color: #3498db;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.file-upload-label:hover {
+  background-color: #2980b9;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.submit-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #2980b9;
+}
+
+.submit-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.ver-cronograma-section {
+  margin-top: 2rem;
+}
+
+.toggle-button {
+  background-color: #9b59b6;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 1rem;
+}
+
+.toggle-button:hover {
+  background-color: #8e44ad;
+}
+
+.cronograma-detalle {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.cronograma-detalle h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.cronograma-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  gap: 1px;
+  background-color: #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.grid-header {
+  display: contents;
+}
+
+.grid-header > div {
+  background-color: #3498db;
+  color: white;
+  padding: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.grid-row {
+  display: contents;
+}
+
+.grid-row > div {
+  background-color: white;
+  padding: 10px;
+}
+
+.grid-row > div:first-child {
+  font-weight: 600;
+}
+
+.no-contenido {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1rem;
+  background-color: white;
+}
+
+/* Alert Messages */
+.alert-message {
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.error-message {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.success-message {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.loading-secciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: #666;
+  font-size: 1.1rem;
+  margin: 1rem 0;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .publicar-cronograma-container {
+    padding: 15px;
+  }
+
+  .main-title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+  }
+
+  .publicar-cronograma-card {
+    padding: 30px 20px;
+  }
+
+  .botones-accion {
+    flex-direction: column;
+  }
+
+  .cronograma-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .grid-header > div:first-child,
+  .grid-row > div:first-child {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-title {
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .action-button,
+  .file-upload-label {
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+}
