@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-import { FaBook, FaClock, FaSave, FaSpinner, FaChalkboardTeacher } from 'react-icons/fa';
+import { FaBook, FaClock, FaSave, FaSpinner, FaChalkboardTeacher, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import "./AbrirSeccion.css";
 
 type Seccion = {
+  id_seccion?: string; // Nuevo campo para identificar secciones existentes
   id_horario: string;
-  id_profesor: string; 
+  id_profesor: string;
+  isExisting?: boolean; // Para identificar si es una sección existente
 };
 
 type Profesor = {
@@ -34,6 +36,7 @@ export default function AbrirSeccion() {
   const [codigoMateria, setCodigoMateria] = useState('');
   const [numeroSecciones, setNumeroSecciones] = useState('');
   const [secciones, setSecciones] = useState<Seccion[]>([]);
+  const [existingSecciones, setExistingSecciones] = useState<Seccion[]>([]);
   const [profesores, setProfesores] = useState<Profesor[]>([]);
   const [materias, setMaterias] = useState<Materia[]>([]);
   const [horariosClase, setHorariosClase] = useState<HorarioClase[]>([]);
@@ -43,6 +46,7 @@ export default function AbrirSeccion() {
   const [loadingProfesores, setLoadingProfesores] = useState(true);
   const [loadingMaterias, setLoadingMaterias] = useState(true);
   const [loadingHorarios, setLoadingHorarios] = useState(true);
+  const [loadingExisting, setLoadingExisting] = useState(false);
   const navigate = useNavigate();
 
   // Cargar profesores, materias y horarios al iniciar
@@ -91,6 +95,42 @@ export default function AbrirSeccion() {
     cargarDatosIniciales();
   }, []);
 
+  // Cargar secciones existentes cuando se selecciona una materia
+  useEffect(() => {
+    if (!codigoMateria) return;
+
+    const cargarSeccionesExistentes = async () => {
+      setLoadingExisting(true);
+      try {
+        const { data: seccionesData, error } = await supabase
+          .from('seccion')
+          .select('id_seccion, id_horario, id_profesor')
+          .eq('codigo_materia', codigoMateria);
+
+        if (error) throw error;
+
+        const seccionesConFlag = seccionesData?.map(seccion => ({
+          ...seccion,
+          isExisting: true
+        })) || [];
+
+        setExistingSecciones(seccionesConFlag);
+        
+        // Si hay secciones existentes, actualizamos el número de secciones
+        if (seccionesConFlag.length > 0) {
+          setNumeroSecciones(seccionesConFlag.length.toString());
+        }
+      } catch (err) {
+        setError('Error al cargar secciones existentes');
+        console.error('Error al cargar secciones existentes:', err);
+      } finally {
+        setLoadingExisting(false);
+      }
+    };
+
+    cargarSeccionesExistentes();
+  }, [codigoMateria]);
+
   const handleNumeroSeccionesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*$/.test(value)) {
@@ -98,9 +138,20 @@ export default function AbrirSeccion() {
       
       const num = value === '' ? 0 : parseInt(value);
       if (num >= 0 && num <= 15) {
-        setSecciones(Array(num).fill({ id_horario: '', id_profesor: '' }).map((_, i) => 
-          secciones[i] || { id_horario: '', id_profesor: '' }
-        ));
+        // Mantenemos las secciones existentes y agregamos nuevas si es necesario
+        const totalSecciones = [...existingSecciones];
+        
+        // Agregamos nuevas secciones si el número es mayor que las existentes
+        if (num > existingSecciones.length) {
+          const nuevasSecciones = Array(num - existingSecciones.length)
+            .fill({ id_horario: '', id_profesor: '' })
+            .map((_, i) => secciones[existingSecciones.length + i] || { id_horario: '', id_profesor: '' });
+          
+          totalSecciones.push(...nuevasSecciones);
+        }
+        
+        // Si el número es menor, solo mantenemos las primeras 'num' secciones
+        setSecciones(totalSecciones.slice(0, num));
       }
     }
   };
@@ -109,6 +160,30 @@ export default function AbrirSeccion() {
     const newSecciones = [...secciones];
     newSecciones[index] = { ...newSecciones[index], [field]: value };
     setSecciones(newSecciones);
+  };
+
+  const handleDeleteSeccion = async (idSeccion: string, index: number) => {
+    if (!window.confirm('¿Estás seguro de eliminar esta sección?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('seccion')
+        .delete()
+        .eq('id_seccion', idSeccion);
+
+      if (error) throw error;
+
+      // Eliminar la sección del estado
+      const newSecciones = [...secciones];
+      newSecciones.splice(index, 1);
+      setSecciones(newSecciones);
+      setExistingSecciones(existingSecciones.filter(s => s.id_seccion !== idSeccion));
+      setNumeroSecciones((parseInt(numeroSecciones) - 1).toString());
+      setSuccess('Sección eliminada correctamente');
+    } catch (err) {
+      setError('Error al eliminar la sección');
+      console.error('Error al eliminar sección:', err);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -136,25 +211,44 @@ export default function AbrirSeccion() {
         }
       }
 
-      // Insertar secciones en la tabla "seccion"
-      const seccionesToInsert = secciones.map(seccion => ({
-        codigo_materia: codigoMateria,
-        id_horario: seccion.id_horario,
-        id_profesor: seccion.id_profesor
-      }));
+      // Separar secciones existentes y nuevas
+      const seccionesParaActualizar = secciones.filter(s => s.isExisting);
+      const seccionesParaInsertar = secciones.filter(s => !s.isExisting);
 
-      const { error: seccionesError } = await supabase
-        .from('seccion') 
-        .insert(seccionesToInsert);
+      // Actualizar secciones existentes
+      const updates = seccionesParaActualizar.map(async seccion => {
+        const { error } = await supabase
+          .from('seccion')
+          .update({
+            id_horario: seccion.id_horario,
+            id_profesor: seccion.id_profesor
+          })
+          .eq('id_seccion', seccion.id_seccion);
 
-      if (seccionesError) throw seccionesError;
+        if (error) throw error;
+      });
 
-      setSuccess('Secciones creadas exitosamente!');
+      await Promise.all(updates);
+
+      // Insertar nuevas secciones
+      if (seccionesParaInsertar.length > 0) {
+        const { error: insertError } = await supabase
+          .from('seccion')
+          .insert(seccionesParaInsertar.map(seccion => ({
+            codigo_materia: codigoMateria,
+            id_horario: seccion.id_horario,
+            id_profesor: seccion.id_profesor
+          })));
+
+        if (insertError) throw insertError;
+      }
+
+      setSuccess('Secciones guardadas exitosamente!');
       setTimeout(() => {
         navigate('/');
       }, 1000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear las secciones');
+      setError(err instanceof Error ? err.message : 'Error al guardar las secciones');
       console.error('Error detallado:', err);
     } finally {
       setIsSubmitting(false);
@@ -217,9 +311,15 @@ export default function AbrirSeccion() {
                 )}
               </div>
 
+              {codigoMateria && loadingExisting && (
+                <div className="loading-profesores">
+                  <FaSpinner className="spinner" /> Cargando secciones existentes...
+                </div>
+              )}
+
               <div className="form-group">
                 <label htmlFor="numeroSecciones" className="form-label">
-                  Número de Secciones:
+                  Número Total de Secciones (incluyendo las existentes):
                 </label>
                 <input
                   type="text"
@@ -227,9 +327,15 @@ export default function AbrirSeccion() {
                   value={numeroSecciones}
                   onChange={handleNumeroSeccionesChange}
                   className="form-input"
-                  placeholder="Ej: 2"
+                  placeholder={`Ej: ${existingSecciones.length > 0 ? existingSecciones.length + 1 : '2'}`}
                   inputMode="numeric"
                 />
+                {existingSecciones.length > 0 && (
+                  <p className="info-text">
+                    Esta materia ya tiene {existingSecciones.length} sección(es). 
+                    Ingresa el número total deseado (actual + nuevas).
+                  </p>
+                )}
               </div>
 
               {loadingProfesores || loadingHorarios ? (
@@ -238,8 +344,22 @@ export default function AbrirSeccion() {
                 </div>
               ) : (
                 secciones.map((seccion, index) => (
-                  <div key={index} className="seccion-group">
-                    <h3 className="seccion-title">Sección {index + 1}</h3>
+                  <div key={index} className={`seccion-group ${seccion.isExisting ? 'existing-section' : ''}`}>
+                    <div className="seccion-header">
+                      <h3 className="seccion-title">
+                        Sección {index + 1} 
+                        {seccion.isExisting && <span className="existing-badge">Existente</span>}
+                      </h3>
+                      {seccion.isExisting && (
+                        <button
+                          type="button"
+                          className="delete-button"
+                          onClick={() => handleDeleteSeccion(seccion.id_seccion!, index)}
+                        >
+                          <FaTrash /> Eliminar
+                        </button>
+                      )}
+                    </div>
                     
                     <div className="form-group">
                       <label htmlFor={`horario-${index}`} className="form-label">
@@ -285,10 +405,10 @@ export default function AbrirSeccion() {
               <button 
                 type="submit" 
                 className="submit-button"
-                disabled={isSubmitting || secciones.length === 0 || loadingProfesores || loadingMaterias || loadingHorarios}
+                disabled={isSubmitting || secciones.length === 0 || loadingProfesores || loadingMaterias || loadingHorarios || loadingExisting}
               >
                 {isSubmitting ? <FaSpinner className="spinner" /> : <FaSave />}
-                {isSubmitting ? ' Creando...' : ' Crear Secciones'}
+                {isSubmitting ? ' Guardando...' : ' Guardar Secciones'}
               </button>
             </form>
           </div>
