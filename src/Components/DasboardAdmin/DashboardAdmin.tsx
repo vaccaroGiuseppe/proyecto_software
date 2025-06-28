@@ -1,4 +1,4 @@
-import { FaChalkboardTeacher, FaBook, FaDoorOpen, FaSyncAlt } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaBook, FaDoorOpen, FaSyncAlt, FaCalendarAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient'; // Asegúrate de que la ruta sea correcta
 import './DashboardAdmin.css';
@@ -9,26 +9,26 @@ function DashboardAdmin() {
   const [isResetting, setIsResetting] = useState(false);
 
   const handleResetSections = async () => {
-  if (!window.confirm('¿Estás seguro que deseas vaciar todas las secciones? Esta acción no se puede deshacer.')) {
-    return;
-  }
+    if (!window.confirm('¿Estás seguro que deseas vaciar todas las secciones? Esta acción no se puede deshacer.')) {
+      return;
+    }
 
-  setIsResetting(true);
-  try {
-    // Solución 2: Llamar a una función RPC
-    const { error } = await supabase
-      .rpc('truncate_seccion');
+    setIsResetting(true);
+    try {
+      // Solución 2: Llamar a una función RPC
+      const { error } = await supabase
+        .rpc('truncate_seccion');
 
-    if (error) throw error;
+      if (error) throw error;
 
-    alert('✅ Todas las secciones han sido reiniciadas correctamente');
-  } catch (error) {
-    console.error('Error al reiniciar secciones:', error);
-    alert('❌ Ocurrió un error al reiniciar las secciones');
-  } finally {
-    setIsResetting(false);
-  }
-};
+      alert('✅ Todas las secciones han sido reiniciadas correctamente');
+    } catch (error) {
+      console.error('Error al reiniciar secciones:', error);
+      alert('❌ Ocurrió un error al reiniciar las secciones');
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   return (
     <div className="todoesto">
@@ -81,6 +81,16 @@ function DashboardAdmin() {
               {isResetting ? 'Reiniciando...' : 'Reiniciar Secciones'}
             </h2>
             <p className="card-description">Vaciar todas las secciones de la base de datos</p>
+          </div>
+          <div 
+            className="dashboard-card"
+            onClick={() => navigate('/publicar-cronogramas')}
+          >
+            <div className="card-icon">
+              <FaCalendarAlt size={60} />
+            </div>
+            <h2 className="card-title">Publicar Cronogramas</h2>
+            <p className="card-description">Gestionar y publicar calendarios académicos</p>
           </div>
         </div>
       </div>
