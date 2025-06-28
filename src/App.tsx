@@ -16,6 +16,7 @@ import { PrivateRoute } from './Components/PrivateRoute';
 import { CompletarPerfil } from './Pages/CompletarPerfil/CompletarPerfil';
 import AsignarSalon from "./Pages/AsignarSalon/AsignarSalon";
 import GestionarMateria from "./Pages/CrearEditarMateria/CrearEditarEliminarMateria"
+import PublicarCronograma from "./Pages/PublicarCronograma/PublicarCronograma";
 
 function App() {
   return (
@@ -31,7 +32,8 @@ function App() {
             <Route path="/confirmacion-correo" element={<ConfirmacionCorreo />} />
             <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
             <Route path="/actualizar-contrasena" element={<ActualizarContrasena />} />
-            
+            <Route path="/publicar-cronograma" element={<PublicarCronograma />} />
+
             {/* Ruta de callback para autenticación con Google*/}
             <Route path="/auth/callback" element={<AuthCallback />} />
 
@@ -93,6 +95,15 @@ function App() {
               element={
                 <PrivateRoute>
                   <GestionarMateria />
+                </PrivateRoute>
+              } 
+            />
+
+            <Route 
+              path="/publicar-cronograma" 
+              element={
+                <PrivateRoute>
+                  <PublicarCronograma />
                 </PrivateRoute>
               } 
             />

@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-import { FaUpload, FaDownload, FaSpinner, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaUpload, FaDownload, FaSpinner, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import "./PublicarCronograma.css";
+import * as XLSX from 'xlsx';
 
 type Seccion = {
   id_seccion: string;
@@ -12,19 +13,18 @@ type Seccion = {
   nombre_profesor: string;
   horario: string;
   modalidad: string;
+  salon?: string | null;
+};
+
+type DiaCronograma = {
+  semana: number;
+  dia_numero: number; // 1 o 2
+  actividad: string;
 };
 
 type Cronograma = {
-  id_cronograma: string;
   id_seccion: string;
-  link_archivo: string;
-  contenido?: Semana[]; // Para almacenar el contenido desglosado
-};
-
-type Semana = {
-  semana: number;
-  clase1: string;
-  clase2: string;
+  dias: DiaCronograma[];
 };
 
 export default function PublicarCronograma() {
@@ -36,189 +36,187 @@ export default function PublicarCronograma() {
   const [success, setSuccess] = useState<string | null>(null);
   const [loadingSecciones, setLoadingSecciones] = useState(true);
   const [cronogramaActual, setCronogramaActual] = useState<Cronograma | null>(null);
-  const [mostrarCronograma, setMostrarCronograma] = useState(false);
+  const [mostrarContenido, setMostrarContenido] = useState(false);
 
   // Cargar secciones con datos relacionados
-  // Definir interfaces para los tipos de datos
-interface Materia {
-  codigo_materia: string;
-  nombre: string;
-}
-
-interface Profesor {
-  id_usuario: string;
-  nombre: string;
-  apellido: string;
-}
-
-interface Horario {
-  id_horario_clase: string;
-  dia_semana: string;
-  hora_inicio: string;
-  hora_fin: string;
-  modalidad: string;
-}
-
-interface SeccionDB {
-  id_seccion: string;
-  codigo_materia: string;
-  id_profesor: string;
-  id_horario: string;
-  salon: string | null;
-}
-
-interface SeccionFormateada {
-  id_seccion: string;
-  codigo_materia: string;
-  nombre_materia: string;
-  nombre_profesor: string;
-  horario: string;
-  modalidad: string;
-  salon: string | null;
-}
-
-// Dentro de tu componente, modifica el useEffect así:
-useEffect(() => {
-  const cargarSecciones = async () => {
-    try {
-      // Paso 1: Obtener todas las secciones con tipos explícitos
-      const { data: seccionesData, error: seccionesError } = await supabase
-        .from('seccion')
-        .select('*')
-        .returns<SeccionDB[]>();
-
-      if (seccionesError) throw seccionesError;
-      if (!seccionesData) throw new Error('No se encontraron secciones');
-
-      // Paso 2: Obtener datos relacionados con tipos explícitos
-      const codigosMateria = seccionesData.map(s => s.codigo_materia);
-      const idsProfesores = seccionesData.map(s => s.id_profesor);
-      const idsHorarios = seccionesData.map(s => s.id_horario);
-
-      // Consultas en paralelo con tipos definidos
-      const [
-        { data: materiasData, error: materiasError },
-        { data: profesoresData, error: profesoresError },
-        { data: horariosData, error: horariosError }
-      ] = await Promise.all([
-        supabase
-          .from('materia')
-          .select('codigo_materia, nombre')
-          .in('codigo_materia', codigosMateria)
-          .returns<Materia[]>(),
-        supabase
-          .from('usuario')
-          .select('id_usuario, nombre, apellido')
-          .in('id_usuario', idsProfesores)
-          .returns<Profesor[]>(),
-        supabase
-          .from('horario_clase')
-          .select('id_horario_clase, dia_semana, hora_inicio, hora_fin, modalidad')
-          .in('id_horario_clase', idsHorarios)
-          .returns<Horario[]>()
-      ]);
-
-      if (materiasError) throw materiasError;
-      if (profesoresError) throw profesoresError;
-      if (horariosError) throw horariosError;
-
-      // Formatear los datos con seguridad de tipos
-      const seccionesFormateadas: SeccionFormateada[] = seccionesData.map(seccion => {
-        const materia = materiasData?.find(m => m.codigo_materia === seccion.codigo_materia);
-        const profesor = profesoresData?.find(p => p.id_usuario === seccion.id_profesor);
-        const horario = horariosData?.find(h => h.id_horario_clase === seccion.id_horario);
-
-        return {
-          id_seccion: seccion.id_seccion,
-          codigo_materia: seccion.codigo_materia,
-          nombre_materia: materia?.nombre || 'Sin nombre',
-          nombre_profesor: profesor 
-            ? `${profesor.nombre} ${profesor.apellido}` 
-            : 'Sin profesor',
-          horario: horario
-            ? `${horario.dia_semana} ${horario.hora_inicio}-${horario.hora_fin}`
-            : 'Sin horario',
-          modalidad: horario?.modalidad || '',
-          salon: seccion.salon
-        };
-      });
-
-      setSecciones(seccionesFormateadas);
-    } catch (err) {
-      setError('Error al cargar las secciones');
-      console.error('Error al cargar secciones:', err);
-    } finally {
-      setLoadingSecciones(false);
-    }
-  };
-
-  cargarSecciones();
-}, []);
-
-  // Cargar cronograma existente cuando se selecciona una sección
   useEffect(() => {
-    const cargarCronograma = async () => {
+    const cargarSecciones = async () => {
+      try {
+        const { data: seccionesData, error: seccionesError } = await supabase
+          .from('seccion')
+          .select('*');
+
+        if (seccionesError) throw seccionesError;
+        if (!seccionesData) throw new Error('No se encontraron secciones');
+
+        const codigosMateria = seccionesData.map(s => s.codigo_materia);
+        const idsProfesores = seccionesData.map(s => s.id_profesor);
+        const idsHorarios = seccionesData.map(s => s.id_horario);
+
+        const [
+          { data: materiasData, error: materiasError },
+          { data: profesoresData, error: profesoresError },
+          { data: horariosData, error: horariosError }
+        ] = await Promise.all([
+          supabase
+            .from('materia')
+            .select('codigo_materia, nombre')
+            .in('codigo_materia', codigosMateria),
+          supabase
+            .from('usuario')
+            .select('id_usuario, nombre, apellido')
+            .in('id_usuario', idsProfesores),
+          supabase
+            .from('horario_clase')
+            .select('id_horario_clase, dia_semana, hora_inicio, hora_fin, modalidad')
+            .in('id_horario_clase', idsHorarios)
+        ]);
+
+        if (materiasError) throw materiasError;
+        if (profesoresError) throw profesoresError;
+        if (horariosError) throw horariosError;
+
+        const seccionesFormateadas: Seccion[] = seccionesData.map(seccion => {
+          const materia = materiasData?.find(m => m.codigo_materia === seccion.codigo_materia);
+          const profesor = profesoresData?.find(p => p.id_usuario === seccion.id_profesor);
+          const horario = horariosData?.find(h => h.id_horario_clase === seccion.id_horario);
+
+          return {
+            id_seccion: seccion.id_seccion,
+            codigo_materia: seccion.codigo_materia,
+            nombre_materia: materia?.nombre || 'Sin nombre',
+            nombre_profesor: profesor 
+              ? `${profesor.nombre} ${profesor.apellido}` 
+              : 'Sin profesor',
+            horario: horario
+              ? `${horario.dia_semana} ${horario.hora_inicio}-${horario.hora_fin}`
+              : 'Sin horario',
+            modalidad: horario?.modalidad || '',
+            salon: seccion.salon
+          };
+        });
+
+        setSecciones(seccionesFormateadas);
+      } catch (err) {
+        setError('Error al cargar las secciones');
+        console.error('Error al cargar secciones:', err);
+      } finally {
+        setLoadingSecciones(false);
+      }
+    };
+
+    cargarSecciones();
+  }, []);
+
+  // Cargar cronograma existente al seleccionar sección
+  useEffect(() => {
+    const cargarCronogramaExistente = async () => {
       if (!seccionSeleccionada) return;
       
       try {
-        const { data, error } = await supabase
-          .from('cronograma')
-          .select('*')
+        
+        const {data,error } = await supabase
+          .from('cronogramas')
+          .select('semana, dia_numero, actividad')
           .eq('id_seccion', seccionSeleccionada)
-          .single();
+          .order('semana', { ascending: true })
+          .order('dia_numero', { ascending: true });
 
-        if (error && error.code !== 'PGRST116') throw error; // Ignorar error "No rows found"
+        if (error) throw error;
         
-        setCronogramaActual(data || null);
-        
-        // Si hay un cronograma, intentar cargar y parsear el archivo
-        if (data?.link_archivo) {
-          await cargarYParsearCronograma(data.link_archivo);
-        }
+        setCronogramaActual({
+          id_seccion: seccionSeleccionada,
+          dias: data || []
+        });
       } catch (err) {
         console.error('Error al cargar cronograma:', err);
         setError('Error al cargar el cronograma existente');
       }
     };
 
-    cargarCronograma();
+    cargarCronogramaExistente();
   }, [seccionSeleccionada]);
 
-  const cargarYParsearCronograma = async (filePath: string) => {
-    try {
-      // Descargar el archivo
-      const { data, error } = await supabase.storage
-        .from('cronogramas') // Asegúrate de que este bucket exista
-        .download(filePath);
+  const descargarPlantilla = () => {
+    const wb = XLSX.utils.book_new();
+    
+    const datos = [
+      ["Semana", "Clase 1", "Clase 2"],
+      ...Array.from({ length: 12 }, (_, i) => [
+        i + 1,
+        `Tema semana ${i + 1} clase 1`,
+        `Tema semana ${i + 1} clase 2`
+      ])
+    ];
 
-      if (error) throw error;
-      if (!data) throw new Error('No se pudo descargar el archivo');
+    const ws = XLSX.utils.aoa_to_sheet(datos);
+    
+    if (ws['!cols'] === undefined) ws['!cols'] = [];
+    ws['!cols'][0] = { wch: 10 };
+    ws['!cols'][1] = { wch: 30 };
+    ws['!cols'][2] = { wch: 30 };
 
-      // Aquí iría la lógica para parsear el archivo según su formato
-      // Por ahora simulamos un parseo básico
-      //const contenido = await parsearArchivo(data);
-      //setCronogramaActual(prev => prev ? { ...prev, contenido } : null);
-    } catch (err) {
-      console.error('Error al parsear cronograma:', err);
-      setError('Error al procesar el cronograma');
-    }
+    XLSX.utils.book_append_sheet(wb, ws, "Cronograma");
+    XLSX.writeFile(wb, "plantilla_cronograma.xlsx");
   };
 
+  const parsearArchivoExcel = async (file: File): Promise<DiaCronograma[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          
+          interface ExcelRow {
+            Semana: number;
+            'Clase 1': string;
+            'Clase 2': string;
+          }
 
-  const descargarPlantilla = () => {
-    // Crear una plantilla básica (en una implementación real sería un archivo Excel o CSV)
-    const plantilla = `Semana,Clase 1,Clase 2\n${Array.from({ length: 12 }, (_, i) => 
-      `${i + 1},Tema semana ${i + 1} clase 1,Tema semana ${i + 1} clase 2`).join('\n')}`;
-    
-    const blob = new Blob([plantilla], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'plantilla_cronograma.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+          const jsonData = XLSX.utils.sheet_to_json<ExcelRow>(firstSheet);
+
+          // Validar estructura del archivo
+          if (jsonData.length === 0) {
+            throw new Error('El archivo está vacío');
+          }
+
+          const primeraFila = jsonData[0];
+          if (!('Semana' in primeraFila) || !('Clase 1' in primeraFila) || !('Clase 2' in primeraFila)) {
+            throw new Error('El archivo no tiene el formato correcto. Debe contener columnas: Semana, Clase 1, Clase 2');
+          }
+
+          // Convertir a formato de días del cronograma
+          const dias: DiaCronograma[] = [];
+          
+          jsonData.forEach(row => {
+            dias.push({
+              semana: row.Semana,
+              dia_numero: 1,
+              actividad: row['Clase 1'] || ''
+            });
+            
+            dias.push({
+              semana: row.Semana,
+              dia_numero: 2,
+              actividad: row['Clase 2'] || ''
+            });
+          });
+
+          resolve(dias);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Error al leer el archivo'));
+      };
+      
+      reader.readAsArrayBuffer(file);
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -234,7 +232,6 @@ useEffect(() => {
     setSuccess(null);
 
     try {
-      // Validaciones
       if (!seccionSeleccionada) {
         throw new Error('Debes seleccionar una sección');
       }
@@ -243,36 +240,52 @@ useEffect(() => {
         throw new Error('Debes seleccionar un archivo');
       }
 
-      // Subir el archivo a Supabase Storage
-      const fileExt = archivo.name.split('.').pop();
-      const fileName = `${seccionSeleccionada}_${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // Parsear el archivo Excel
+      const dias = await parsearArchivoExcel(archivo);
+      console.log(dias)
+      console.log(seccionSeleccionada)
+      
+      // Verificar que tenga 24 registros (12 semanas × 2 días)
+      if (dias.length !== 24) {
+        console.warn(`El archivo contiene ${dias.length} registros, se esperaban 24 (12 semanas × 2 días)`);
+      }
 
-      const { error: uploadError } = await supabase.storage
+      //1. Eliminar cronograma existente (si lo hay)
+      const { error: deleteError } = await supabase
         .from('cronogramas')
-        .upload(filePath, archivo);
+        .delete()
+        .eq('id_seccion', seccionSeleccionada);
 
-      if (uploadError) throw uploadError;
+      if (deleteError) console.warn('No se pudo eliminar cronograma anterior:', deleteError);
 
-      // Guardar referencia en la tabla cronograma
-      const { error: dbError } = await supabase
-        .from('cronograma')
-        .upsert({
-          id_seccion: seccionSeleccionada,
-          link_archivo: filePath
-        }, {
-          onConflict: 'id_seccion'
-        });
+      // 2. Insertar nuevo cronograma
+      console.log("hola")
+      const { error: insertError } = await supabase
+        .from('cronogramas')
+        .insert(
+          dias.map(dia => ({
+            id_seccion: seccionSeleccionada,
+            semana: dia.semana,
+            dia_numero: dia.dia_numero,
+            actividad: dia.actividad,
+          }))
+        );
+        
 
-      if (dbError) throw dbError;
+      if (insertError) throw insertError;
 
-      // Parsear el archivo para mostrar el contenido
-      //const contenido = await parsearArchivo(archivo);
-
-      setSuccess('Cronograma subido correctamente!');
-      setTimeout(() => setSuccess(null), 3000);
+      //3. Actualizar estado
+      setCronogramaActual({
+        id_seccion: seccionSeleccionada,
+        dias: dias
+      });
+      
+      setSuccess('Cronograma guardado correctamente!');
+      setTimeout(() => setSuccess(null), 5000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al subir el cronograma');
+      
+      const errorMsg = err instanceof Error ? err.message : 'Error al guardar el cronograma';
+      setError(errorMsg);
       console.error('Error detallado:', err);
     } finally {
       setIsSubmitting(false);
@@ -348,8 +361,9 @@ useEffect(() => {
                       <input 
                         type="file" 
                         onChange={handleFileChange} 
-                        accept=".xlsx,.xls,.csv"
+                        accept=".xlsx,.xls"
                         className="file-input"
+                        required
                       />
                     </label>
                     {archivo && (
@@ -369,34 +383,39 @@ useEffect(() => {
                 </div>
 
                 {cronogramaActual && (
-                  <div className="ver-cronograma-section">
-                    <button 
-                      className="toggle-button"
-                      onClick={() => setMostrarCronograma(!mostrarCronograma)}
-                    >
-                      {mostrarCronograma ? 'Ocultar Cronograma' : 'Ver Cronograma Actual'}
-                    </button>
+                  <div className="cronograma-existente">
+                    <div className="cronograma-info">
+                      <span>Cronograma existente para esta sección</span>
+                      <div className="cronograma-actions">
+                        <button 
+                          onClick={() => setMostrarContenido(!mostrarContenido)}
+                          className="view-button"
+                        >
+                          <FaEye /> {mostrarContenido ? 'Ocultar' : 'Ver'}
+                        </button>
+                      </div>
+                    </div>
 
-                    {mostrarCronograma && (
-                      <div className="cronograma-detalle">
-                        <h3>Cronograma de la Sección</h3>
-                        <div className="cronograma-grid">
+                    {mostrarContenido && (
+                      <div className="cronograma-contenido">
+                        <h4>Contenido del Cronograma</h4>
+                        <div className="contenido-grid">
                           <div className="grid-header">
                             <div>Semana</div>
-                            <div>Clase 1</div>
-                            <div>Clase 2</div>
+                            <div>Día</div>
+                            <div>Actividad</div>
                           </div>
-                          {cronogramaActual.contenido ? (
-                            cronogramaActual.contenido.map((semana) => (
-                              <div key={semana.semana} className="grid-row">
-                                <div>{semana.semana}</div>
-                                <div>{semana.clase1}</div>
-                                <div>{semana.clase2}</div>
+                          {cronogramaActual.dias.length > 0 ? (
+                            cronogramaActual.dias.map((dia, index) => (
+                              <div key={index} className="grid-row">
+                                <div>{dia.semana}</div>
+                                <div>Día {dia.dia_numero}</div>
+                                <div>{dia.actividad}</div>
                               </div>
                             ))
                           ) : (
                             <div className="no-contenido">
-                              No se pudo cargar el contenido del cronograma
+                              No hay actividades programadas
                             </div>
                           )}
                         </div>

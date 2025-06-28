@@ -120,7 +120,7 @@ function Navbar() {
         {/* Mostrar enlaces adicionales para admin */}
         {isAuthenticated && location.pathname !== '/actualizar-contrasena'&& userType === 'admin' && (
           <>
-          <Link className="Link Link_Nosotros" to="/asignar-salon">
+          <Link className="Link Link_Nosotros" to="/publicar-cronograma">
               Salones
             </Link>
             <Link className="Link Link_Nosotros" to="/crear-editar-eliminar-materia">
