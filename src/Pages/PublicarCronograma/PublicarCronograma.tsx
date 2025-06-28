@@ -23,10 +23,14 @@ type DiaCronograma = {
   actividad: string;
 };
 
+/*
 type Cronograma = {
   id_seccion: string;
   dias: DiaCronograma[];
-};
+};*/
+
+type EditableDia = DiaCronograma & { isEditing?: boolean };
+
 
 
 export default function PublicarCronograma() {
@@ -37,7 +41,10 @@ export default function PublicarCronograma() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loadingSecciones, setLoadingSecciones] = useState(true);
-  const [cronogramaActual, setCronogramaActual] = useState<Cronograma | null>(null);
+  const [cronogramaActual, setCronogramaActual] = useState<{
+    id_seccion: string;
+    dias: EditableDia[];
+  } | null>(null);
   const [mostrarContenido, setMostrarContenido] = useState(false);
 
   // Cargar secciones con datos relacionados
@@ -244,6 +251,42 @@ export default function PublicarCronograma() {
     }
   };
 
+  const manejarEdicionActividad = async (semana: number, dia_numero: number, nuevaActividad: string) => {
+    if (!seccionSeleccionada || !cronogramaActual) return;
+
+    try {
+      // Actualizar en la base de datos
+      const { error } = await supabase
+        .from('cronogramas')
+        .update({ actividad: nuevaActividad })
+        .eq('id_seccion', seccionSeleccionada)
+        .eq('semana', semana)
+        .eq('dia_numero', dia_numero);
+
+      if (error) throw error;
+
+      // Actualizar el estado local
+      setCronogramaActual(prev => {
+        if (!prev) return null;
+        
+        const diasActualizados = prev.dias.map(dia => {
+          if (dia.semana === semana && dia.dia_numero === dia_numero) {
+            return { ...dia, actividad: nuevaActividad, isEditing: false };
+          }
+          return dia;
+        });
+
+        return { ...prev, dias: diasActualizados };
+      });
+
+      setSuccess('Actividad actualizada correctamente');
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError('Error al actualizar la actividad');
+      console.error('Error al actualizar:', err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -433,7 +476,54 @@ export default function PublicarCronograma() {
                                     return (
                                       <div key={`dia-${semanaNum}-${diaIndex}`} className="dia-calendario">
                                         <div className="dia-header">{diaNombre}</div>
-                                        <div className="dia-actividad">{dia.actividad}</div>
+                                        {dia.isEditing ? (
+                                          <input
+                                            type="text"
+                                            value={dia.actividad}
+                                            onChange={(e) => {
+                                              setCronogramaActual(prev => {
+                                                if (!prev) return null;
+                                                
+                                                const diasActualizados = prev.dias.map(d => {
+                                                  if (d.semana === dia.semana && d.dia_numero === dia.dia_numero) {
+                                                    return { ...d, actividad: e.target.value };
+                                                  }
+                                                  return d;
+                                                });
+
+                                                return { ...prev, dias: diasActualizados };
+                                              });
+                                            }}
+                                            onBlur={() => manejarEdicionActividad(dia.semana, dia.dia_numero, dia.actividad)}
+                                            onKeyPress={(e) => {
+                                              if (e.key === 'Enter') {
+                                                manejarEdicionActividad(dia.semana, dia.dia_numero, dia.actividad);
+                                              }
+                                            }}
+                                            autoFocus
+                                            className="editable-input"
+                                          />
+                                        ) : (
+                                          <div 
+                                            className="dia-actividad editable-text"
+                                            onClick={() => {
+                                              setCronogramaActual(prev => {
+                                                if (!prev) return null;
+                                                
+                                                const diasActualizados = prev.dias.map(d => {
+                                                  if (d.semana === dia.semana && d.dia_numero === dia.dia_numero) {
+                                                    return { ...d, isEditing: true };
+                                                  }
+                                                  return d;
+                                                });
+
+                                                return { ...prev, dias: diasActualizados };
+                                              });
+                                            }}
+                                          >
+                                            {dia.actividad || <span className="placeholder">Haz clic para editar</span>}
+                                          </div>
+                                        )}
                                       </div>
                                     );
                                   })}
