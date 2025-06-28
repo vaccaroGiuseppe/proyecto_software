@@ -14,6 +14,7 @@ type Seccion = {
   horario: string;
   modalidad: string;
   salon?: string | null;
+  dias_semana: string[];
 };
 
 type DiaCronograma = {
@@ -26,6 +27,7 @@ type Cronograma = {
   id_seccion: string;
   dias: DiaCronograma[];
 };
+
 
 export default function PublicarCronograma() {
   const [secciones, setSecciones] = useState<Seccion[]>([]);
@@ -76,10 +78,16 @@ export default function PublicarCronograma() {
         if (profesoresError) throw profesoresError;
         if (horariosError) throw horariosError;
 
+        // En la función cargarSecciones, modificar el mapeo:
         const seccionesFormateadas: Seccion[] = seccionesData.map(seccion => {
           const materia = materiasData?.find(m => m.codigo_materia === seccion.codigo_materia);
           const profesor = profesoresData?.find(p => p.id_usuario === seccion.id_profesor);
           const horario = horariosData?.find(h => h.id_horario_clase === seccion.id_horario);
+
+          // Extraer los días de la semana
+          const diasSemana: string[] = horario?.dia_semana 
+            ? horario.dia_semana.split(' y ').map((d: string) => d.trim())
+            : ['Día 1', 'Día 2'];
 
           return {
             id_seccion: seccion.id_seccion,
@@ -92,9 +100,11 @@ export default function PublicarCronograma() {
               ? `${horario.dia_semana} ${horario.hora_inicio}-${horario.hora_fin}`
               : 'Sin horario',
             modalidad: horario?.modalidad || '',
-            salon: seccion.salon
+            salon: seccion.salon,
+            dias_semana: diasSemana // Agregamos los días de la semana
           };
         });
+        
 
         setSecciones(seccionesFormateadas);
       } catch (err) {
@@ -107,6 +117,10 @@ export default function PublicarCronograma() {
 
     cargarSecciones();
   }, []);
+  const obtenerDiasSeccion = (idSeccion: string): string[] => {
+    const seccion = secciones.find(s => s.id_seccion === idSeccion);
+    return seccion?.dias_semana || ['Día 1', 'Día 2'];
+  };
 
   // Cargar cronograma existente al seleccionar sección
   useEffect(() => {
@@ -140,12 +154,17 @@ export default function PublicarCronograma() {
   const descargarPlantilla = () => {
     const wb = XLSX.utils.book_new();
     
+    // Obtener los días reales de la sección seleccionada
+    const diasSeccion = obtenerDiasSeccion(seccionSeleccionada);
+    const dia1 = diasSeccion[0] || 'Clase 1';
+    const dia2 = diasSeccion[1] || 'Clase 2';
+
     const datos = [
-      ["Semana", "Clase 1", "Clase 2"],
+      ["Semana", dia1, dia2],
       ...Array.from({ length: 12 }, (_, i) => [
         i + 1,
-        `Tema semana ${i + 1} clase 1`,
-        `Tema semana ${i + 1} clase 2`
+        `Tema semana ${i + 1} ${dia1.toLowerCase()}`,
+        `Tema semana ${i + 1} ${dia2.toLowerCase()}`
       ])
     ];
 
@@ -157,7 +176,7 @@ export default function PublicarCronograma() {
     ws['!cols'][2] = { wch: 30 };
 
     XLSX.utils.book_append_sheet(wb, ws, "Cronograma");
-    XLSX.writeFile(wb, "plantilla_cronograma.xlsx");
+    XLSX.writeFile(wb, `plantilla_cronograma_${seccionSeleccionada}.xlsx`);
   };
 
   const parsearArchivoExcel = async (file: File): Promise<DiaCronograma[]> => {
@@ -407,12 +426,17 @@ export default function PublicarCronograma() {
                               <div key={`semana-${semanaNum}`} className="semana-calendario">
                                 <div className="semana-header">Semana {semanaNum}</div>
                                 <div className="dias-semana">
-                                  {diasSemana.map((dia, diaIndex) => (
-                                    <div key={`dia-${semanaNum}-${diaIndex}`} className="dia-calendario">
-                                      <div className="dia-header">Día {dia.dia_numero}</div>
-                                      <div className="dia-actividad">{dia.actividad}</div>
-                                    </div>
-                                  ))}
+                                  {diasSemana.map((dia, diaIndex) => {
+                                    const diasSeccion = obtenerDiasSeccion(seccionSeleccionada);
+                                    const diaNombre = diasSeccion[dia.dia_numero - 1] || `Día ${dia.dia_numero}`;
+                                    
+                                    return (
+                                      <div key={`dia-${semanaNum}-${diaIndex}`} className="dia-calendario">
+                                        <div className="dia-header">{diaNombre}</div>
+                                        <div className="dia-actividad">{dia.actividad}</div>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             );
