@@ -118,12 +118,12 @@
 }
 
 .download-button {
-  background-color: #2ecc71;
+  background-color: #F67E08;
   color: white;
 }
 
 .download-button:hover {
-  background-color: #27ae60;
+  background-color: #D46D07;
 }
 
 .upload-form {
@@ -133,7 +133,7 @@
 }
 
 .file-upload-label {
-  background-color: #3498db;
+  background-color: #F67E08;
   color: white;
   padding: 12px 20px;
   border-radius: 8px;
@@ -148,7 +148,7 @@
 }
 
 .file-upload-label:hover {
-  background-color: #2980b9;
+  background-color: #D46D07;
 }
 
 .file-input {
@@ -196,7 +196,7 @@
 }
 
 .toggle-button {
-  background-color: #9b59b6;
+  background-color: #F67E08;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -209,7 +209,7 @@
 }
 
 .toggle-button:hover {
-  background-color: #8e44ad;
+  background-color: #D46D07;
 }
 
 .cronograma-detalle {
@@ -300,6 +300,107 @@
   color: #666;
   font-size: 1.1rem;
   margin: 1rem 0;
+}
+
+/* Estilos para el botón de ver/ocultar */
+.view-button {
+  background-color: #F67E08;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  border: none;
+}
+
+.view-button:hover {
+  background-color: #D46D07;
+}
+
+/* Estilos para el contenedor de acciones del cronograma */
+.cronograma-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Estilos para la información del cronograma */
+.cronograma-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.cronograma-info span {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+/* Estilos para el calendario del cronograma */
+.calendario-cronograma {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.semana-calendario {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.semana-header {
+  background-color: #0f6cbf;
+  color: white;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.dias-semana {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.dia-calendario {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.dia-header {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dia-actividad {
+  color: #555;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendario-cronograma {
+    grid-template-columns: 1fr;
+  }
 }
 
 @keyframes spin {

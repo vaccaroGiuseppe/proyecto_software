@@ -389,7 +389,7 @@ export default function PublicarCronograma() {
                       <div className="cronograma-actions">
                         <button 
                           onClick={() => setMostrarContenido(!mostrarContenido)}
-                          className="view-button"
+                          className="action-button toggle-button"
                         >
                           <FaEye /> {mostrarContenido ? 'Ocultar' : 'Ver'}
                         </button>
@@ -398,26 +398,25 @@ export default function PublicarCronograma() {
 
                     {mostrarContenido && (
                       <div className="cronograma-contenido">
-                        <h4>Contenido del Cronograma</h4>
-                        <div className="contenido-grid">
-                          <div className="grid-header">
-                            <div>Semana</div>
-                            <div>Día</div>
-                            <div>Actividad</div>
-                          </div>
-                          {cronogramaActual.dias.length > 0 ? (
-                            cronogramaActual.dias.map((dia, index) => (
-                              <div key={index} className="grid-row">
-                                <div>{dia.semana}</div>
-                                <div>Día {dia.dia_numero}</div>
-                                <div>{dia.actividad}</div>
+                        <div className="calendario-cronograma">
+                          {Array.from({ length: 12 }, (_, semanaIndex) => {
+                            const semanaNum = semanaIndex + 1;
+                            const diasSemana = cronogramaActual.dias.filter(d => d.semana === semanaNum);
+                            
+                            return (
+                              <div key={`semana-${semanaNum}`} className="semana-calendario">
+                                <div className="semana-header">Semana {semanaNum}</div>
+                                <div className="dias-semana">
+                                  {diasSemana.map((dia, diaIndex) => (
+                                    <div key={`dia-${semanaNum}-${diaIndex}`} className="dia-calendario">
+                                      <div className="dia-header">Día {dia.dia_numero}</div>
+                                      <div className="dia-actividad">{dia.actividad}</div>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            ))
-                          ) : (
-                            <div className="no-contenido">
-                              No hay actividades programadas
-                            </div>
-                          )}
+                            );
+                          })}
                         </div>
                       </div>
                     )}

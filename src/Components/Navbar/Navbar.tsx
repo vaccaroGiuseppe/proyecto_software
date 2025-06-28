@@ -120,7 +120,7 @@ function Navbar() {
         {/* Mostrar enlaces adicionales para admin */}
         {isAuthenticated && location.pathname !== '/actualizar-contrasena'&& userType === 'admin' && (
           <>
-          <Link className="Link Link_Nosotros" to="/publicar-cronograma">
+          <Link className="Link Link_Nosotros" to="/asignar-salon">
               Salones
             </Link>
             <Link className="Link Link_Nosotros" to="/crear-editar-eliminar-materia">
@@ -128,6 +128,17 @@ function Navbar() {
             </Link>
             <Link className="Link Link_Nosotros" to="/abrir-seccion">
               Secciones
+            </Link>
+            <Link className="Link Link_Nosotros" to="/publicar-cronograma">
+              Cronogramas
+            </Link>
+          </>
+        )}
+
+        {isAuthenticated && location.pathname !== '/actualizar-contrasena'&& userType === 'profesor' && (
+          <>
+            <Link className="Link Link_Nosotros" to="/publicar-cronograma">
+              Cronogramas
             </Link>
           </>
         )}
