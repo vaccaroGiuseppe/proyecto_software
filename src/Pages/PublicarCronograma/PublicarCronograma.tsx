@@ -187,63 +187,82 @@ export default function PublicarCronograma() {
   };
 
   const parsearArchivoExcel = async (file: File): Promise<DiaCronograma[]> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
-      reader.onload = (e) => {
-        try {
-          const data = e.target?.result;
-          const workbook = XLSX.read(data, { type: 'array' });
-          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-          
-          interface ExcelRow {
-            Semana: number;
-            'Clase 1': string;
-            'Clase 2': string;
-          }
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-          const jsonData = XLSX.utils.sheet_to_json<ExcelRow>(firstSheet);
-
-          // Validar estructura del archivo
-          if (jsonData.length === 0) {
-            throw new Error('El archivo está vacío');
-          }
-
-          const primeraFila = jsonData[0];
-          if (!('Semana' in primeraFila) || !('Clase 1' in primeraFila) || !('Clase 2' in primeraFila)) {
-            throw new Error('El archivo no tiene el formato correcto. Debe contener columnas: Semana, Clase 1, Clase 2');
-          }
-
-          // Convertir a formato de días del cronograma
-          const dias: DiaCronograma[] = [];
-          
-          jsonData.forEach(row => {
-            dias.push({
-              semana: row.Semana,
-              dia_numero: 1,
-              actividad: row['Clase 1'] || ''
-            });
-            
-            dias.push({
-              semana: row.Semana,
-              dia_numero: 2,
-              actividad: row['Clase 2'] || ''
-            });
-          });
-
-          resolve(dias);
-        } catch (err) {
-          reject(err);
+    reader.onload = (e) => {
+      try {
+        if (!seccionSeleccionada) {
+          throw new Error('No se ha seleccionado una sección');
         }
-      };
-      
-      reader.onerror = () => {
-        reject(new Error('Error al leer el archivo'));
-      };
-      
-      reader.readAsArrayBuffer(file);
-    });
-  };
+
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        // Obtener los nombres reales de los días para esta sección
+        const diasSeccion = obtenerDiasSeccion(seccionSeleccionada);
+        const [dia1, dia2] = diasSeccion;
+        const nombreDia1 = dia1 || 'Día 1';
+        const nombreDia2 = dia2 || 'Día 2';
+
+        // Definir la interfaz para las filas del Excel
+        interface FilaExcel {
+          Semana: number;
+          [key: string]: string | number; // Para permitir las columnas dinámicas de días
+        }
+
+        // Convertir la hoja a JSON con el tipo definido
+        const jsonData = XLSX.utils.sheet_to_json<FilaExcel>(firstSheet);
+
+        // Validar estructura del archivo
+        if (jsonData.length === 0) {
+          throw new Error('El archivo está vacío');
+        }
+
+        const primeraFila = jsonData[0];
+        
+        // Validar que tenga las columnas necesarias
+        if (!('Semana' in primeraFila) || !(nombreDia1 in primeraFila) || !(nombreDia2 in primeraFila)) {
+          throw new Error(`El archivo no tiene el formato correcto. Debe contener columnas: Semana, ${nombreDia1}, ${nombreDia2}`);
+        }
+
+        // Convertir a formato de días del cronograma
+        const dias: DiaCronograma[] = [];
+        
+        jsonData.forEach(row => {
+          // Validar que la semana sea un número válido
+          const semana = Number(row.Semana);
+          if (isNaN(semana)) {
+            throw new Error(`La semana debe ser un número (valor encontrado: ${row.Semana})`);
+          }
+
+          dias.push({
+            semana: semana,
+            dia_numero: 1,
+            actividad: String(row[nombreDia1] ?? '').trim()
+          });
+          
+          dias.push({
+            semana: semana,
+            dia_numero: 2,
+            actividad: String(row[nombreDia2] ?? '').trim()
+          });
+        });
+
+        resolve(dias);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Error al leer el archivo'));
+    };
+    
+    reader.readAsArrayBuffer(file);
+  });
+};
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
