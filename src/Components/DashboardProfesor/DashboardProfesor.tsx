@@ -1,4 +1,4 @@
-import { FaDoorOpen } from 'react-icons/fa'; // PENDIENTE POR CAMBIAR SON LOS ÍCONOS
+import { FaDoorOpen,FaCalendarAlt } from 'react-icons/fa'; // PENDIENTE POR CAMBIAR SON LOS ÍCONOS
 import { useNavigate } from 'react-router-dom';
 import './DashboardProfesor.css';
 
@@ -20,6 +20,16 @@ function DashboardProfesor() {
             </div>
             <h2 className="card-title">Materias</h2>
             <p className="card-description">Visualizar las materias que imparte este trimestre</p>
+          </div>
+          <div 
+            className="dashboard-card"
+            onClick={() => navigate('/publicar-cronogramas')}
+          >
+            <div className="card-icon">
+              <FaCalendarAlt size={60} />
+            </div>
+            <h2 className="card-title">Publicar Cronogramas</h2>
+            <p className="card-description">Gestionar y publicar calendarios académicos</p>
           </div>
 
         </div>
