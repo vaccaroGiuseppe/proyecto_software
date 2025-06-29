@@ -46,7 +46,7 @@ font-size: 3.22rem;}
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-top: 6px solid #f67e08;
+  border-top: 6px solid #afaeae;
 }
 
 .dashboard-card:hover {
