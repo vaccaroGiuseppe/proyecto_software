@@ -1,6 +1,4 @@
-html {
- 
-}
+/* ===== ESTILOS BASE ===== */
 .about-page {
   font-family: 'Montserrat', sans-serif;
   color: #1e1e1e;
@@ -8,6 +6,7 @@ html {
   overflow-x: hidden;
 }
 
+/* ===== HERO SECTION ===== */
 .about-hero {
   position: relative;
   background-image: url("/foto-about.jpg");
@@ -18,27 +17,11 @@ html {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 8rem 2rem 4rem; /* Valor base para desktop */
+  padding: 8rem 2rem 4rem;
   margin: 0 1% 4rem;
   box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 
-/* AJUSTES ESPECÍFICOS PARA MÓVILES */
-@media (max-width: 768px) {
-  .about-hero {
-    padding-top: 9rem !important; /* Máximo espacio en móviles */
-    min-height: 50vh; /* Altura ajustada */
-  }
-}
-
-@media (max-width: 480px) {
-  .about-hero {
-    padding-top: 7rem !important; /* Espacio mínimo seguro */
-    margin: 0 1rem 3rem; /* Márgenes laterales reducidos */
-  }
-}
-
-/* OVERLAY (SIN CAMBIOS) */
 .overlay {
   position: absolute;
   top: 0;
@@ -50,7 +33,6 @@ html {
   border-radius: 12px;
 }
 
-/* CONTENIDO HERO (SIN CAMBIOS) */
 .hero-content {
   position: relative;
   z-index: 2;
@@ -82,7 +64,7 @@ html {
   text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* SECCIÓN MISIÓN/VISIÓN (SIN CAMBIOS) */
+/* ===== MISION/VISION SECTION ===== */
 .about-main {
   padding: 80px 20px;
   background-color: #f5f5f5;
@@ -102,6 +84,9 @@ html {
   padding: 50px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease;
+  background-color: #f9f9f9;
+  border-top: 10px solid #f67e08;
+  border-bottom: 10px solid #f67e08;
 }
 
 .mv-card:hover {
@@ -112,6 +97,7 @@ html {
   font-size: 2.8rem;
   margin-bottom: 25px;
   font-weight: 700;
+  color: #f67e08;
 }
 
 .mv-card p {
@@ -120,80 +106,99 @@ html {
   font-weight: 400;
 }
 
-.mv-orange {
-  background-color: #f9f9f9;
-  border-top: 10px solid #f67e08;
-  border-bottom: 10px solid #f67e08;
-}
-
-.mv-orange h2 {
-  color: #f67e08;
-}
-
-.mv-white {
-  background-color: #f9f9f9;
-  border-top: 10px solid #f67e08;
-  border-bottom: 10px solid #f67e08;
-}
-
-.mv-white h2 {
-  color: #f67e08;
-}
-
-/* RESPONSIVE (SOLO CAMBIOS EN HERO) */
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+/* Laptops (992px - 1200px) */
 @media (max-width: 1200px) {
   .about-hero {
-    padding-top: 10rem; /* Reducción progresiva */
+    padding-top: 10rem;
+  }
+  
+  .mv-card {
+    padding: 40px 30px;
+  }
+  
+  .mv-card h2 {
+    font-size: 2.4rem;
+  }
+  
+  .mv-card p {
+    font-size: 1.3rem;
   }
 }
 
+/* Small Laptops/Tablets Landscape (768px - 992px) */
 @media (max-width: 992px) {
   .about-hero {
     padding-top: 8rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .about-hero {
-    padding-top: 7rem;
-    margin: 0 3% 3rem;
     min-height: 60vh;
   }
   
-  /* Estilos existentes... */
-  .mv-card {
-    padding: 25px 20px;
-  }
-
-  .mv-card h2 {
-    font-size: 2rem;
-  }
-
-  .mv-card p {
-    font-size: 1.1rem;
-  }
-
   .mv-section {
-    padding: 0 10px;
+    gap: 30px;
   }
-
-  .about-main {
-    padding: 60px 10px;
-  }
-
-  .hero-title {
+  
+  .mv-card h2 {
     font-size: 2.2rem;
   }
-
-  .hero-subtitle {
-    font-size: 1.1rem;
+  
+  .mv-card p {
+    font-size: 1.2rem;
   }
 }
 
-@media (max-width: 480px) {
+/* Tablets Portrait (576px - 768px) */
+@media (max-width: 768px) {
   .about-hero {
-    padding-top: 6rem; /* Mínimo para móviles */
+    padding-top: 7rem;
+    min-height: 50vh;
+    margin: 0 3% 3rem;
+  }
+  
+  .mv-card {
+    padding: 30px 20px;
+  }
+  
+  .mv-card h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .mv-card p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  
+  .about-main {
+    padding: 60px 15px;
+  }
+}
+
+/* Mobile Devices (up to 576px) */
+@media (max-width: 576px) {
+  .about-hero {
+    padding-top: 6rem;
     margin: 0 2rem 2rem;
+    min-height: 40vh;
     border-radius: 8px;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .mv-card {
+    padding: 25px 15px;
+  }
+  
+  .mv-card h2 {
+    font-size: 1.8rem;
+  }
+  
+  .mv-card p {
+    font-size: 1rem;
   }
 }
