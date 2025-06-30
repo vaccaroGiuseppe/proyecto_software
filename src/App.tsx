@@ -16,6 +16,9 @@ import { PrivateRoute } from './Components/PrivateRoute';
 import { CompletarPerfil } from './Pages/CompletarPerfil/CompletarPerfil';
 import AsignarSalon from "./Pages/AsignarSalon/AsignarSalon";
 import GestionarMateria from "./Pages/CrearEditarMateria/CrearEditarEliminarMateria"
+//import PublicarCronograma from "./Pages/PublicarCronograma/PublicarCronograma";
+import BuscarSeccion from "./Pages/BuscarSeccion/BuscarSeccion";
+import VerSeccion from "./Pages/VerSeccion/VerSeccion";
 import PublicarCronograma from "./Pages/PublicarCronograma/PublicarCronograma";
 
 function App() {
@@ -33,6 +36,8 @@ function App() {
             <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
             <Route path="/actualizar-contrasena" element={<ActualizarContrasena />} />
             <Route path="/publicar-cronograma" element={<PublicarCronograma />} />
+            <Route path="/verseccion/:id" element={<VerSeccion />} />
+            <Route path="/buscar-seccion" element={<BuscarSeccion />} />
 
             {/* Ruta de callback para autenticación con Google*/}
             <Route path="/auth/callback" element={<AuthCallback />} />
@@ -107,6 +112,17 @@ function App() {
                 </PrivateRoute>
               } 
             />
+
+            <Route 
+              path="/buscar-seccion" 
+              element={
+                <PrivateRoute>
+                  <BuscarSeccion />
+                </PrivateRoute>
+              } 
+            />
+
+
           </Routes>
         </AuthProvider>
       </Router>

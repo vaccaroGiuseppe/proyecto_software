@@ -1,4 +1,4 @@
-import { FaChalkboardTeacher, FaBook, FaDoorOpen, FaSyncAlt, FaCalendarAlt } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaBook, FaDoorOpen, FaSyncAlt, FaCalendarAlt,FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient'; // Asegúrate de que la ruta sea correcta
 import './DashboardAdmin.css';
@@ -84,13 +84,23 @@ function DashboardAdmin() {
           </div>
           <div 
             className="dashboard-card"
-            onClick={() => navigate('/publicar-cronogramas')}
+            onClick={() => navigate('/publicar-cronograma')}
           >
             <div className="card-icon">
               <FaCalendarAlt size={60} />
             </div>
             <h2 className="card-title">Publicar Cronogramas</h2>
             <p className="card-description">Gestionar y publicar calendarios académicos</p>
+          </div>
+          <div 
+            className="dashboard-card"
+            onClick={() => navigate('/buscar-seccion')}
+          >
+            <div className="card-icon">
+              <FaSearch size={60} />
+            </div>
+            <h2 className="card-title">Buscar Secciones</h2>
+            <p className="card-description">Buscar y visualizar información de secciones</p>
           </div>
         </div>
       </div>

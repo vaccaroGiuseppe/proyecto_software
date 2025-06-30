@@ -3,6 +3,7 @@ import { supabase } from '../../supabaseClient';
 import { FaSearch, FaSpinner } from 'react-icons/fa';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from '../../Components/Footer/Footer';
+import { useNavigate } from 'react-router-dom';
 import "./BuscarSeccion.css";
 
 type SeccionFormateada = {
@@ -17,6 +18,7 @@ type SeccionFormateada = {
 
 export default function BuscarSeccion() {
   const [secciones, setSecciones] = useState<SeccionFormateada[]>([]);
+  const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState('');
   const [resultados, setResultados] = useState<SeccionFormateada[]>([]);
   const [mostrarTodas, setMostrarTodas] = useState(false);
@@ -180,7 +182,12 @@ export default function BuscarSeccion() {
                 <div className="results-container">
                   <div className="results-list">
                     {resultados.map((seccion) => (
-                      <div key={seccion.id_seccion} className="result-item">
+                      <div 
+                        key={seccion.id_seccion} 
+                        className="result-item"
+                        onClick={() => navigate(`/verseccion/${seccion.id_seccion}`)}
+                        style={{ cursor: 'pointer' }}
+                      >
                         <div className="result-header">
                           <span className="materia-codigo">{seccion.codigo_materia}</span>
                           <span className="materia-nombre">{seccion.nombre_materia}</span>
