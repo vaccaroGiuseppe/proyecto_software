@@ -1,0 +1,249 @@
+/* Estilos generales - consistentes con el diseño original */
+.buscar-seccion-container {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #f5f5f5;
+  display: flex;
+  min-height: 80vh;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+.fullpues{
+    background-color: #f67e08;
+}
+
+.main-title {
+  font-size: 2.5rem;
+  color: #f67e08;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  color: #2c3e50;
+  font-weight: 400;
+}
+
+/* Panel de búsqueda */
+.search-container {
+  width: 100%;
+  max-width: 800px;
+}
+
+.search-card {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-top: 6px solid #f67e08;
+  border-bottom: 6px solid #f67e08;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.search-group {
+  position: relative;
+}
+
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  color: #666;
+  z-index: 1;
+}
+
+.search-input {
+  padding-left: 40px !important;
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #f67e08;
+}
+
+.show-all-button {
+  position: absolute;
+  right: 10px;
+  background-color: #f67e08;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.show-all-button:hover {
+  background-color: #d46d07;
+}
+
+.show-all-button.active {
+  background-color: #2c3e50;
+}
+
+/* Resultados de búsqueda */
+.results-container {
+  margin-top: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.results-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.result-item {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-item:hover {
+  background-color: #f9f9f9;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.materia-codigo {
+  color: #f67e08;
+}
+
+.materia-nombre {
+  color: #2c3e50;
+}
+
+.result-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.result-details span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Alert Messages y loading (consistentes con el diseño original) */
+.alert-message {
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.error-message {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.loading-secciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: #666;
+  font-size: 1.1rem;
+  margin: 1rem 0;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .buscar-seccion-container {
+    padding: 15px;
+  }
+
+  .main-title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+  }
+
+  .search-card {
+    padding: 30px 20px;
+  }
+
+  .show-all-button {
+    position: static;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .search-input-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-title {
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .result-header {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
