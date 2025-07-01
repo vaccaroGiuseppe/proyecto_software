@@ -463,7 +463,7 @@ export default function PublicarCronograma() {
                   </form>
                 </div>
 
-                {cronogramaActual && (
+                {cronogramaActual && (cronogramaActual?.dias?.length ?? 0) > 0 && (
                   <div className="cronograma-existente">
                     <div className="cronograma-info">
                       <span>Cronograma existente para esta sección</span>

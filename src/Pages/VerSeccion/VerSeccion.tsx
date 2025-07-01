@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
 import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '../../supabaseClient';
 import { FaSpinner, FaArrowLeft, FaCalendarAlt, FaChalkboardTeacher, FaClock, FaUniversity, FaUpload } from 'react-icons/fa';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from '../../Components/Footer/Footer';
-import "./VerSeccion.css";
+import "./Verseccion.css";
 
 type SeccionDetalle = {
   id_seccion: string;
@@ -31,6 +31,30 @@ export default function VerSeccion() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mostrarCronograma, setMostrarCronograma] = useState(false);
+  const [userType, setUserType] = useState<string | null>(null);
+
+  // Obtener tipo de usuario
+  useEffect(() => {
+    const getUserType = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data, error } = await supabase
+            .from('usuario')
+            .select('tipo')
+            .eq('id_usuario', user.id)
+            .single();
+          
+          if (data) setUserType(data.tipo);
+          if (error) console.error('Error al obtener tipo de usuario:', error);
+        }
+      } catch (err) {
+        console.error('Error al obtener tipo de usuario:', err);
+      }
+    };
+
+    getUserType();
+  }, []);
 
   // Cargar datos de la sección y cronograma
   useEffect(() => {
@@ -73,8 +97,8 @@ export default function VerSeccion() {
 
         // Formatear datos de la sección
         const diasSemana = horarioData?.dia_semana 
-            ? horarioData.dia_semana.split(' y ').map((d: string) => d.trim())
-            : ['Día 1', 'Día 2'];
+          ? horarioData.dia_semana.split(' y ').map((d: string) => d.trim())
+          : ['Día 1', 'Día 2'];
 
         const seccionFormateada: SeccionDetalle = {
           id_seccion: seccionData.id_seccion,
@@ -116,6 +140,7 @@ export default function VerSeccion() {
   }, [id]);
 
   const tieneCronograma = cronograma.length > 0;
+  const puedePublicarCronograma = userType === 'profesor' || userType === 'admin';
 
   return (
     <div className="fullpues">
@@ -146,7 +171,7 @@ export default function VerSeccion() {
           <div className="seccion-content">
             <div className="seccion-card">
               <div className="seccion-header">
-                <h2>{seccion.codigo_materia} - {seccion.nombre_materia}</h2>
+                <h2>{seccion.id_seccion} - {seccion.nombre_materia}</h2>
               </div>
 
               <div className="seccion-details">
@@ -180,16 +205,20 @@ export default function VerSeccion() {
               <div className="cronograma-header">
                 <h3><FaCalendarAlt /> Cronograma de Clases</h3>
                 
-                {!tieneCronograma && (
-                  <button 
-                    onClick={() => navigate('/publicar-cronograma')}
-                    className="publish-button"
-                  >
-                    <FaUpload /> Publicar Cronograma
-                  </button>
-                )}
-
-                {tieneCronograma && (
+                {!tieneCronograma ? (
+                  puedePublicarCronograma ? (
+                    <button 
+                      onClick={() => navigate('/publicar-cronograma')}
+                      className="publish-button"
+                    >
+                      <FaUpload /> Publicar Cronograma
+                    </button>
+                  ) : (
+                    <div className="no-permission-message">
+                      Solo profesores y administradores pueden publicar cronogramas
+                    </div>
+                  )
+                ) : (
                   <button 
                     onClick={() => setMostrarCronograma(!mostrarCronograma)}
                     className="toggle-button"
@@ -202,6 +231,11 @@ export default function VerSeccion() {
               {!tieneCronograma ? (
                 <div className="no-cronograma">
                   <p>Esta sección no tiene un cronograma publicado aún.</p>
+                  {!puedePublicarCronograma && (
+                    <p className="contact-message">
+                      Contacta al profesor o administrador para solicitar el cronograma.
+                    </p>
+                  )}
                 </div>
               ) : mostrarCronograma && (
                 <div className="cronograma-content">
