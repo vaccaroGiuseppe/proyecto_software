@@ -174,7 +174,7 @@ export default function UsuarioForm() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="registro-form">
               <div className="form-grid">
-                <div className="form-group full-width">
+                <div className="form-group full-width FotodePerfil">
                   <label htmlFor="foto_perfil">Foto de Perfil</label>
                   <div className="photo-upload-container">
                     {previewImage ? (

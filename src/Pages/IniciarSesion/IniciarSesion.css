@@ -91,7 +91,8 @@
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  font-family: "Montserrat", sans-serif;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -209,9 +210,7 @@
     font-size: 1.05rem;
   }
   
-  .IniciarSesion_Boton {
-    font-size: 1.2rem;
-  }
+ 
 }
 
 /* Teléfonos (hasta 767px) */
@@ -239,7 +238,6 @@
   }
   
   .IniciarSesion_Boton {
-    font-size: 1.1rem;
     padding: 1rem;
   }
   
