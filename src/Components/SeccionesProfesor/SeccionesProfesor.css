@@ -1,0 +1,194 @@
+/* BuscadorSeccion.css - Estilos para SeccionesProfesor */
+
+.buscador1 {
+  background-color: #f5f5f5;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.dashboar-title1 {
+  text-align: left;
+  color: #333;
+  margin-bottom: 3rem;
+  font-size: 3.2rem;
+  margin-left: 5.09rem;
+  font-weight: 600;
+}
+
+.buscador-simplificado1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 6rem;
+  background-color: #f5f5f5;
+}
+
+/* Estilos para los resultados */
+.results-container1 {
+  width: 100%;
+  margin-top: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.results-list1 {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.result-item1 {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  transition: all 0.2s ease;
+}
+
+.result-item1:last-child {
+  border-bottom: none;
+}
+
+.result-item1:hover {
+  background-color: #f9f9f9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.result-header1 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.materia-codigo1 {
+  color: #f67e08;
+  font-size: 1.1rem;
+}
+
+.materia-nombre1 {
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.result-details1 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.result-details1 span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Loading y mensajes de estado */
+.loading-secciones1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  color: #666;
+  font-size: 1.1rem;
+  margin: 1rem 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  font-size: 1.5rem;
+  color: #f67e08;
+}
+
+.alert-message {
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.error-message {
+  background-color: #ffecec;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+}
+
+/* Animaciones */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .buscador-simplificado1 {
+    padding: 1rem 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .buscador-simplificado1 {
+    padding: 1rem;
+  }
+  
+  .dashboar-title1 {
+    font-size: 2.5rem;
+    margin-left: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .results-container1 {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .result-item1 {
+    padding: 12px;
+  }
+
+  .materia-codigo1 {
+    font-size: 1rem;
+  }
+
+  .materia-nombre1 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboar-title1 {
+    font-size: 2rem;
+  }
+
+  .result-header1 {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .result-details1 {
+    font-size: 0.9rem;
+  }
+}

@@ -116,7 +116,7 @@ const handleClickSeccion = (idSeccion: string) => {
   };
   return (
     <div className="buscador">
-            <h1 className="dashboar-title">Busca tu Sección</h1>
+            <h1 className="dashboar-title">Buscar Sección</h1>
 
         <div className="buscador-simplificado">
         <div className="search-input-container">

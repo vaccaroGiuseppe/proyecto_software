@@ -97,6 +97,7 @@ margin-left: 5.09rem;}
   padding: 15px;
   border-bottom: 1px solid #eee;
   transition: background-color 0.2s;
+  background-color: white;
 }
 
 .result-item:last-child {
@@ -189,6 +190,7 @@ margin-left: 5.09rem;}
 
   .buscador{
     align-items: center;
+    text-align: center;
   }
 
   .search-input-container {

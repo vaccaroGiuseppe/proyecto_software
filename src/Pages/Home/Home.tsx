@@ -13,6 +13,7 @@ import Imagen1 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_1.png";
 import Imagen2 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_2.png";
 import Imagen3 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_3.png";
 import BuscadorSecciones from '../../Components/BuscadorSecciones/BuscadorSecciones';
+import SeccionesProfesor from '../../Components/SeccionesProfesor/SeccionesProfesor';
 
 const Home = () => {
   const [user, setUser] = useState({
@@ -97,6 +98,7 @@ const Home = () => {
       <Navbar />
       <Carrusel_Inicio imagenes={imagenesCarrusel} />
       {user.isEstudiante && <BuscadorSecciones />}      
+      {user.isProfesor && <SeccionesProfesor />} 
       {/* DashBoard de usuario dependiendo del tipo */}
       {user.isLoading ? (
         <div className="loading-container">

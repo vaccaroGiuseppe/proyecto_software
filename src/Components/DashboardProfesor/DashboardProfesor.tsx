@@ -23,7 +23,7 @@ function DashboardProfesor() {
           </div>
           <div 
             className="dashboard-card"
-            onClick={() => navigate('/publicar-cronogramas')}
+            onClick={() => navigate('/publicar-cronograma')}
           >
             <div className="card-icon">
               <FaCalendarAlt size={60} />
