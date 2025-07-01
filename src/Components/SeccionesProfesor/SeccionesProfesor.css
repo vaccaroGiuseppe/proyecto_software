@@ -69,19 +69,19 @@
 
 .materia-codigo1 {
   color: #f67e08;
-  font-size: 1.1rem;
+  font-size: 2rem;
 }
 
 .materia-nombre1 {
   color: #2c3e50;
-  font-size: 1.2rem;
+  font-size: 2.2rem;
 }
 
 .result-details1 {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 0.95rem;
+  font-size: 1.4rem;
   color: #555;
 }
 

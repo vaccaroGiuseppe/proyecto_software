@@ -128,7 +128,7 @@ const handleClickSeccion = (idSeccion: string) => {
                 setBusqueda(e.target.value);
                 setMostrarTodas(false);
             }}
-            className="search-input"
+            className="search-input3"
             placeholder="Buscar por código, materia, profesor..."
             />
             <button

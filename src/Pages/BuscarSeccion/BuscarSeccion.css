@@ -5,7 +5,7 @@
   display: flex;
   min-height: 80vh;
   flex-direction: column;
-  align-items: center;
+  align-items:center;
   padding: 20px;
 }
 
@@ -35,9 +35,11 @@
 .search-container {
   width: 100%;
   max-width: 800px;
+  align-items: center;
 }
 
 .search-card {
+  align-self: center;
   width: 100%;
   background: white;
   border-radius: 12px;
@@ -61,6 +63,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  align-self: center;
 }
 
 .search-icon {
@@ -126,6 +129,7 @@
   padding: 15px;
   border-bottom: 1px solid #eee;
   transition: background-color 0.2s;
+  font-size:2rem;
 }
 
 .result-item:last-child {
@@ -155,7 +159,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: #555;
 }
 

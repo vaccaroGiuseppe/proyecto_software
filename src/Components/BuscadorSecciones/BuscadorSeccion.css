@@ -39,13 +39,13 @@ margin-left: 5.09rem;}
   z-index: 1;
 }
 
-.search-input {
+.search-input3 {
   padding-left: 40px !important;
   width: 100%;
-  padding: 12px 15px;
+  padding: 16px 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 1.7rem;
   font-family: 'Montserrat', sans-serif;
   transition: border-color 0.3s;
 }
@@ -62,7 +62,7 @@ margin-left: 5.09rem;}
   border: none;
   padding: 8px 12px;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   font-weight: 600;
 
   cursor: pointer;
@@ -127,7 +127,7 @@ margin-left: 5.09rem;}
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: #555;
 }
 
