@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
-import { FaSpinner, FaArrowLeft, FaCalendarAlt, FaChalkboardTeacher, FaClock, FaUniversity, FaUpload } from 'react-icons/fa';
+import { FaSpinner, FaArrowLeft, FaCalendarAlt, FaChalkboardTeacher, FaClock, FaUniversity, FaUpload, FaUserGraduate } from 'react-icons/fa';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from '../../Components/Footer/Footer';
 import "./Verseccion.css";
@@ -15,6 +15,11 @@ type SeccionDetalle = {
   modalidad: string;
   salon: string | null;
   dias_semana: string[];
+  preparador?: {
+    nombre: string;
+    apellido: string;
+    correo: string;
+  } | null;
 };
 
 type DiaCronograma = {
@@ -65,7 +70,7 @@ export default function VerSeccion() {
         // Obtener datos de la sección
         const { data: seccionData, error: seccionError } = await supabase
           .from('seccion')
-          .select('id_seccion, codigo_materia, id_profesor, id_horario, salon')
+          .select('id_seccion, codigo_materia, id_profesor, id_horario, salon, id_preparador')
           .eq('id_seccion', id)
           .single();
 
@@ -76,7 +81,8 @@ export default function VerSeccion() {
         const [
           { data: materiaData },
           { data: profesorData },
-          { data: horarioData }
+          { data: horarioData },
+          { data: preparadorData }
         ] = await Promise.all([
           supabase
             .from('materia')
@@ -92,7 +98,14 @@ export default function VerSeccion() {
             .from('horario_clase')
             .select('id_horario_clase, dia_semana, hora_inicio, hora_fin, modalidad')
             .eq('id_horario_clase', seccionData.id_horario)
-            .single()
+            .single(),
+          seccionData.id_preparador 
+            ? supabase
+                .from('usuario')
+                .select('nombre, apellido, correo')
+                .eq('id_usuario', seccionData.id_preparador)
+                .single()
+            : { data: null }
         ]);
 
         // Formatear datos de la sección
@@ -112,8 +125,15 @@ export default function VerSeccion() {
             : 'Sin horario',
           modalidad: horarioData?.modalidad || '',
           salon: seccionData.salon,
-          dias_semana: diasSemana
-        };
+          dias_semana: diasSemana,
+          preparador: preparadorData 
+            ? {
+                nombre: preparadorData.nombre,
+                apellido: preparadorData.apellido,
+                correo: preparadorData.correo
+              }
+            : null
+          }
 
         setSeccion(seccionFormateada);
 
@@ -197,6 +217,17 @@ export default function VerSeccion() {
                   <FaUniversity className="detail-icon" />
                   <span className="detail-label">Salón:</span>
                   <span className="detail-value">{seccion.salon || 'No asignado'}</span>
+                </div>
+
+                {/* Nuevo recuadro para el preparador */}
+                <div className="detail-item">
+                  <FaUserGraduate className="detail-icon" />
+                  <span className="detail-label">Preparador:</span>
+                  <span className="detail-value">
+                    {seccion.preparador 
+                      ? `${seccion.preparador.apellido}, ${seccion.preparador.nombre} (${seccion.preparador.correo})`
+                      : 'No asignado'}
+                  </span>
                 </div>
               </div>
             </div>
