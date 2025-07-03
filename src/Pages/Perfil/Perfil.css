@@ -23,6 +23,11 @@
   align-items: center;
 }
 
+.change-avatar-button{
+  max-height: 32px;
+  border-radius: 8px;
+}
+
 /* Panel naranja  Lo vamos a quitar mientras en todos
 .orange-panel {
   width: 40%;
