@@ -225,7 +225,7 @@ export default function VerSeccion() {
                   <span className="detail-label">Preparador:</span>
                   <span className="detail-value">
                     {seccion.preparador 
-                      ? `${seccion.preparador.apellido}, ${seccion.preparador.nombre} (${seccion.preparador.correo})`
+                      ? `${seccion.preparador.apellido}, ${seccion.preparador.nombre}`
                       : 'No asignado'}
                   </span>
                 </div>
