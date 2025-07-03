@@ -12,6 +12,11 @@ type SeccionFormateada = {
   horario: string;
   modalidad: string;
   salon: string | null;
+  preparador?: {
+    nombre: string;
+    apellido: string;
+    correo: string;
+  } | null;
 };
 
 type SeccionesProfesorProps = {
@@ -55,7 +60,7 @@ export default function SeccionesProfesor({ onSeccionSelect }: SeccionesProfesor
         // Obtener las secciones del profesor
         const { data: seccionesData, error: seccionesError } = await supabase
           .from('seccion')
-          .select('id_seccion, codigo_materia, id_profesor, id_horario, salon')
+          .select('id_seccion, codigo_materia, id_profesor, id_horario, salon, id_preparador')
           .eq('id_profesor', idProfesor);
 
         if (seccionesError) throw seccionesError;
@@ -68,22 +73,36 @@ export default function SeccionesProfesor({ onSeccionSelect }: SeccionesProfesor
 
         const codigosMateria = [...new Set(seccionesData?.map(s => s.codigo_materia))];
         const idsHorarios = [...new Set(seccionesData?.map(s => s.id_horario))];
+        const idsPreparadores = seccionesData
+          .map(s => s.id_preparador)
+          .filter(id => id !== null) as string[];
 
-        // Obtener información de las materias y horarios
+        // Obtener información adicional en paralelo
         const [
           { data: materiasData },
           { data: profesorData },
-          { data: horariosData }
+          { data: horariosData },
+          { data: preparadoresData }
         ] = await Promise.all([
           supabase.from('materia').select('codigo_materia, nombre').in('codigo_materia', codigosMateria),
           supabase.from('usuario').select('id_usuario, nombre, apellido').eq('id_usuario', idProfesor),
-          supabase.from('horario_clase').select('id_horario_clase, dia_semana, hora_inicio, hora_fin, modalidad').in('id_horario_clase', idsHorarios)
+          supabase.from('horario_clase').select('id_horario_clase, dia_semana, hora_inicio, hora_fin, modalidad').in('id_horario_clase', idsHorarios),
+          idsPreparadores.length > 0 
+            ? supabase.from('usuario').select('id_usuario, nombre, apellido, correo').in('id_usuario', idsPreparadores)
+            : { data: [] }
         ]);
+
+        const preparadoresMap = new Map(
+          preparadoresData?.map(prep => [prep.id_usuario, prep]) || []
+        );
 
         const seccionesFormateadas = seccionesData?.map(seccion => {
           const materia = materiasData?.find(m => m.codigo_materia === seccion.codigo_materia);
           const profesor = profesorData?.[0];
           const horario = horariosData?.find(h => h.id_horario_clase === seccion.id_horario);
+          const preparador = seccion.id_preparador 
+            ? preparadoresMap.get(seccion.id_preparador) 
+            : null;
 
           return {
             id_seccion: seccion.id_seccion,
@@ -92,7 +111,12 @@ export default function SeccionesProfesor({ onSeccionSelect }: SeccionesProfesor
             nombre_profesor: profesor ? `${profesor.nombre} ${profesor.apellido}` : 'Sin profesor',
             horario: horario ? `${horario.dia_semana} ${horario.hora_inicio}-${horario.hora_fin}` : 'Sin horario',
             modalidad: horario?.modalidad || '',
-            salon: seccion.salon
+            salon: seccion.salon,
+            preparador: preparador ? {
+              nombre: preparador.nombre,
+              apellido: preparador.apellido,
+              correo: preparador.correo
+            } : null
           };
         }) || [];
 
@@ -157,6 +181,12 @@ export default function SeccionesProfesor({ onSeccionSelect }: SeccionesProfesor
                     <span><strong>Profesor:</strong> {seccion.nombre_profesor}</span>
                     <span><strong>Horario:</strong> {seccion.horario} ({seccion.modalidad})</span>
                     <span><strong>Salón:</strong> {seccion.salon || 'No asignado'}</span>
+                    <span>
+                      <strong>Preparador:</strong> 
+                      {seccion.preparador 
+                        ? ` ${seccion.preparador.nombre} ${seccion.preparador.apellido} (${seccion.preparador.correo})`
+                        : ' No asignado'}
+                    </span>
                   </div>
                 </div>
               ))}

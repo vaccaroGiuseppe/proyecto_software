@@ -137,6 +137,9 @@ function Navbar() {
 
         {isAuthenticated && location.pathname !== '/actualizar-contrasena'&& userType === 'profesor' && (
           <>
+            <Link className="Link Link_Nosotros" to="/asignar-preparador">
+              Preparadores
+            </Link>
             <Link className="Link Link_Nosotros" to="/publicar-cronograma">
               Cronogramas
             </Link>
