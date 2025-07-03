@@ -12,6 +12,7 @@
     padding: 20px;
     margin: 0 auto;
     width: 100%;
+    font-size: 1.4rem; /* Tamaño base aumentado */
 }
 
 .header-section {
@@ -20,14 +21,14 @@
 }
 
 .main-title {
-    font-size: 2.5rem;
+    font-size: 3 rem; /* Aumentado de 2.5rem */
     color: #f67e08;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1 rem; /* Aumentado */
 }
 
 .subtitle {
-    font-size: 1.3rem;
+    font-size: 1.5rem; /* Aumentado de 1.3rem */
     color: #2c3e50;
     font-weight: 400;
 }
@@ -53,17 +54,18 @@
 
 .form-label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 10px; /* Aumentado */
     font-weight: 600;
     color: #2c3e50;
+    font-size: 1.3rem; /* Aumentado */
 }
 
 .form-select, .form-input {
     width: 100%;
-    padding: 12px 15px;
+    padding: 14px 18px; /* Aumentado */
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 1.8rem; /* Aumentado */
     font-family: 'Montserrat', sans-serif;
     transition: border-color 0.3s;
 }
@@ -93,7 +95,7 @@
 }
 
 .suggestions-container {
-    margin-top: 10px;
+    margin-top: 12px; /* Aumentado */
     border: 1px solid #eee;
     border-radius: 8px;
     max-height: 300px;
@@ -101,12 +103,13 @@
 }
 
 .suggestion-item {
-    padding: 12px 15px;
+    padding: 14px 18px; /* Aumentado */
     cursor: pointer;
     display: flex;
     align-items: center;
     border-bottom: 1px solid #eee;
     transition: background-color 0.2s;
+    font-size: 1.5em; /* Aumentado */
 }
 
 .suggestion-item:last-child {
@@ -124,7 +127,7 @@
 .suggestion-icon {
     margin-right: 15px;
     color: #f67e08;
-    font-size: 1.2rem;
+    font-size: 1.8rem; /* Aumentado */
 }
 
 .suggestion-info {
@@ -136,25 +139,26 @@
 .suggestion-name {
     font-weight: 600;
     color: #2c3e50;
+    font-size: 2rem; /* Aumentado */
 }
 
 .suggestion-email {
-    font-size: 0.9rem;
+    font-size: 1.4rem; /* Aumentado de 0.9rem */
     color: #666;
 }
 
 .preparador-badge {
     background-color: #f67e08;
     color: white;
-    padding: 3px 8px;
+    padding: 4px 10px; /* Aumentado */
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 1.4rem; /* Aumentado */
     font-weight: 600;
 }
 
 .selected-preparador {
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: 25px; /* Aumentado */
+    padding: 18px; /* Aumentado */
     background-color: #f9f9f9;
     border-radius: 8px;
     border-left: 4px solid #f67e08;
@@ -163,15 +167,17 @@
 .selected-preparador h3 {
     margin-top: 0;
     color: #2c3e50;
+    font-size: 1.4rem; /* Aumentado */
 }
 
 .preparador-info {
     display: flex;
     align-items: center;
+    font-size: 1.4rem; /* Aumentado */
 }
 
 .preparador-icon {
-    font-size: 1.5rem;
+    font-size: 1.8rem; /* Aumentado de 1.5rem */
     color: #f67e08;
     margin-right: 15px;
 }
@@ -179,21 +185,21 @@
 .form-actions {
     display: flex;
     gap: 15px;
-    margin-top: 30px;
+    margin-top: 35px; /* Aumentado */
 }
 
 .action-button {
-    padding: 12px 20px;
+    padding: 14px 22px; /* Aumentado */
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 1.4rem; /* Aumentado */
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px; /* Aumentado */
 }
 
 .save-button {
@@ -225,13 +231,14 @@
 }
 
 .alert-message {
-    padding: 15px;
+    padding: 16px; /* Aumentado */
     margin-bottom: 25px;
     border-radius: 8px;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px; /* Aumentado */
+    font-size: 1.4rem; /* Aumentado */
 }
 
 .exito-message {
@@ -249,13 +256,15 @@
 .loading-message {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px; /* Aumentado */
     color: #666;
-    padding: 10px 0;
+    padding: 12px 0; /* Aumentado */
+    font-size: 1.4rem; /* Aumentado */
 }
 
 .spinner {
     animation: spin 1s linear infinite;
+    font-size: 1.2rem; /* Aumentado */
 }
 
 @keyframes spin {
@@ -266,18 +275,45 @@
 @media (max-width: 768px) {
     .asignar-preparador-container {
         padding: 15px;
+        font-size: 1rem; /* Tamaño base para móviles */
     }
 
     .main-title {
-        font-size: 2rem;
+        font-size: 2.2rem; /* Ajustado para móviles */
     }
 
     .subtitle {
-        font-size: 1.1rem;
+        font-size: 1.2rem; /* Ajustado para móviles */
     }
 
     .asignar-preparador-card {
         padding: 20px;
+    }
+
+    .form-label {
+        font-size: 1.1rem; /* Ajustado para móviles */
+    }
+
+    .form-select, .form-input {
+        font-size: 1rem; /* Ajustado para móviles */
+        padding: 12px 15px; /* Ajustado para móviles */
+    }
+
+    .suggestion-item {
+        font-size: 1rem; /* Ajustado para móviles */
+        padding: 12px 15px; /* Ajustado para móviles */
+    }
+
+    .selected-preparador h3 {
+        font-size: 1.2rem; /* Ajustado para móviles */
+    }
+
+    .preparador-info {
+        font-size: 1rem; /* Ajustado para móviles */
+    }
+
+    .action-button {
+        font-size: 1rem; /* Ajustado para móviles */
     }
 
     .form-actions {
@@ -286,5 +322,19 @@
 
     .action-button {
         width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 1.8rem; /* Más pequeño para pantallas muy pequeñas */
+    }
+    
+    .subtitle {
+        font-size: 1.1rem; /* Más pequeño para pantallas muy pequeñas */
+    }
+    
+    .asignar-preparador-card {
+        padding: 15px;
     }
 }
