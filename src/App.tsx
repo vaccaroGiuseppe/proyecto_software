@@ -20,6 +20,7 @@ import GestionarMateria from "./Pages/CrearEditarMateria/CrearEditarEliminarMate
 import BuscarSeccion from "./Pages/BuscarSeccion/BuscarSeccion";
 import VerSeccion from "./Pages/VerSeccion/VerSeccion";
 import PublicarCronograma from "./Pages/PublicarCronograma/PublicarCronograma";
+import AsignarPreparador from "./Pages/AsignarPreparador/AsignarPreparador";
 
 function App() {
   return (
@@ -38,6 +39,8 @@ function App() {
             <Route path="/publicar-cronograma" element={<PublicarCronograma />} />
             <Route path="/verseccion/:id" element={<VerSeccion />} />
             <Route path="/buscar-seccion" element={<BuscarSeccion />} />
+            <Route path="/asignar-preparador" element={<AsignarPreparador />} />
+
 
             {/* Ruta de callback para autenticación con Google*/}
             <Route path="/auth/callback" element={<AuthCallback />} />
