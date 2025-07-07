@@ -85,7 +85,7 @@ const RecuperarContrasena = () => {
           </div>
         ) : (
           <>
-            <p className='RecuperarContrasena_Instrucciones'>
+            <p className='RecuperarContrasena_Instrucciones1'>
               Ingresa tu correo institucional UNIMET y te enviaremos un enlace para restablecer tu contraseña.
             </p>
             
@@ -125,7 +125,7 @@ const RecuperarContrasena = () => {
         <div className='RecuperarContrasena_Volver_Contenedor'>
           <button 
             onClick={() => navigate('/iniciarsesion')} 
-            className='RecuperarContrasena_Volver_Link'
+            className='RecuperarContrasena_Boton1'
             disabled={loading}
           >
             <FaArrowLeft className='RecuperarContrasena_Volver_Icono' />

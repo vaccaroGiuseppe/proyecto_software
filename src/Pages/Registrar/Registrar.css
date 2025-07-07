@@ -327,6 +327,12 @@
     flex-direction: column;
   }
 
+  .panel-content1 {
+  padding-left: 30px;
+  padding-right: 0;
+
+}
+
   .orange-panel {
     width: 100%;
     padding: 10px 20px;
@@ -409,7 +415,7 @@
   display: none;
 }
 
-.upload-button {
+.upload-button1 {
   display: inline-block;
   padding: 0.8rem 1.5rem;
   background-color: #f67e08;
@@ -419,6 +425,7 @@
   text-align: center;
   transition: all 0.3s ease;
   font-weight: 600;
+  font-size: 1.4rem;
   border: none;
 }
 
@@ -426,10 +433,15 @@
   background-color: #d46d07;
 }
 
-.file-hint {
-  font-size: 0.8rem;
+.file-hint1 {
+  font-size: 1.6rem;
   color: #666;
   margin-top: 0.5rem;
+}
+
+.fotodeperfil{
+  font-size: 3rem;
+  align-self: center;
 }
 
 .close-alert {
@@ -452,6 +464,14 @@
     width: 100px;
     height: 100px;
   }
+
+  .panel-content1 {
+  padding-left: 30px;
+
+}
+
+
+
 }
 
 

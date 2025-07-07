@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 /* Estilos generales */
 .RecuperarContrasena_Contenedor {
   display: flex;
@@ -31,18 +32,19 @@
 }
 
 .RecuperarContrasena_Titulo {
-  font-size: 2.2rem;
+  font-size: 3.5rem;
   color: #333;
   margin: 0;
   font-weight: 600;
 }
 
-.RecuperarContrasena_Instrucciones {
+.RecuperarContrasena_Instrucciones1 {
   text-align: center;
-  color: #555;
+  color: black;
   margin-bottom: 2rem;
-  max-width: 500px;
   padding: 0 1rem;
+  font-size: 1.8rem;
+  padding-bottom: 2rem;
 }
 
 /* Estilos del formulario */
@@ -101,6 +103,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 0.5rem;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .RecuperarContrasena_Boton:hover {
@@ -126,6 +129,33 @@
   justify-content: space-between;
   max-width: 500px;
   width: 100%;
+}
+
+/* Estilos del botón */
+.RecuperarContrasena_Boton1 {
+  width: 100%;
+  padding: 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.RecuperarContrasena_Boton1:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.RecuperarContrasena_Boton1:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .RecuperarContrasena_Cerrar_Error {
@@ -183,6 +213,7 @@
 
 .RecuperarContrasena_Volver_Icono {
   font-size: 1rem;
+  margin-right: 1rem;
 }
 
 .RecuperarContrasena_Volver {

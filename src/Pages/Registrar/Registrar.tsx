@@ -175,7 +175,7 @@ export default function UsuarioForm() {
             <form onSubmit={handleSubmit(onSubmit)} className="registro-form">
               <div className="form-grid">
                 <div className="form-group full-width FotodePerfil">
-                  <label htmlFor="foto_perfil">Foto de Perfil</label>
+                  <h1 className="fotodeperfil">Foto de Perfil</h1>
                   <div className="photo-upload-container">
                     {previewImage ? (
                       <div className="photo-preview">
@@ -212,19 +212,19 @@ export default function UsuarioForm() {
                     />
                     <button
                       type="button"
-                      className="upload-button"
+                      className="upload-button1"
                       onClick={triggerFileInput}
                       disabled={isUploadingImage}
                     >
                       {isUploadingImage ? (
                         <FaSpinner className="spinner" />
                       ) : previewImage ? (
-                        'Cambiar imagen'
+                        'Cambiar Imagen'
                       ) : (
-                        'Seleccionar imagen'
+                        'Seleccionar Imagen'
                       )}
                     </button>
-                    <p className="file-hint">Formatos: JPG, PNG (Máx. 5MB)</p>
+                    <p className="file-hint1">Formatos: JPG, PNG, JPEG, HEIC</p>
                   </div>
                 </div>
 
