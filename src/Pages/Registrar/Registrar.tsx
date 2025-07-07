@@ -385,10 +385,10 @@ export default function UsuarioForm() {
         </div>
 
         <div className="orange-panel">
-          <div className="panel-content">
+          <div className="panel-content1">
             <FaUserEdit className="hero-icon" />
-            <h1 className="hero-title">Registro de Usuario</h1>
-            <p className="hero-subtitle">Únete a nuestra comunidad académica</p>
+            <h1 className="hero-title1">Registro de Usuario</h1>
+            <p className="hero-subtitle1">Únete a nuestra comunidad académica</p>
           </div>
         </div>
       </div>
