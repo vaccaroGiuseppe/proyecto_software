@@ -14,6 +14,19 @@ type Profesor = {
   tipo: string;
 };
 
+type HorarioConsulta = {
+  id_consulta: string;
+  dia_semana: string;
+  hora_inicio: string;
+  hora_fin: string;
+  id_profesor: string;
+};
+
+type HorarioAgendadoConProfesor = HorarioConsulta & {
+  nombreProfesor?: string;
+  apellidoProfesor?: string;
+};
+
 export default function BuscarProfesor() {
   const [profesores, setProfesores] = useState<Profesor[]>([]);
   const navigate = useNavigate();
@@ -22,6 +35,12 @@ export default function BuscarProfesor() {
   const [mostrarTodos, setMostrarTodos] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Para horarios agendados
+  const [idEstudiante, setIdEstudiante] = useState<string | null>(null);
+  const [horariosAgendados, setHorariosAgendados] = useState<HorarioAgendadoConProfesor[]>([]);
+  const [loadingHorario, setLoadingHorario] = useState(true);
+  const [mensaje, setMensaje] = useState<string | null>(null);
 
   // Cargar profesores al montar el componente
   useEffect(() => {
@@ -44,6 +63,51 @@ export default function BuscarProfesor() {
 
     cargarProfesores();
   }, []);
+
+  // Obtener id del estudiante logueado y cargar horarios agendados
+  useEffect(() => {
+    const getUserAndHorarios = async () => {
+      setLoadingHorario(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      setIdEstudiante(user?.id ?? null);
+      if (user?.id) {
+        console.log('idEstudiante:', idEstudiante);
+        // Traer todos los horarios agendados por el estudiante
+        const { data: horarios, error } = await supabase
+          .from('horario_consulta')
+          .select('id_consulta, dia_semana, hora_inicio, hora_fin, id_profesor')
+          .eq('id_estudiante', user.id);
+
+        if (error || !horarios || horarios.length === 0) {
+          setHorariosAgendados([]);
+        } else {
+          // Obtener los ids únicos de profesores
+          const idsProfesores = [...new Set(horarios.map(h => h.id_profesor))];
+          // Traer los datos de los profesores
+          const { data: datosProfesores, error: errorProfesores } = await supabase
+            .from('usuario')
+            .select('id_usuario, nombre, apellido')
+            .in('id_usuario', idsProfesores);
+            console.log(errorProfesores)
+
+          // Mapear los nombres a los horarios
+          const horariosConProfesor = horarios.map(horario => {
+            const profe = datosProfesores?.find(p => p.id_usuario === horario.id_profesor);
+            return {
+              ...horario,
+              nombreProfesor: profe?.nombre || '',
+              apellidoProfesor: profe?.apellido || '',
+            };
+          });
+          setHorariosAgendados(horariosConProfesor);
+        }
+      } else {
+        setHorariosAgendados([]);
+      }
+      setLoadingHorario(false);
+    };
+    getUserAndHorarios();
+  }, [mensaje]);
 
   // Filtrar resultados según la búsqueda
   useEffect(() => {
@@ -79,14 +143,65 @@ export default function BuscarProfesor() {
     }
   };
 
+  const formatHora = (hora: string) =>
+    new Date(`1970-01-01T${hora}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // Eliminar horario agendado
+  const handleEliminarAgendado = async (id_consulta: string) => {
+    setMensaje(null);
+    setLoadingHorario(true);
+    const { error } = await supabase
+      .from('horario_consulta')
+      .update({ disponibilidad: true, id_estudiante: null })
+      .eq('id_consulta', id_consulta);
+    if (error) {
+      setMensaje('Error al eliminar el horario agendado');
+    } else {
+      setMensaje('¡Horario agendado eliminado correctamente!');
+    }
+    setLoadingHorario(false);
+    setTimeout(() => setMensaje(null), 3000);
+  };
+
   return (
     <div className='fullpues1'>
-      
-
       <div className="buscar-profe-container">
         <div className="header-section">
           <h1 className="main-title">Buscar Profesores</h1>
           <p className="subtitle">Encuentra los profesores registrados</p>
+        </div>
+
+        {/* Horarios de consulta agendados */}
+        <div className="agendado-section">
+          <h1>Horarios de consulta agendados</h1>
+          {mensaje && <div className="alert-message success-message">{mensaje}</div>}
+          {loadingHorario ? (
+            <div className="loading-secciones">
+              <FaSpinner className="spinner" /> Cargando horarios agendados...
+            </div>
+          ) : horariosAgendados.length > 0 ? (
+            <ul style={{ paddingLeft: 0 }}>
+              {horariosAgendados.map((horario) => (
+                <li key={horario.id_consulta} className="horario-agendado" style={{ listStyle: 'none', marginBottom: 10 }}>
+                  <span>
+                    <strong>{horario.dia_semana}:</strong> {formatHora(horario.hora_inicio)} - {formatHora(horario.hora_fin)}
+                    {' | '}
+                    <strong>Profesor:</strong> {horario.nombreProfesor} {horario.apellidoProfesor}
+                  </span>
+                  <button
+                    className="submit-button"
+                    style={{ marginLeft: 16 }}
+                    onClick={() => handleEliminarAgendado(horario.id_consulta)}
+                    disabled={loadingHorario}
+                  >
+                    Eliminar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="no-horario-agendado">No tienes ningún horario de consulta agendado.</div>
+          )}
         </div>
 
         <div className="search-container">
@@ -134,7 +249,6 @@ export default function BuscarProfesor() {
                         <div
                           key={profesor.id_usuario}
                           className="result-item"
-                          // Puedes cambiar la navegación si tienes una página de perfil de profesor
                           onClick={() => navigate(`/perfilprofesor/${profesor.id_usuario}`)}
                           style={{ cursor: 'pointer' }}
                         >

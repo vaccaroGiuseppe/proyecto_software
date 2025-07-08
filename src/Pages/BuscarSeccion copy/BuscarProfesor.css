@@ -204,6 +204,25 @@
   margin: 1rem 0;
 }
 
+.agendado-section {
+  margin-bottom: 32px;
+}
+.horario-agendado {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-top: 10px;
+  font-size: 1.1rem;
+}
+.no-horario-agendado {
+  color: #666;
+  padding: 12px 0;
+  font-size: 1.1rem;
+}
+
 .spinner {
   animation: spin 1s linear infinite;
 }

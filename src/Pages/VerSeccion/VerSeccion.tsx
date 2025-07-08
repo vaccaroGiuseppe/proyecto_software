@@ -4,7 +4,7 @@ import { supabase } from '../../supabaseClient';
 import { FaSpinner, FaArrowLeft, FaCalendarAlt, FaChalkboardTeacher, FaClock, FaUniversity, FaUpload, FaUserGraduate } from 'react-icons/fa';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from '../../Components/Footer/Footer';
-import "./Verseccion.css";
+import "./VerSeccion.css";
 
 type SeccionDetalle = {
   id_seccion: string;

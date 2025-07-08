@@ -100,3 +100,49 @@
     font-size: 1.3rem;
   }
 }
+
+.agendar-btn {
+  background: #f67e08;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.agendar-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+.alert-message.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.btn-regresar {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: #fff;
+  color: #f67e08;
+  border: 2px solid #f67e08;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-regresar:hover {
+  background: #f67e08;
+  color: #fff;
+}
