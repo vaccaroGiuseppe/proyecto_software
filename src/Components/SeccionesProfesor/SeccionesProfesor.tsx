@@ -174,7 +174,7 @@ export default function SeccionesProfesor({ onSeccionSelect }: SeccionesProfesor
                   style={{ cursor: 'pointer' }}
                 >
                   <div className="result-header1">
-                    <span className="materia-codigo1">{seccion.id_seccion}</span>
+                    <span className="materia-codigo1">{seccion.codigo_materia}</span>
                     <span className="materia-nombre1">{seccion.nombre_materia}</span>
                   </div>
                   <div className="result-details1">
