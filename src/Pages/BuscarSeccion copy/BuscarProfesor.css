@@ -7,7 +7,7 @@
   flex-direction: column;
   align-items:center;
   margin-bottom: 0;
-  padding-bottom: 0;
+  padding-bottom: 3.5rem;
 }
 
 .header-section {
@@ -22,19 +22,20 @@
   margin-bottom: 0;
 }
 
-
-.main-title {
+.mini{
   font-size: 2.5rem;
-  color: #f67e08;
+}
+
+
+.main-title1 {
+  color: #333;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  text-align: left;
+  font-size: 3.2rem;
+  padding-left: 7.6rem;
 }
 
-.subtitle {
-  font-size: 1.3rem;
-  color: #2c3e50;
-  font-weight: 400;
-}
 
 /* Panel de búsqueda */
 .search-container {

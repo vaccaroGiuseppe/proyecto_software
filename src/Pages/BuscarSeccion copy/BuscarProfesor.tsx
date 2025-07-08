@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { FaSearch, FaSpinner } from 'react-icons/fa';
 
-import Footer from '../../Components/Footer/Footer';
 import { useNavigate } from 'react-router-dom';
 import "./BuscarProfesor.css";
 
@@ -167,13 +166,12 @@ export default function BuscarProfesor() {
     <div className='fullpues1'>
       <div className="buscar-profe-container">
         <div className="header-section">
-          <h1 className="main-title">Buscar Profesores</h1>
-          <p className="subtitle">Encuentra los profesores registrados</p>
+          <h1 className="main-title1">Buscar Profesores</h1>
         </div>
 
         {/* Horarios de consulta agendados */}
         <div className="agendado-section">
-          <h1>Horarios de consulta agendados</h1>
+          <h1 className="mini">Horarios de consulta agendados:</h1>
           {mensaje && <div className="alert-message success-message">{mensaje}</div>}
           {loadingHorario ? (
             <div className="loading-secciones">
@@ -268,7 +266,6 @@ export default function BuscarProfesor() {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
