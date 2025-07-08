@@ -8,17 +8,29 @@ type HorarioClase = {
   hora_fin: string;
 };
 
-type Props = {
-  id_usuario: string;
+type HorarioConsulta = {
+  id_consulta: string;
+  dia_semana: string;
+  hora_inicio: string;
+  hora_fin: string;
+  disponibilidad: boolean;
+  id_estudiante: string | null;
 };
 
-export default function AddHorarioConsulta({ id_usuario }: Props) {
+type Props = {
+  id_usuario: string;
+  onHorarioAgregado?: () => void;
+};
+
+export default function AddHorarioConsulta({ id_usuario, onHorarioAgregado }: Props) {
   const [horarios, setHorarios] = useState<HorarioClase[]>([]);
   const [selected, setSelected] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [horariosConsulta, setHorariosConsulta] = useState<HorarioConsulta[]>([]);
 
+  // Cargar horarios disponibles para agregar
   useEffect(() => {
     const cargarHorarios = async () => {
       setLoading(true);
@@ -32,7 +44,25 @@ export default function AddHorarioConsulta({ id_usuario }: Props) {
       setLoading(false);
     };
     cargarHorarios();
+    console.log(horariosConsulta)
   }, []);
+
+  // Cargar horarios de consulta del profesor
+  const cargarHorariosConsulta = async () => {
+    const { data, error } = await supabase
+      .from('horario_consulta')
+      .select('id_consulta, dia_semana, hora_inicio, hora_fin, disponibilidad, id_estudiante')
+      .eq('id_profesor', id_usuario)
+      .order('dia_semana', { ascending: true })
+      .order('hora_inicio', { ascending: true });
+    if (error) setError('Error al cargar horarios de consulta');
+    setHorariosConsulta(data || []);
+  };
+
+  useEffect(() => {
+    cargarHorariosConsulta();
+    // eslint-disable-next-line
+  }, [id_usuario]);
 
   const formatHora = (hora: string) =>
     new Date(`1970-01-01T${hora}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -46,8 +76,7 @@ export default function AddHorarioConsulta({ id_usuario }: Props) {
       return;
     }
     const { dia_semana, hora_inicio, hora_fin } = horario;
-    console.log({ id_usuario, dia_semana, hora_inicio, hora_fin });
-    const { error: insertError, data } = await supabase
+    const { error: insertError } = await supabase
       .from('horario_consulta')
       .insert([{ id_profesor: id_usuario, dia_semana, hora_inicio, hora_fin }]);
     if (insertError) {
@@ -55,9 +84,11 @@ export default function AddHorarioConsulta({ id_usuario }: Props) {
     } else {
       setSuccess('¡Horario de consulta agregado correctamente!');
       setSelected('');
+      await cargarHorariosConsulta(); // Refresca la lista después de agregar
+      if (typeof onHorarioAgregado === 'function') {
+        onHorarioAgregado();
+      }
     }
-    console.log('Insert response:', { insertError, data });
-
   };
 
   return (

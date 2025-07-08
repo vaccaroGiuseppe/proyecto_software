@@ -1,4 +1,4 @@
-import { FaUserGraduate,FaCalendarAlt } from 'react-icons/fa'; // PENDIENTE POR CAMBIAR SON LOS ÍCONOS
+import { FaUserGraduate, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './DashboardProfesor.css';
 
@@ -30,6 +30,16 @@ function DashboardProfesor() {
             </div>
             <h2 className="card-title">Gestión de Cronogramas</h2>
             <p className="card-description">Publicar y editar calendarios académicos</p>
+          </div>
+          <div 
+            className="dashboard-card"
+            onClick={() => navigate('/gestion-consultas')}
+          >
+            <div className="card-icon">
+              <FaClock size={60} />
+            </div>
+            <h2 className="card-title">Horarios de Consulta</h2>
+            <p className="card-description">Gestiona tus horarios de consulta</p>
           </div>
         </div>
       </div>

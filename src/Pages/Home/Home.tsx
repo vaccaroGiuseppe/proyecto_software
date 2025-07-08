@@ -14,8 +14,6 @@ import Imagen2 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_2.png";
 import Imagen3 from "../../Images/Carrusel_Inicio/Carrusel_Inicio_3.png";
 import BuscadorSecciones from '../../Components/BuscadorSecciones/BuscadorSecciones';
 import SeccionesProfesor from '../../Components/SeccionesProfesor/SeccionesProfesor';
-import AddHorarioConsulta from '../../Pages/AddHorarioConsulta/AddHorarioConsulta';
-import { Session } from '@supabase/supabase-js';
 const Home = () => {
   const [user, setUser] = useState({
     isAdmin: false,
@@ -94,15 +92,9 @@ const Home = () => {
     return () => subscription?.unsubscribe();
   }, []);
 
-  const [session, setSession] = useState<Session | null>(null);
 
-useEffect(() => {
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    setSession(session);
-  });
-}, []);
 
-const id_usuario = session?.user?.id;
+
 
   return (
     <div className='Home_Contenedor'>
@@ -111,7 +103,6 @@ const id_usuario = session?.user?.id;
       {user.isEstudiante && <BuscadorSecciones />}
       {user.isEstudiante && <BuscarProfesor />}      
       {user.isProfesor && <SeccionesProfesor />}
-      {user.isProfesor && id_usuario && <AddHorarioConsulta id_usuario={id_usuario} />} 
       {/* DashBoard de usuario dependiendo del tipo */}
       {user.isLoading ? (
         <div className="loading-container">

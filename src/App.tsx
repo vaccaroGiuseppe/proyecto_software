@@ -22,7 +22,7 @@ import VerSeccion from "./Pages/VerSeccion/VerSeccion";
 import PublicarCronograma from "./Pages/PublicarCronograma/PublicarCronograma";
 import AsignarPreparador from "./Pages/AsignarPreparador/AsignarPreparador";
 import PerfilProfesor from "./Pages/PerfilProfesor/PerfilProfesor";
-
+import GestionConsultas from "./Pages/GestionConsultas/GestionConsultas";
 function App() {
   return (
     
@@ -42,7 +42,7 @@ function App() {
             <Route path="/buscar-seccion" element={<BuscarSeccion />} />
             <Route path="/asignar-preparador" element={<AsignarPreparador />} />
             <Route path="/perfilprofesor/:id" element={<PerfilProfesor />} />
-
+            <Route path="/gestion-consultas" element={<GestionConsultas />} />
             {/* Ruta de callback para autenticación con Google*/}
             <Route path="/auth/callback" element={<AuthCallback />} />
 

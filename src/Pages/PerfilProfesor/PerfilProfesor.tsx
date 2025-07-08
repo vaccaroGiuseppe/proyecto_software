@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from '../../Components/Footer/Footer';
@@ -27,10 +27,22 @@ type HorarioConsulta = {
 
 export default function PerfilProfesor() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [profesor, setProfesor] = useState<Profesor | null>(null);
   const [secciones, setSecciones] = useState<Seccion[]>([]);
   const [horariosConsulta, setHorariosConsulta] = useState<HorarioConsulta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mensaje, setMensaje] = useState<string | null>(null);
+  const [idEstudiante, setIdEstudiante] = useState<string | null>(null);
+
+  // Obtener id del estudiante logueado
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIdEstudiante(user?.id ?? null);
+    };
+    getUser();
+  }, []);
 
   useEffect(() => {
     const fetchPerfil = async () => {
@@ -54,7 +66,6 @@ export default function PerfilProfesor() {
         .select('id_consulta, dia_semana, hora_inicio, hora_fin, disponibilidad')
         .eq('id_profesor', id)
         .eq('disponibilidad', true);
-        
 
       if (!profeError) setProfesor(profeData);
       if (!seccionesError) setSecciones(seccionesData || []);
@@ -69,8 +80,43 @@ export default function PerfilProfesor() {
   const formatHora = (hora: string) =>
     new Date(`1970-01-01T${hora}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+  // Función para agendar horario
+  const agendarHorario = async (id_consulta: string) => {
+    if (!idEstudiante) {
+      setMensaje('Debes iniciar sesión como estudiante para agendar.');
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase
+      .from('horario_consulta')
+      .update({ disponibilidad: false, id_estudiante: idEstudiante })
+      .eq('id_consulta', id_consulta);
+    if (error) {
+      setMensaje('Error al agendar el horario.');
+    } else {
+      setMensaje('¡Horario agendado exitosamente!');
+      // Refrescar horarios
+      const { data: horariosData } = await supabase
+        .from('horario_consulta')
+        .select('id_consulta, dia_semana, hora_inicio, hora_fin, disponibilidad')
+        .eq('id_profesor', id)
+        .eq('disponibilidad', true);
+      setHorariosConsulta(horariosData || []);
+    }
+    setLoading(false);
+    setTimeout(() => setMensaje(null), 3000);
+  };
+
   return (
     <div className="perfil-profesor-bg">
+      {/* Botón de regresar */}
+      <button
+        className="btn-regresar"
+        onClick={() => navigate('/')}
+        title="Regresar al inicio"
+      >
+        ⬅ Regresar
+      </button>
       <Navbar />
       <div className="perfil-profesor-main">
         {loading ? (
@@ -95,13 +141,25 @@ export default function PerfilProfesor() {
               </ul>
             )}
             <h3>Horarios de Consulta Disponibles</h3>
+            {mensaje && (
+              <div className="alert-message success-message">{mensaje}</div>
+            )}
             {horariosConsulta.length === 0 ? (
               <p>No tiene horarios de consulta disponibles.</p>
             ) : (
               <ul>
                 {horariosConsulta.map(horario => (
-                  <li key={horario.id_consulta}>
-                    <strong>{horario.dia_semana}:</strong> {formatHora(horario.hora_inicio)} - {formatHora(horario.hora_fin)}
+                  <li key={horario.id_consulta} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <span>
+                      <strong>{horario.dia_semana}:</strong> {formatHora(horario.hora_inicio)} - {formatHora(horario.hora_fin)}
+                    </span>
+                    <button
+                      className="agendar-btn"
+                      onClick={() => agendarHorario(horario.id_consulta)}
+                      disabled={loading}
+                    >
+                      Agendar
+                    </button>
                   </li>
                 ))}
               </ul>
