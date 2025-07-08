@@ -1,9 +1,21 @@
-.Home_Separador {
-    padding: .5rem;
-    background-color: #f49b43;
-    
+.Home_Contenedor {
+    background-color: #F67E08;
 }
 
-.Home_Contenedor {
-    background-color: rgb(234, 124, 21, 0.8)
+.Centrar_Footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+html {
+  overflow-x: hidden; /* Evita scroll horizontal */
+}
+
+
+.loading-container {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  color: #666;
 }

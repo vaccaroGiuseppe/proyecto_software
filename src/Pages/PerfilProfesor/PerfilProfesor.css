@@ -1,0 +1,148 @@
+.perfil-profesor-bg {
+  min-height: 100vh;
+  background: #F67E08;
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-profesor-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 0 30px 0;
+}
+
+.perfil-profesor-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 32px 24px;
+  min-width: 320px;
+  max-width: 500px;
+  width: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.perfil-profesor-container h2 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  color: #1a237e;
+  text-align: center;
+}
+
+.perfil-profesor-container p {
+  font-size: 1.1rem;
+  margin: 8px 0;
+  color: #333;
+}
+
+.perfil-profesor-container h3 {
+  margin-top: 28px;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #3949ab;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 4px;
+}
+
+.perfil-profesor-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.perfil-profesor-container li {
+  background: #f5f6fa;
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-profesor-container li strong {
+  color: #1a237e;
+}
+
+.perfil-profesor-loading,
+.perfil-profesor-error {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 32px 24px;
+  min-width: 320px;
+  max-width: 500px;
+  width: 100%;
+  margin: 40px auto;
+  text-align: center;
+  color: #1a237e;
+  font-size: 1.2rem;
+}
+
+.Centrar_Footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+}
+
+@media (max-width: 600px) {
+  .perfil-profesor-container,
+  .perfil-profesor-loading,
+  .perfil-profesor-error {
+    padding: 18px 6px;
+    max-width: 98vw;
+  }
+  .perfil-profesor-container h2 {
+    font-size: 1.3rem;
+  }
+}
+
+.agendar-btn {
+  background: #f67e08;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.agendar-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+.alert-message.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.btn-regresar {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: #fff;
+  color: #f67e08;
+  border: 2px solid #f67e08;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-regresar:hover {
+  background: #f67e08;
+  color: #fff;
+}

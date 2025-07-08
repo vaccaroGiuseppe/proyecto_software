@@ -1,0 +1,175 @@
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '../../supabaseClient';
+import Navbar from '../../Components/Navbar/Navbar';
+import Footer from '../../Components/Footer/Footer';
+import './PerfilProfesor.css';
+
+type Profesor = {
+  id_usuario: string;
+  nombre: string;
+  correo: string;
+};
+
+type Seccion = {
+  id_seccion: string;
+  codigo_materia: string;
+  salon: string;
+};
+
+type HorarioConsulta = {
+  id_consulta: string;
+  dia_semana: string;
+  hora_inicio: string;
+  hora_fin: string;
+  disponibilidad: boolean;
+};
+
+export default function PerfilProfesor() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [profesor, setProfesor] = useState<Profesor | null>(null);
+  const [secciones, setSecciones] = useState<Seccion[]>([]);
+  const [horariosConsulta, setHorariosConsulta] = useState<HorarioConsulta[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [mensaje, setMensaje] = useState<string | null>(null);
+  const [idEstudiante, setIdEstudiante] = useState<string | null>(null);
+
+  // Obtener id del estudiante logueado
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIdEstudiante(user?.id ?? null);
+    };
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    const fetchPerfil = async () => {
+      setLoading(true);
+      // Datos del profesor
+      const { data: profeData, error: profeError } = await supabase
+        .from('usuario')
+        .select('id_usuario, nombre, correo')
+        .eq('id_usuario', id)
+        .single();
+
+      // Materias asignadas
+      const { data: seccionesData, error: seccionesError } = await supabase
+        .from('seccion')
+        .select('id_seccion, codigo_materia, salon')
+        .eq('id_profesor', id);
+
+      // Horarios de consulta con disponibilidad TRUE
+      const { data: horariosData, error: horariosError } = await supabase
+        .from('horario_consulta')
+        .select('id_consulta, dia_semana, hora_inicio, hora_fin, disponibilidad')
+        .eq('id_profesor', id)
+        .eq('disponibilidad', true);
+
+      if (!profeError) setProfesor(profeData);
+      if (!seccionesError) setSecciones(seccionesData || []);
+      if (!horariosError) setHorariosConsulta(horariosData || []);
+      setLoading(false);
+    };
+
+    if (id) fetchPerfil();
+  }, [id]);
+
+  // Formatear hora para mostrar solo HH:mm
+  const formatHora = (hora: string) =>
+    new Date(`1970-01-01T${hora}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // Función para agendar horario
+  const agendarHorario = async (id_consulta: string) => {
+    if (!idEstudiante) {
+      setMensaje('Debes iniciar sesión como estudiante para agendar.');
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase
+      .from('horario_consulta')
+      .update({ disponibilidad: false, id_estudiante: idEstudiante })
+      .eq('id_consulta', id_consulta);
+    if (error) {
+      setMensaje('Error al agendar el horario.');
+    } else {
+      setMensaje('¡Horario agendado exitosamente!');
+      // Refrescar horarios
+      const { data: horariosData } = await supabase
+        .from('horario_consulta')
+        .select('id_consulta, dia_semana, hora_inicio, hora_fin, disponibilidad')
+        .eq('id_profesor', id)
+        .eq('disponibilidad', true);
+      setHorariosConsulta(horariosData || []);
+    }
+    setLoading(false);
+    setTimeout(() => setMensaje(null), 3000);
+  };
+
+  return (
+    <div className="perfil-profesor-bg">
+      {/* Botón de regresar */}
+      <button
+        className="btn-regresar"
+        onClick={() => navigate('/')}
+        title="Regresar al inicio"
+      >
+        ⬅ Regresar
+      </button>
+      <Navbar />
+      <div className="perfil-profesor-main">
+        {loading ? (
+          <div className="perfil-profesor-loading">Cargando perfil del profesor...</div>
+        ) : !profesor ? (
+          <div className="perfil-profesor-error">No se encontró el profesor.</div>
+        ) : (
+          <div className="perfil-profesor-container">
+            <h2>Perfil del Profesor</h2>
+            <p><strong>Nombre:</strong> {profesor.nombre}</p>
+            <p><strong>Correo:</strong> {profesor.correo}</p>
+            <h3>Materias Asignadas</h3>
+            {secciones.length === 0 ? (
+              <p>No tiene materias asignadas.</p>
+            ) : (
+              <ul>
+                {secciones.map(seccion => (
+                  <li key={seccion.id_seccion}>
+                    <strong>Código Materia:</strong> {seccion.codigo_materia} | <strong>Salón:</strong> {seccion.salon}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <h3>Horarios de Consulta Disponibles</h3>
+            {mensaje && (
+              <div className="alert-message success-message">{mensaje}</div>
+            )}
+            {horariosConsulta.length === 0 ? (
+              <p>No tiene horarios de consulta disponibles.</p>
+            ) : (
+              <ul>
+                {horariosConsulta.map(horario => (
+                  <li key={horario.id_consulta} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <span>
+                      <strong>{horario.dia_semana}:</strong> {formatHora(horario.hora_inicio)} - {formatHora(horario.hora_fin)}
+                    </span>
+                    <button
+                      className="agendar-btn"
+                      onClick={() => agendarHorario(horario.id_consulta)}
+                      disabled={loading}
+                    >
+                      Agendar
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="Centrar_Footer">
+        <Footer />
+      </div>
+    </div>
+  );
+}

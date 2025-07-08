@@ -10,11 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
+    "@types/react-router-dom": "^5.3.3",
+    "all": "^0.0.0",
+    "bcrypt": "^6.0.0",
     "react": "^18.2.0",
+    "react-datepicker": "^8.4.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^7.6.0"
+    "react-hook-form": "^7.57.0",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.6.2",
+    "xlsx": "^0.18.5",
+    "xlsx-style": "^0.8.13"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
