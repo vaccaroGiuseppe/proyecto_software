@@ -171,7 +171,7 @@ export default function BuscarProfesor() {
 
         {/* Horarios de consulta agendados */}
         <div className="agendado-section">
-          <h1 className="mini">Horarios de consulta agendados:</h1>
+          <h1 className="mini">Tus Horarios de consulta agendados:</h1>
           {mensaje && <div className="alert-message success-message">{mensaje}</div>}
           {loadingHorario ? (
             <div className="loading-secciones">
@@ -183,16 +183,18 @@ export default function BuscarProfesor() {
                 <li key={horario.id_consulta} className="horario-agendado" style={{ listStyle: 'none', marginBottom: 10 }}>
                   <span>
                     <strong>{horario.dia_semana}:</strong> {formatHora(horario.hora_inicio)} - {formatHora(horario.hora_fin)}
-                    {' | '}
+                    {' con el '}
                     <strong>Profesor:</strong> {horario.nombreProfesor} {horario.apellidoProfesor}
                   </span>
                   <button
-                    className="submit-button"
-                    style={{ marginLeft: 16 }}
+                    className="trash-button"
                     onClick={() => handleEliminarAgendado(horario.id_consulta)}
                     disabled={loadingHorario}
+                    aria-label="Eliminar horario"
                   >
-                    Eliminar
+                    <svg className="trash-icon" viewBox="0 0 448 512">
+                      <path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.7 23.7 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"/>
+                    </svg>
                   </button>
                 </li>
               ))}
