@@ -191,7 +191,7 @@ export default function VerSeccion() {
           <div className="seccion-content">
             <div className="seccion-card">
               <div className="seccion-header">
-                <h2>{seccion.id_seccion} - {seccion.nombre_materia}</h2>
+                <h2>{seccion.codigo_materia} - {seccion.nombre_materia}</h2>
               </div>
 
               <div className="seccion-details">

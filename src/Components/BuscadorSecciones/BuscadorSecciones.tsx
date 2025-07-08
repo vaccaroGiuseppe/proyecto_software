@@ -164,7 +164,7 @@ const handleClickSeccion = (idSeccion: string) => {
                     style={{ cursor: 'pointer' }}
                 >
                     <div className="result-header">
-                    <span className="materia-codigo">{seccion.id_seccion}</span>
+                    <span className="materia-codigo">{seccion.codigo_materia}</span>
                     <span className="materia-nombre">{seccion.nombre_materia}</span>
                     </div>
                     <div className="result-details">
