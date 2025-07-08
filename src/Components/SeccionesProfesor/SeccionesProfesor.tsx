@@ -170,7 +170,7 @@ export default function SeccionesProfesor({ onSeccionSelect }: SeccionesProfesor
                 <div 
                   key={seccion.id_seccion} 
                   className="result-item1"
-                  onClick={() => handleClickSeccion(seccion.id_seccion)}
+                  onClick={() => handleClickSeccion(seccion.codigo_materia)}
                   style={{ cursor: 'pointer' }}
                 >
                   <div className="result-header1">
