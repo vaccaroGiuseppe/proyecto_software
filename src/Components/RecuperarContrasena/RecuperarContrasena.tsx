@@ -108,8 +108,9 @@ const RecuperarContrasena = () => {
               <button 
                 type='submit' 
                 className='RecuperarContrasena_Boton'
-                disabled={loading}
-              >
+                onClick={() => navigate('/iniciarsesion')} 
+                
+                >
                 {loading ? (
                   <span className="loading-indicator">
                     <span className="loading-dot">.</span>
@@ -117,6 +118,7 @@ const RecuperarContrasena = () => {
                     <span className="loading-dot">.</span>
                   </span>
                 ) : 'Enviar Enlace'}
+                
               </button>
             </form>
           </>
