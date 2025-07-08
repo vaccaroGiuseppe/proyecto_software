@@ -23,6 +23,8 @@ type UsuarioFormData = {
 };
 
 export default function UsuarioForm() {
+  const [isActive, setActive] = useState(false);
+  const [loading0, setLoading0] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<UsuarioFormData>();
@@ -31,9 +33,18 @@ export default function UsuarioForm() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const { signUp, loginWithGoogle, loading: authLoading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const { signUp, loginWithGoogle, loading: authLoading } = useAuth();
+
+  const handleActive = () => {
+    setActive(true);
+  };
+
+  const googleFunction = () => {
+    handleActive();
+    loginWithGoogle();
+  };
 
   const determinarTipoUsuario = (correo: string): string => {
     const profesor = /@unimet\.edu\.ve$/i;
@@ -82,12 +93,14 @@ export default function UsuarioForm() {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
+      // 1. Subir la imagen al bucket de Supabase
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
+      // 2. Obtener la URL pública de la imagen
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
@@ -102,30 +115,34 @@ export default function UsuarioForm() {
 
   const onSubmit = async (formData: UsuarioFormData) => {
     setError(null);
-    
+  
+  if(isActive) {
     try {
+
       if (formData.contrasena !== formData.confirmar_contrasena) {
         throw new Error('Las contraseñas no coinciden');
       }
+
 
       let imageUrl = null;
       if (previewImage && fileInputRef.current?.files?.[0]) {
         imageUrl = await uploadImageToSupabase(fileInputRef.current.files[0]);
       }
 
-      await signUp(
+    await signUp(
         formData.correo,
         formData.contrasena,
         {
-          nombre: formData.nombre,
+           nombre: formData.nombre,
           apellido: formData.apellido,
+
           tipo: formData.tipo,
+
           fecha_nacimiento: startDate?.toISOString(),
           sexo: formData.sexo,
           foto_perfil: imageUrl
         }
       );
-
       setSuccess(true);
       reset();
       setStartDate(null);
@@ -138,15 +155,88 @@ export default function UsuarioForm() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');
       console.error('Error detallado:', err);
+
+
     }
-  };
+  
 
-  const triggerFileInput = () => {
+
+  }else{
+    setLoading0(true);
+
+        try {
+
+          
+          // 1. Validar que las contraseñas coincidan
+          if (formData.contrasena !== formData.confirmar_contrasena) {
+            throw new Error('Las contraseñas no coinciden');
+          }
+
+          // 2. Subir imagen si existe
+          let imageUrl = null;
+          if (previewImage && fileInputRef.current?.files?.[0]) {
+            imageUrl = await uploadImageToSupabase(fileInputRef.current.files[0]);
+          }
+
+          // 3. Registrar usuario en Auth de Supabase
+          const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: formData.correo,
+            password: formData.contrasena,
+            options: {
+              data: {
+                nombre: formData.nombre,
+                apellido: formData.apellido,
+              }
+            }
+          });
+
+          if (authError) throw new Error(authError.message);
+
+          // 4. Insertar datos adicionales en la tabla usuario
+          const { error: insertError } = await supabase
+            .from('usuario')
+            .insert([{
+              id_usuario: authData.user?.id,
+              nombre: formData.nombre,
+              apellido: formData.apellido,
+              correo: formData.correo,
+              tipo: formData.tipo,
+              fecha_creacion: new Date().toISOString(),
+              fecha_nacimiento: startDate?.toISOString(),
+              sexo: formData.sexo,
+              foto_perfil: imageUrl
+            }]);
+
+          if (insertError) throw new Error(insertError.message);
+
+          setSuccess(true);
+          reset();
+          setStartDate(null);
+          setPreviewImage(null);
+          
+          setTimeout(() => {
+            navigate('/confirmacion-correo');
+          }, 1000);
+          
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Ocurrió un error durante el registro');
+          console.error('Error detallado:', err);
+        } finally {
+          setLoading0(false);
+        }
+      }
+
+    };
+    
+    const triggerFileInput = () => {
     fileInputRef.current?.click();
-  };
 
+    
+  }
   const loading = authLoading || isUploadingImage;
 
+
+  
   return (
     <div className='registro-page'>
       <Navbar />
@@ -347,9 +437,9 @@ export default function UsuarioForm() {
               <button 
                 type="submit" 
                 className="submit-button" 
-                disabled={loading || isUploadingImage}
+                disabled={loading0 || isUploadingImage}
               >
-                {(loading || isUploadingImage) ? (
+                {(loading0 || isUploadingImage) ? (
                   <FaSpinner className="spinner" />
                 ) : (
                   'Registrarse'
@@ -358,10 +448,11 @@ export default function UsuarioForm() {
             </form>
             
             <div className="google-login-wrapper">
-              <button 
+  
+  <button 
                 type="button" 
                 className="google-button" 
-                onClick={loginWithGoogle}
+                onClick={googleFunction}
                 disabled={loading}
               >
                 {loading ? (
@@ -381,6 +472,7 @@ export default function UsuarioForm() {
                 )}
               </button>
             </div>
+
           </div>
         </div>
 
